@@ -1,0 +1,596 @@
+---
+title: 'Cross-Platform Development'
+description: 'Best practices for developing TeeChart FMX applications across Windows, macOS, iOS, and Android'
+icon: 'mobile'
+---
+
+## Overview
+
+FireMonkey (FMX) enables true cross-platform development with a single codebase that runs on Windows, macOS, iOS, and Android. This guide covers platform-specific considerations and best practices for TeeChart FMX applications.
+
+<Info>
+TeeChart FMX automatically scales and adapts to different screen sizes and resolutions, but you'll need to handle platform-specific UI adjustments and feature availability.
+</Info>
+
+## Supported Platforms
+
+<CardGroup cols={2}>
+  <Card title="Windows" icon="windows">
+    Full feature support with desktop optimization
+  </Card>
+  
+  <Card title="macOS" icon="apple">
+    Native macOS application with Cocoa framework
+  </Card>
+  
+  <Card title="iOS" icon="mobile-screen">
+    iPhone and iPad with touch optimization
+  </Card>
+  
+  <Card title="Android" icon="android">
+    Mobile and tablet with Material Design support
+  </Card>
+</CardGroup>
+
+## Platform-Specific Code
+
+### Conditional Compilation
+
+Use compiler directives to include platform-specific code:
+
+```pascal
+uses
+  System.SysUtils, FMXTee.Engine, FMXTee.Chart,
+  {$IFNDEF IOS}
+  FireDAC.Phys.ODBCBase,  // Not available on iOS
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
+  Winapi.Windows,
+  {$ENDIF MSWINDOWS}
+  FMXTee.Editor.Series.WorldMap;
+```
+
+### Platform Constants
+
+Common compiler directives:
+
+```pascal
+{$IFDEF MSWINDOWS}
+  // Windows-specific code
+{$ENDIF}
+
+{$IFDEF MACOS}
+  // macOS-specific code
+{$ENDIF}
+
+{$IFDEF IOS}
+  // iOS-specific code
+{$ENDIF}
+
+{$IFDEF ANDROID}
+  // Android-specific code
+{$ENDIF}
+
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+  // Mobile platforms (iOS or Android)
+{$ENDIF}
+
+{$IF DEFINED(MACOS) and not DEFINED(IOS)}
+  // macOS only (not iOS)
+{$ENDIF}
+```
+
+## UI Adaptations
+
+### Font Sizing
+
+Adjust font sizes for different platforms and screen densities:
+
+```pascal
+procedure TDashForm.Init;
+begin
+  // Desktop platforms
+  {$IFDEF MACOS}
+    Layout4.Height := 192;
+    LBTotalSales.TextSettings.Font.Size := 14;
+    Label5.TextSettings.Font.Size := 14;
+    LBTotalItemsSold.TextSettings.Font.Size := 14;
+  {$ELSE}
+    Layout4.Height := 256;
+    LBTotalSales.TextSettings.Font.Size := 18;
+    Label5.TextSettings.Font.Size := 18;
+    LBTotalItemsSold.TextSettings.Font.Size := 18;
+  {$ENDIF}
+  
+  // Mobile platforms
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    LBTotalSales.TextSettings.Font.Size := 10;
+    Label5.TextSettings.Font.Size := 10;
+    LBTotalItemsSold.TextSettings.Font.Size := 10;
+    LBTotalSalesCountry.TextSettings.Font.Size := 10;
+    LBTotalSalesCountryValue.TextSettings.Font.Size := 10;
+  {$ENDIF}
+end;
+```
+
+### Legend and Mark Sizing
+
+```pascal
+procedure ConfigureChart;
+begin
+  {$IFDEF IOS}
+    BarChart.Legend.Font.Size := 10;
+    DonutSeries.Marks.Visible := False;  // Too small on iPhone
+  {$ENDIF}
+  
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    // Larger touch targets on mobile
+    Chart1.Legend.Symbol.Width := 30;
+    Chart1.Legend.Symbol.Height := 20;
+  {$ENDIF}
+end;
+```
+
+## Platform-Specific Layouts
+
+Create device-specific form layouts:
+
+### Layout File Structure
+
+```
+MainFrm.fmx              # Default layout
+MainFrm.iPad.fmx         # iPad-specific layout
+MainFrm.XLgXhdpiTb.fmx   # Large tablet layout
+MainFrm.iPhone.fmx       # iPhone-specific layout
+```
+
+### Loading Platform Layouts
+
+FireMonkey automatically loads the appropriate layout file based on:
+- Device type (phone/tablet)
+- Screen size
+- Orientation
+- Platform (iOS/Android)
+
+<Tip>
+Create platform-specific layouts by right-clicking the form in the IDE and selecting "Add View" → "Device View".
+</Tip>
+
+## Feature Availability
+
+### Chart Editor
+
+The visual chart editor is not available on iOS:
+
+```pascal
+procedure TDashForm.AreaChartDblClick(Sender: TObject);
+{$IFNDEF IOS}
+var 
+  ChartEditor: TChartEditor;
+{$ENDIF}
+begin
+  {$IFNDEF IOS}
+  ChartEditor := TChartEditor.Create(Self);
+  ChartEditor.Chart := TChart(Sender);
+  ChartEditor.Execute;
+  {$ENDIF}
+end;
+```
+
+### Database Drivers
+
+Some database drivers are platform-specific:
+
+```pascal
+uses
+  FireDAC.Stan.Intf,
+  FireDAC.Phys.Intf,
+  {$IFNDEF IOS}
+  FireDAC.Phys.ODBCBase,    // ODBC not available on iOS
+  FireDAC.Phys.MSSQL,       // SQL Server not on mobile
+  {$ENDIF}
+  FireDAC.Phys.SQLite;      // SQLite available on all platforms
+```
+
+### File System Access
+
+```pascal
+procedure SaveChartToFile;
+var
+  FilePath: string;
+begin
+  {$IFDEF MSWINDOWS}
+    FilePath := 'C:\Temp\chart.tee';
+  {$ENDIF}
+  
+  {$IFDEF MACOS}
+    FilePath := GetHomePath + '/Documents/chart.tee';
+  {$ENDIF}
+  
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    FilePath := TPath.GetDocumentsPath + PathDelim + 'chart.tee';
+  {$ENDIF}
+  
+  Chart1.SaveToFile(FilePath);
+end;
+```
+
+## Touch vs Mouse Interaction
+
+### Touch Optimization
+
+```pascal
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    // Larger touch targets
+    Chart1.Legend.Symbol.Width := 40;
+    
+    // Disable hover effects (no mouse)
+    Chart1.Hover.Visible := False;
+    
+    // Enable touch gestures
+    Chart1.Touch.GestureManager := GestureManager1;
+    Chart1.Touch.InteractiveGestures := 
+      [TInteractiveGesture.Zoom, TInteractiveGesture.Pan];
+  {$ELSE}
+    // Desktop: enable hover and mouse wheel zoom
+    Chart1.Hover.Visible := True;
+    Chart1.AllowZoom := True;
+    Chart1.Zoom.MouseWheel := pmwNormal;
+  {$ENDIF}
+end;
+```
+
+### Click vs Touch Events
+
+```pascal
+procedure ChartClickSeries(Sender: TCustomChart; Series: TChartSeries;
+  ValueIndex: Integer; Button: TMouseButton; Shift: TShiftState; 
+  X, Y: Integer);
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    // Provide visual feedback for touch
+    ShowSelectionIndicator(ValueIndex);
+  {$ELSE}
+    // Desktop: show tooltip
+    ShowTooltip(X, Y, Series.Labels[ValueIndex]);
+  {$ENDIF}
+end;
+```
+
+## Performance Optimization
+
+### Mobile-Specific Optimizations
+
+```pascal
+procedure OptimizeForMobile;
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    // Reduce quality for better performance
+    Chart1.AntiAlias := False;
+    Chart1.View3D := False;  // 3D rendering is slower on mobile
+    
+    // Simplify gradients
+    Chart1.Gradient.Visible := False;
+    Series1.Gradient.Visible := False;
+    
+    // Reduce animation duration
+    Animation1.Duration := 500;  // Faster on mobile
+    
+    // Disable shadows
+    Chart1.Shadow.Visible := False;
+  {$ENDIF}
+end;
+```
+
+### Fast Line for Large Datasets
+
+```pascal
+procedure CreateLargeDataChart;
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    // Use FastLine for better performance
+    var FastLineSeries := TFastLineSeries.Create(Self);
+    Chart1.AddSeries(FastLineSeries);
+  {$ELSE}
+    // Desktop can handle regular line series
+    var LineSeries := TLineSeries.Create(Self);
+    Chart1.AddSeries(LineSeries);
+  {$ENDIF}
+end;
+```
+
+## Screen Orientation
+
+### Handling Rotation
+
+```pascal
+procedure TForm1.FormResize(Sender: TObject);
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    if Width > Height then
+    begin
+      // Landscape orientation
+      Chart1.Legend.Alignment := laRight;
+      Chart1.Legend.TextStyle := ltsPlain;
+    end
+    else
+    begin
+      // Portrait orientation
+      Chart1.Legend.Alignment := laBottom;
+      Chart1.Legend.TextStyle := ltsLeftValue;
+    end;
+  {$ENDIF}
+end;
+```
+
+## Responsive Design Patterns
+
+### Adaptive Layouts
+
+```pascal
+procedure TForm1.FormShow(Sender: TObject);
+begin
+  // Adapt to screen width
+  if Width < 600 then
+  begin
+    // Phone or small screen
+    GridPanelLayout1.ColumnCollection[0].Value := 100;  // Single column
+    Chart1.Legend.Visible := False;
+    Chart1.Title.Visible := False;
+  end
+  else if Width < 1024 then
+  begin
+    // Tablet
+    GridPanelLayout1.ColumnCollection[0].Value := 50;   // Two columns
+    Chart1.Legend.Visible := True;
+  end
+  else
+  begin
+    // Desktop
+    GridPanelLayout1.ColumnCollection[0].Value := 33.3; // Three columns
+    Chart1.Legend.Visible := True;
+    Chart1.Title.Visible := True;
+  end;
+end;
+```
+
+## Resource Management
+
+### Platform-Specific Resources
+
+```pascal
+function GetResourcePath: string;
+begin
+  {$IFDEF MSWINDOWS}
+    Result := ExtractFilePath(ParamStr(0)) + 'Resources\\';
+  {$ENDIF}
+  
+  {$IFDEF MACOS}
+    {$IFDEF IOS}
+      Result := TPath.GetDocumentsPath + '/Resources/';
+    {$ELSE}
+      Result := TPath.GetHomePath + '/Resources/';
+    {$ENDIF}
+  {$ENDIF}
+  
+  {$IFDEF ANDROID}
+    Result := TPath.GetDocumentsPath + '/Resources/';
+  {$ENDIF}
+end;
+```
+
+## Testing Across Platforms
+
+### Multi-Device Testing Checklist
+
+<Note>
+1. **Windows** - Test on different DPI settings (96, 120, 144 DPI)
+2. **macOS** - Test on Retina and non-Retina displays
+3. **iOS** - Test on iPhone (various sizes) and iPad
+4. **Android** - Test on different screen sizes and densities
+5. **Orientation** - Test landscape and portrait modes
+6. **Performance** - Profile on actual devices, not just simulators
+</Note>
+
+### Platform Testing Code
+
+```pascal
+procedure LogPlatformInfo;
+begin
+  {$IFDEF DEBUG}
+  Memo1.Lines.Add('Platform: ' + 
+    {$IFDEF MSWINDOWS}'Windows'{$ENDIF}
+    {$IFDEF MACOS}{$IFNDEF IOS}'macOS'{$ELSE}'iOS'{$ENDIF}{$ENDIF}
+    {$IFDEF ANDROID}'Android'{$ENDIF}
+  );
+  
+  Memo1.Lines.Add('Screen Size: ' + 
+    Screen.Width.ToString + 'x' + Screen.Height.ToString);
+  
+  Memo1.Lines.Add('DPI: ' + Screen.PixelsPerInch.ToString);
+  {$ENDIF}
+end;
+```
+
+## Deployment Considerations
+
+### Windows
+
+- Package TeeChart DLLs with application
+- Consider installer (Inno Setup, InstallShield)
+- Code signing for distribution
+
+### macOS
+
+```pascal
+// macOS bundle structure
+MyApp.app/
+  Contents/
+    MacOS/          # Executable
+    Resources/      # Charts, images, data
+    Info.plist      # App metadata
+```
+
+### iOS
+
+- App Store submission requirements
+- Provisioning profiles and certificates
+- Asset catalog for different resolutions
+
+### Android
+
+- APK/AAB packaging
+- Different screen densities (ldpi, mdpi, hdpi, xhdpi, xxhdpi)
+- Permissions in AndroidManifest.xml
+
+## Common Patterns
+
+### Platform Detection at Runtime
+
+```pascal
+function IsMobilePlatform: Boolean;
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    Result := True;
+  {$ELSE}
+    Result := False;
+  {$ENDIF}
+end;
+
+function IsDesktopPlatform: Boolean;
+begin
+  {$IF DEFINED(MSWINDOWS) or (DEFINED(MACOS) and not DEFINED(IOS))}
+    Result := True;
+  {$ELSE}
+    Result := False;
+  {$ENDIF}
+end;
+```
+
+### Adaptive Chart Configuration
+
+```pascal
+procedure ConfigureChartForPlatform(Chart: TChart);
+begin
+  if IsMobilePlatform then
+  begin
+    Chart.Hover.Visible := False;
+    Chart.Legend.Font.Size := 10;
+    Chart.Title.Font.Size := 14;
+    Chart.View3D := False;
+    Chart.AntiAlias := False;
+  end
+  else
+  begin
+    Chart.Hover.Visible := True;
+    Chart.Legend.Font.Size := 12;
+    Chart.Title.Font.Size := 18;
+    Chart.View3D := True;
+    Chart.AntiAlias := True;
+  end;
+end;
+```
+
+## Best Practices
+
+<Tip>
+1. **Test on real devices** - Simulators don't show real performance
+2. **Use platform layouts** - Create device-specific form layouts
+3. **Optimize for mobile** - Disable expensive features on mobile
+4. **Handle rotation** - Adapt layouts for landscape/portrait
+5. **Touch-friendly UI** - Larger hit targets on mobile (44x44 pts minimum)
+6. **Platform-appropriate navigation** - Tab bar on iOS, drawer on Android
+7. **Performance profiling** - Test with realistic data volumes
+</Tip>
+
+## Example: Complete Cross-Platform Form
+
+```pascal
+unit CrossPlatformChart;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FMX.Types, FMX.Controls, FMX.Forms,
+  FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart;
+
+type
+  TFormChart = class(TForm)
+    Chart1: TChart;
+    Series1: TLineSeries;
+    procedure FormCreate(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+  private
+    procedure ConfigureForPlatform;
+  end;
+
+implementation
+
+{$R *.fmx}
+
+procedure TFormChart.FormCreate(Sender: TObject);
+begin
+  ConfigureForPlatform;
+  Series1.FillSampleValues;
+end;
+
+procedure TFormChart.ConfigureForPlatform;
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    // Mobile configuration
+    Chart1.Hover.Visible := False;
+    Chart1.View3D := False;
+    Chart1.Legend.Font.Size := 10;
+    Chart1.Title.Font.Size := 14;
+    
+    // Touch gestures
+    Chart1.Touch.InteractiveGestures := 
+      [TInteractiveGesture.Zoom, TInteractiveGesture.Pan];
+  {$ELSE}
+    // Desktop configuration
+    Chart1.Hover.Visible := True;
+    Chart1.View3D := True;
+    Chart1.Legend.Font.Size := 12;
+    Chart1.Title.Font.Size := 18;
+    Chart1.AllowZoom := True;
+  {$ENDIF}
+end;
+
+procedure TFormChart.FormResize(Sender: TObject);
+begin
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    // Adapt to orientation
+    if Width > Height then
+      Chart1.Legend.Alignment := laRight
+    else
+      Chart1.Legend.Alignment := laBottom;
+  {$ENDIF}
+end;
+
+end.
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Standard Series" icon="chart-line" href="/fmx/standard-series">
+    Explore chart types
+  </Card>
+  
+  <Card title="Dashboard" icon="table-cells" href="/fmx/dashboard">
+    Build cross-platform dashboards
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [FireMonkey Platform Services](https://docwiki.embarcadero.com/RADStudio/en/FireMonkey_Platform_Services)
+- [iOS Development](https://docwiki.embarcadero.com/RADStudio/en/iOS_Application_Development)
+- [Android Development](https://docwiki.embarcadero.com/RADStudio/en/Android_Mobile_Application_Development)
+- [Multi-Device Preview](https://docwiki.embarcadero.com/RADStudio/en/Creating_a_Multi-Device_Application)
+
+<Warning>
+Always test on actual devices before releasing. Simulators and emulators don't accurately represent real-world performance and user experience.
+</Warning>

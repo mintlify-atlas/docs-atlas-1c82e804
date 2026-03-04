@@ -1,0 +1,718 @@
+---
+title: 'TeeMaker'
+description: 'Interactive 3D object creation and modeling tool for building complex 3D visualizations'
+icon: 'cube-fill'
+---
+
+## Overview
+
+TeeMaker is a powerful 3D object creation and modeling tool included with TeeChart. It allows you to interactively design, build, and export complex 3D objects and scenes that can be integrated into your TeeChart applications. TeeMaker provides a visual editor for creating 3D blocks, shapes, and complete 3D environments.
+
+**Location:** `VCL/TeeMaker/`
+
+**Source:** `VCL/TeeMaker/TeeMaker.dpr:1`
+
+## What is TeeMaker?
+
+TeeMaker is a standalone application and component library that provides:
+
+- **Interactive 3D Editor** - Visual WYSIWYG environment for 3D object creation
+- **3D Block System** - Modular building blocks for complex objects
+- **OpenGL Rendering** - Hardware-accelerated 3D visualization
+- **Export Capabilities** - Save and load 3D objects for use in applications
+- **Animation Support** - Create animated 3D scenes
+- **Texture Mapping** - Apply images to 3D surfaces
+- **GLSL Shaders** - Custom shader support for advanced effects
+
+## Getting Started
+
+### Running TeeMaker
+
+TeeMaker is a standalone executable application:
+
+**Source:** `VCL/TeeMaker/TeeMaker.dpr:68`
+
+```delphi
+program TeeMaker;
+
+uses
+  Forms,
+  TeeMakerEditor,
+  TeeBlocks,
+  TeeMakerControl,
+  OpenGL2;
+
+begin
+  Application.Initialize;
+  Application.Title := 'TeeMaker';
+  Application.CreateForm(TMakerEditor1, MakerEditor1);
+  Application.Run;
+end.
+```
+
+### TeeMaker Component
+
+Embed TeeMaker editing capabilities in your applications:
+
+**Source:** `VCL/TeeMaker/TeeMakerControl.pas`
+
+```delphi
+uses
+  TeeMakerControl;
+
+var
+  MakerControl: TTeeMakerControl;
+begin
+  MakerControl := TTeeMakerControl.Create(Self);
+  MakerControl.Parent := Panel1;
+  MakerControl.Align := alClient;
+  
+  // Load a 3D object
+  MakerControl.LoadFromFile('object.hou');
+end;
+```
+
+## 3D Block System
+
+### What are Blocks?
+
+**Source:** `VCL/TeeMaker/TeeBlocks.pas:1`
+
+Blocks are the fundamental building units in TeeMaker:
+
+```delphi
+{********************************************}
+{ TeeMaker - Basic 3D Blocks                 }
+{ Copyright (c) 2002-2026 by Steema Software }
+{       All Rights Reserved                  }
+{********************************************}
+unit TeeBlocks;
+```
+
+Blocks support:
+- Position and rotation
+- Texture mapping
+- Transparency
+- Animations
+- Parent-child hierarchies
+
+### Available Block Types
+
+TeeMaker includes numerous pre-built block types:
+
+**Source:** `VCL/TeeMaker/TeeMaker.dpr:19`
+
+```delphi
+uses
+  TeeBlocks,          // Base block system
+  TeeRain,            // Rain effect block
+  TeeStairs,          // Staircase generator
+  TeeRevolution,      // Revolution surfaces
+  TeeExtruded,        // Extruded shapes
+  TeePipe,            // Pipe/tube shapes
+  TeeRoundRect,       // Rounded rectangles
+  TeeTerrain,         // Terrain generation
+  TeeHelix,           // Helix/spiral shapes
+  TeeWater,           // Water effects
+  TeeMesh,            // Mesh objects
+  TeeFacesBlock,      // Face-based modeling
+  TeeClipBlock;       // Clipping volumes
+```
+
+### Creating Basic Blocks
+
+```delphi
+var
+  Block: TCustomBlock;
+begin
+  Block := TCustomBlock.Create(Self);
+  
+  // Position
+  Block.X := 100;
+  Block.Y := 200;
+  Block.Z := 0;
+  
+  // Size
+  Block.Width := 50;
+  Block.Height := 50;
+  Block.Depth := 50;
+  
+  // Appearance
+  Block.Color := clRed;
+  Block.Transparency := 30;
+  
+  // Add to scene
+  MakerControl.Blocks.Add(Block);
+end;
+```
+
+## Advanced Block Types
+
+### Revolution Surfaces
+
+**Source:** `VCL/TeeMaker/TeeRevolution.pas`
+
+Create 3D objects by rotating a 2D profile:
+
+```delphi
+var
+  Rev: TRevolutionBlock;
+begin
+  Rev := TRevolutionBlock.Create(Self);
+  
+  // Define profile points
+  Rev.Points.Add(0, 0);
+  Rev.Points.Add(10, 20);
+  Rev.Points.Add(20, 40);
+  Rev.Points.Add(10, 60);
+  Rev.Points.Add(0, 80);
+  
+  // Revolution settings
+  Rev.Steps := 32;        // Smoothness
+  Rev.Angle := 360;       // Full rotation
+  Rev.StartAngle := 0;
+  
+  MakerControl.Blocks.Add(Rev);
+end;
+```
+
+### Extruded Shapes
+
+**Source:** `VCL/TeeMaker/TeeExtruded.pas`
+
+Extrude 2D shapes into 3D objects:
+
+```delphi
+var
+  Ext: TExtrudedBlock;
+begin
+  Ext := TExtrudedBlock.Create(Self);
+  
+  // Define 2D shape
+  Ext.Shape.MoveTo(0, 0);
+  Ext.Shape.LineTo(100, 0);
+  Ext.Shape.LineTo(100, 100);
+  Ext.Shape.LineTo(0, 100);
+  Ext.Shape.ClosePath;
+  
+  // Extrude depth
+  Ext.Depth := 50;
+  
+  MakerControl.Blocks.Add(Ext);
+end;
+```
+
+### Terrain Generation
+
+**Source:** `VCL/TeeMaker/TeeTerrain.pas`
+
+Generate 3D terrain from heightmap data:
+
+```delphi
+var
+  Terrain: TTerrainBlock;
+begin
+  Terrain := TTerrainBlock.Create(Self);
+  
+  // Configure terrain
+  Terrain.Width := 200;
+  Terrain.Height := 200;
+  Terrain.GridSize := 50;
+  
+  // Load heightmap
+  Terrain.LoadHeightMapFromFile('heightmap.bmp');
+  
+  // Texture
+  Terrain.Texture.LoadFromFile('grass.jpg');
+  
+  MakerControl.Blocks.Add(Terrain);
+end;
+```
+
+### Helix/Spiral Shapes
+
+**Source:** `VCL/TeeMaker/TeeHelix.pas`
+
+```delphi
+var
+  Helix: THelixBlock;
+begin
+  Helix := THelixBlock.Create(Self);
+  
+  Helix.Radius := 30;
+  Helix.Height := 100;
+  Helix.Turns := 5;
+  Helix.Steps := 100;
+  Helix.TubeRadius := 5;
+  
+  MakerControl.Blocks.Add(Helix);
+end;
+```
+
+## Textures and Materials
+
+### Texture Mapping
+
+**Source:** `VCL/TeeMaker/TeeBlocks.pas:98`
+
+```delphi
+type
+  TBlockTexture = class(TPersistent)
+  private
+    FAlpha: Boolean;
+    // ...
+  end;
+
+// Usage:
+var
+  Block: TCustomBlock;
+begin
+  Block := TCustomBlock.Create(Self);
+  
+  // Load texture
+  Block.Texture.Picture.LoadFromFile('wood.bmp');
+  Block.Texture.Mode := tmStretch;
+  Block.Texture.Alpha := True;  // Use alpha channel
+  
+  MakerControl.Blocks.Add(Block);
+end;
+```
+
+### Available Textures
+
+**Source:** `VCL/TeeMaker/Makers/` directory contains:
+
+- Wood.bmp
+- Marble.bmp  
+- Bricks.bmp
+- Stone.bmp
+- Water.bmp
+- Glass.bmp
+- Metal textures
+- And more...
+
+### Texture Selector
+
+**Source:** `VCL/TeeMaker/TeeTextureSelector.pas`
+
+TeeMaker includes a texture browser:
+
+```delphi
+uses
+  TeeTextureSelector;
+
+procedure ShowTextureSelector;
+var
+  Selector: TTextureSelector;
+begin
+  Selector := TTextureSelector.Create(Self);
+  try
+    if Selector.Execute then
+      Block.Texture.Picture := Selector.SelectedTexture;
+  finally
+    Selector.Free;
+  end;
+end;
+```
+
+## Animation
+
+### Block Animations
+
+**Source:** `VCL/TeeMaker/TeeBlockAnimations.pas`
+
+```delphi
+var
+  Anim: TBlockAnimation;
+begin
+  Anim := TBlockAnimation.Create(Block);
+  
+  // Rotation animation
+  Anim.AnimateRotation := True;
+  Anim.RotationSpeed.X := 1.0;
+  Anim.RotationSpeed.Y := 2.0;
+  Anim.RotationSpeed.Z := 0.5;
+  
+  // Position animation
+  Anim.AnimatePosition := True;
+  Anim.PositionDelta.Y := 10;  // Move up/down
+  
+  // Start animation
+  Anim.Active := True;
+end;
+```
+
+### Move Animations
+
+**Source:** `VCL/TeeMaker/TeeMoveAnimation.pas`
+
+```delphi
+var
+  MoveAnim: TMoveAnimation;
+begin
+  MoveAnim := TMoveAnimation.Create(Block);
+  
+  // Define path
+  MoveAnim.StartPosition := Point3D(0, 0, 0);
+  MoveAnim.EndPosition := Point3D(100, 100, 50);
+  MoveAnim.Duration := 2000;  // 2 seconds
+  MoveAnim.Loop := True;
+  
+  MoveAnim.Start;
+end;
+```
+
+### Number Animations
+
+**Source:** `VCL/TeeMaker/TeeNumberAnimation.pas`
+
+Animate numeric properties:
+
+```delphi
+var
+  NumAnim: TNumberAnimation;
+begin
+  NumAnim := TNumberAnimation.Create(Self);
+  
+  NumAnim.Target := Block;
+  NumAnim.PropertyName := 'Transparency';
+  NumAnim.StartValue := 0;
+  NumAnim.EndValue := 100;
+  NumAnim.Duration := 3000;
+  
+  NumAnim.Start;
+end;
+```
+
+## OpenGL Integration
+
+### OpenGL Rendering
+
+**Source:** `VCL/TeeMaker/TeeMakerMain.pas:27`
+
+TeeMaker uses OpenGL for hardware-accelerated rendering:
+
+```delphi
+uses
+  TeeMakerEditor,
+  TeeProcs,
+  TeeDraw3D,
+  TeCanvas,
+  TeeOpenGL,        // OpenGL support
+  TeeMakerControl,
+  OpenGL2;          // OpenGL API
+```
+
+### GLSL Shaders
+
+**Source:** `VCL/TeeMaker/TeeGLSLShaders.pas`
+
+Custom shader support:
+
+**From:** `VCL/TeeMaker/TeeMakerMain.pas:89`
+
+```delphi
+procedure TMakerEditor1.BCompileShaderClick(Sender: TObject);
+begin
+  // Compile custom vertex and fragment shaders
+  CompileGLSLProgram(
+    MemoVertexShader.Text,
+    MemoFragmentShader.Text
+  );
+end;
+
+procedure TMakerEditor1.CBShaderActiveClick(Sender: TObject);
+begin
+  // Enable/disable custom shader
+  MakerControl.UseCustomShader := CBShaderActive.Checked;
+end;
+```
+
+### OpenGL Extensions Viewer
+
+**Source:** `VCL/TeeMaker/TeeMakerMain.pas:41`
+
+TeeMaker includes OpenGL extension information:
+
+```delphi
+// TabGLExtensions displays:
+// - Available OpenGL extensions
+// - OpenGL version info
+// - Pixel format details
+// - Video memory information
+```
+
+## File Format Support
+
+### Native Format (.hou)
+
+**Source:** `VCL/TeeMaker/Makers/` contains example .hou files:
+
+- house.hou
+- Office.hou
+- Chair.hou
+- Table.hou
+- Person.hou
+- Bicycle.hou
+- And more...
+
+```delphi
+// Save TeeMaker scene
+MakerControl.SaveToFile('myobject.hou');
+
+// Load TeeMaker scene
+MakerControl.LoadFromFile('myobject.hou');
+```
+
+### OBJ Format
+
+**Source:** `VCL/TeeMaker/TeeObjFormat.pas`
+
+Import/export Wavefront OBJ files:
+
+```delphi
+uses
+  TeeObjFormat;
+
+procedure ImportOBJ;
+var
+  ObjBlock: TObjBlock;
+begin
+  ObjBlock := TObjBlock.Create(Self);
+  ObjBlock.LoadFromFile('model.obj');
+  MakerControl.Blocks.Add(ObjBlock);
+end;
+```
+
+### 3DS Format
+
+**Source:** `VCL/TeeMaker/Tee3DSFormat.pas`
+
+Import 3D Studio files:
+
+```delphi
+uses
+  Tee3DSFormat;
+
+procedure Import3DS;
+var
+  Block3DS: T3DSBlock;
+begin
+  Block3DS := T3DSBlock.Create(Self);
+  Block3DS.LoadFromFile('model.3ds');
+  MakerControl.Blocks.Add(Block3DS);
+end;
+```
+
+## TeeMaker Examples
+
+### Expo3D Demonstrations
+
+**Location:** `VCL/TeeMaker/Expo3D/`
+
+Contains example scenes:
+- Light focus.hou
+- Local_Montilivi.hou  
+- Plastic Chair.hou
+- Plus texture files for materials
+
+### Test Applications
+
+**Location:** `VCL/TeeMaker/TestChart3D/`
+
+Test applications demonstrating TeeMaker integration with TeeChart.
+
+### Block Gallery
+
+**Source:** `VCL/TeeMaker/TeeBlockGallery.pas`
+
+Visual gallery of available block types:
+
+```delphi
+uses
+  TeeBlockGallery;
+
+procedure ShowBlockGallery;
+var
+  Gallery: TBlockGallery;
+begin
+  Gallery := TBlockGallery.Create(Self);
+  try
+    if Gallery.Execute then
+      MakerControl.Blocks.Add(Gallery.SelectedBlock.Clone);
+  finally
+    Gallery.Free;
+  end;
+end;
+```
+
+## Advanced Features
+
+### Kinematics
+
+**Source:** `VCL/TeeMaker/TeeKinematics.pas`
+
+Inverse kinematics for robotic/skeletal animation:
+
+```delphi
+var
+  Kinematics: TKinematics;
+begin
+  Kinematics := TKinematics.Create(Self);
+  
+  // Define joint chain
+  Kinematics.AddJoint(Joint1);
+  Kinematics.AddJoint(Joint2);
+  Kinematics.AddJoint(Joint3);
+  
+  // Set target position
+  Kinematics.Target := Point3D(100, 150, 50);
+  
+  // Solve inverse kinematics
+  Kinematics.Solve;
+end;
+```
+
+### Mesh Subdivision
+
+**Source:** `VCL/TeeMaker/TeeSubdivideMesh.pas`
+
+Smooth meshes using subdivision:
+
+```delphi
+var
+  Mesh: TMeshBlock;
+begin
+  // Load or create mesh
+  Mesh := TMeshBlock.Create(Self);
+  
+  // Subdivide for smoother surface
+  Mesh.SubdivisionLevel := 2;  // 0-4
+  Mesh.SmoothSubdivision := True;
+end;
+```
+
+### Camera Control
+
+**Source:** `VCL/TeeMaker/TeeCamera.pas`
+
+```delphi
+var
+  Camera: TCameraBlock;
+begin
+  Camera := TCameraBlock.Create(Self);
+  
+  Camera.Position.X := 100;
+  Camera.Position.Y := 100;
+  Camera.Position.Z := 200;
+  
+  Camera.LookAt.X := 0;
+  Camera.LookAt.Y := 0;
+  Camera.LookAt.Z := 0;
+  
+  Camera.FieldOfView := 60;
+  
+  MakerControl.Camera := Camera;
+end;
+```
+
+### Clipping Volumes
+
+**Source:** `VCL/TeeMaker/TeeClipBlock.pas`
+
+Create clipping planes to section 3D objects:
+
+```delphi
+var
+  Clip: TClipBlock;
+begin
+  Clip := TClipBlock.Create(Self);
+  
+  Clip.PlaneNormal := Vector3D(1, 0, 0);  // Clip along X axis
+  Clip.PlaneDistance := 50;
+  Clip.Enabled := True;
+  
+  MakerControl.ClippingPlanes.Add(Clip);
+end;
+```
+
+## Integration with TeeChart
+
+### Chart Block
+
+**Source:** `VCL/TeeMaker/TeeChartBlock.pas`
+
+Embed TeeChart charts as 3D objects:
+
+```delphi
+var
+  ChartBlock: TChartBlock;
+begin
+  ChartBlock := TChartBlock.Create(Self);
+  
+  // Configure chart
+  ChartBlock.Chart.AddSeries(TLineSeries.Create(Self));
+  ChartBlock.Chart.Series[0].FillSampleValues;
+  
+  // Position in 3D space
+  ChartBlock.X := 0;
+  ChartBlock.Y := 0;
+  ChartBlock.Z := 0;
+  ChartBlock.Width := 200;
+  ChartBlock.Height := 150;
+  
+  MakerControl.Blocks.Add(ChartBlock);
+end;
+```
+
+## When to Use TeeMaker
+
+### Best Use Cases
+
+- **3D Data Visualization** - Complex 3D charts and graphs
+- **Architectural Visualization** - Building and room layouts
+- **Scientific Visualization** - Molecular models, terrains
+- **Product Visualization** - 3D product presentations
+- **Interactive 3D UI** - Custom 3D user interfaces
+- **Educational Applications** - 3D geometry teaching tools
+- **Gaming/Simulation** - Simple 3D scenes
+
+### Not Recommended For
+
+- Full 3D game engines (use Unity, Unreal instead)
+- CAD applications (use specialized CAD tools)
+- High-polygon photorealistic rendering
+
+## Performance Tips
+
+1. **Use OpenGL**
+   ```delphi
+   MakerControl.UseOpenGL := True;
+   ```
+
+2. **Limit Polygon Count**
+   ```delphi
+   RevolutionBlock.Steps := 16;  // Lower = faster
+   ```
+
+3. **Optimize Textures**
+   ```delphi
+   // Use power-of-2 texture sizes: 256x256, 512x512, etc.
+   ```
+
+4. **Cull Hidden Faces**
+   ```delphi
+   MakerControl.BackFaceCull := True;
+   ```
+
+5. **Use LOD (Level of Detail)**
+   ```delphi
+   Block.DetailLevel := dlLow;  // For distant objects
+   ```
+
+## See Also
+
+- [OpenGL Rendering](/advanced/opengl-rendering) - OpenGL details
+- [Custom Drawing](/advanced/custom-drawing) - Canvas techniques
+- [3D Charts](/features/3d-charts) - 3D charting features
+- [TeeMaker Documentation](https://www.steema.com/docs/teemaker)

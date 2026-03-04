@@ -1,80 +1,403 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart guide
+description: Get up and running with TeeChart VCL/FMX samples in just a few minutes
 ---
 
-## Get started in three steps
+Get started with TeeChart VCL/FMX samples and create your first chart in minutes.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
+Before you begin, ensure you have:
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="TeeChart Pro VCL/FMX" icon="download">
+    Download the fully functional evaluation version from [Steema Downloads](https://www.steema.com/downloads/vcl)
+  </Card>
+  <Card title="RAD Studio/Delphi/C++ Builder" icon="code">
+    Any recent version of RAD Studio, Delphi, or C++ Builder (see [Requirements](/requirements))
+  </Card>
 </CardGroup>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  TeeChart Pro VCL/FMX evaluation includes all features and is required to run the samples in this repository.
 </Note>
+
+## Installation steps
+
+<Steps>
+  <Step title="Download TeeChart Pro">
+    Visit [https://www.steema.com/downloads/vcl](https://www.steema.com/downloads/vcl) and download the TeeChart Pro VCL/FMX evaluation installer for your version of RAD Studio, Delphi, or C++ Builder.
+    
+    Run the installer and follow the prompts to install TeeChart Pro into your IDE.
+    
+    <Tip>
+      The evaluation version is fully functional with no feature limitations. It includes all chart types, tools, and export formats.
+    </Tip>
+  </Step>
+  
+  <Step title="Clone the samples repository">
+    Clone this repository to access 700+ working examples:
+    
+    ```bash
+    git clone https://github.com/Steema/TeeChart-VCL-FMX-Samples.git
+    cd TeeChart-VCL-FMX-Samples
+    ```
+    
+    Alternatively, download the repository as a ZIP file from GitHub and extract it to your preferred location.
+  </Step>
+  
+  <Step title="Open your first sample">
+    Choose a framework and open a demo project:
+    
+    <Tabs>
+      <Tab title="VCL (Windows)">
+        **Option 1: TeeNew Demo (Recommended)**
+        
+        Open `VCL/TeeNew/TeeNew.dproj` for the comprehensive demo with 687 examples showcasing every TeeChart feature.
+        
+        **Option 2: Specific Feature Samples**
+        
+        Browse the `VCL/` directory for specific samples:
+        - `VCL/ActivityGauge/` - Gauge components
+        - `VCL/Map_Layers/` - Geographic maps
+        - `VCL/Animations/` - Chart animations
+        - `VCL/TeeMaker/` - 3D object creation tool
+      </Tab>
+      
+      <Tab title="FireMonkey (Cross-platform)">
+        **Option 1: Main FMX Demo (Recommended)**
+        
+        Open `FMX/Demo/TeeChart_Pro_Firemonkey_Demo.dproj` for the comprehensive FireMonkey demo.
+        
+        **Option 2: Chart Type Samples**
+        
+        Explore `FMX/StandardSeriesDemo/` for chart type examples:
+        - Line, Bar, Area, Pie charts
+        - Animations and transitions
+        - Touch-friendly mobile examples
+        
+        **Option 3: Advanced Samples**
+        
+        Check out specialized samples:
+        - `FMX/Dashboard/` - Multi-chart dashboards
+        - `FMX/Demo/Animations/` - Animation effects
+        - `FMX/FishFacts/` - Database integration
+      </Tab>
+    </Tabs>
+  </Step>
+  
+  <Step title="Build and run">
+    1. Open the project file (`.dproj`) in your IDE
+    2. Press **F9** or click **Run** to compile and run the sample
+    3. Explore the features and interact with the charts
+    4. View the source code to understand how each feature is implemented
+    
+    <Tip>
+      Start with the TeeNew demo (VCL) or the main FMX demo to see an overview of all chart types and features in one application. Use the navigation tree to browse examples by category.
+    </Tip>
+  </Step>
+</Steps>
+
+## Create your first chart
+
+Once you've explored the samples, try creating your own chart from scratch.
+
+### Creating a simple bar chart
+
+<Tabs>
+  <Tab title="Delphi/Pascal">
+    ```pascal
+    uses
+      VCLTee.TeEngine, VCLTee.Series, VCLTee.TeeProcs, VCLTee.Chart;
+    
+    procedure TForm1.FormCreate(Sender: TObject);
+    var
+      BarSeries: TBarSeries;
+    begin
+      // Create the chart
+      Chart1 := TChart.Create(Self);
+      Chart1.Parent := Self;
+      Chart1.Align := alClient;
+      
+      // Add a bar series
+      BarSeries := TBarSeries.Create(Chart1);
+      Chart1.AddSeries(BarSeries);
+      
+      // Add data
+      BarSeries.Add(10, 'Product A', clRed);
+      BarSeries.Add(25, 'Product B', clGreen);
+      BarSeries.Add(15, 'Product C', clBlue);
+      BarSeries.Add(30, 'Product D', clYellow);
+      
+      // Customize appearance
+      Chart1.Title.Text.Text := 'Sales by Product';
+      Chart1.Legend.Visible := True;
+      Chart1.View3D := False;
+    end;
+    ```
+  </Tab>
+  
+  <Tab title="C++">
+    ```cpp
+    #include <VCLTee.TeEngine.hpp>
+    #include <VCLTee.Series.hpp>
+    #include <VCLTee.TeeProcs.hpp>
+    #include <VCLTee.Chart.hpp>
+    
+    void __fastcall TForm1::FormCreate(TObject *Sender)
+    {
+      // Create the chart
+      Chart1 = new TChart(this);
+      Chart1->Parent = this;
+      Chart1->Align = alClient;
+      
+      // Add a bar series
+      TBarSeries *BarSeries = new TBarSeries(Chart1);
+      Chart1->AddSeries(BarSeries);
+      
+      // Add data
+      BarSeries->Add(10, "Product A", clRed);
+      BarSeries->Add(25, "Product B", clGreen);
+      BarSeries->Add(15, "Product C", clBlue);
+      BarSeries->Add(30, "Product D", clYellow);
+      
+      // Customize appearance
+      Chart1->Title->Text->Text = "Sales by Product";
+      Chart1->Legend->Visible = true;
+      Chart1->View3D = false;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Adding real-time data
+
+For streaming data visualization, use `TFastLineSeries`:
+
+```pascal
+uses
+  VCLTee.TeEngine, VCLTee.Series, VCLTee.TeeProcs, VCLTee.Chart;
+
+var
+  FastLine: TFastLineSeries;
+  Timer: TTimer;
+  X: Integer = 0;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  FastLine := TFastLineSeries.Create(Chart1);
+  Chart1.AddSeries(FastLine);
+  
+  // Optimize for real-time performance
+  FastLine.DrawAllPoints := False;
+  FastLine.LinePen.Width := 2;
+  Chart1.AutoRepaint := False;
+  
+  // Setup timer for updates
+  Timer := TTimer.Create(Self);
+  Timer.Interval := 50;  // 20 FPS
+  Timer.OnTimer := UpdateChart;
+  Timer.Enabled := True;
+end;
+
+procedure TForm1.UpdateChart(Sender: TObject);
+begin
+  FastLine.AddXY(X, Sin(X * 0.1) + Random);
+  Inc(X);
+  
+  // Keep only last 100 points
+  if FastLine.Count > 100 then
+    FastLine.Delete(0);
+  
+  Chart1.Repaint;
+end;
+```
+
+### Connecting to a database
+
+Bind a chart directly to a dataset:
+
+```pascal
+uses
+  VCLTee.TeEngine, VCLTee.Series, VCLTee.DBChart, Data.DB;
+
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  BarSeries: TBarSeries;
+begin
+  // Create DB-aware chart
+  DBChart1 := TDBChart.Create(Self);
+  DBChart1.Parent := Self;
+  DBChart1.Align := alClient;
+  
+  // Add series and bind to dataset
+  BarSeries := TBarSeries.Create(DBChart1);
+  DBChart1.AddSeries(BarSeries);
+  
+  // Connect to dataset fields
+  BarSeries.DataSource := ClientDataSet1;
+  BarSeries.XLabelsSource := 'ProductName';
+  BarSeries.YValues.ValueSource := 'Sales';
+  
+  // Aggregate data
+  BarSeries.GroupBy := gbSum;
+  
+  DBChart1.Title.Text.Text := 'Sales by Product';
+end;
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Explore VCL samples" icon="desktop" href="/vcl/overview">
+    Browse 687 VCL examples including financial charts, gauges, maps, and 3D visualizations
+  </Card>
+  <Card title="Explore FMX samples" icon="mobile" href="/fmx/overview">
+    Check out cross-platform FireMonkey examples for Windows, macOS, iOS, and Android
+  </Card>
+  <Card title="Chart types" icon="chart-bar" href="/charts/area">
+    Learn about all 70+ available chart types and when to use each one
+  </Card>
+  <Card title="Advanced features" icon="rocket" href="/features/axes">
+    Discover axes, legends, annotations, export, real-time data, and database integration
+  </Card>
+</CardGroup>
+
+## Recommended sample projects
+
+Start with these essential samples:
+
+### For VCL development
+
+1. **TeeNew Demo** (`VCL/TeeNew/TeeNew.dproj`)
+   - 687 comprehensive examples
+   - Every chart type and feature
+   - Interactive navigation tree
+   - Source code for every example
+
+2. **TeeChartOffice** (`VCL/TeeChartOffice/`)
+   - Professional business dashboard
+   - Multiple synchronized charts
+   - Real-world data visualization patterns
+
+3. **Map_Layers** (`VCL/Map_Layers/`)
+   - Geographic visualization
+   - Shapefile support
+   - Interactive maps with zooming
+
+### For FireMonkey development
+
+1. **Main FMX Demo** (`FMX/Demo/TeeChart_Pro_Firemonkey_Demo.dproj`)
+   - Cross-platform examples
+   - Touch-friendly interactions
+   - Mobile-optimized layouts
+
+2. **Dashboard** (`FMX/Dashboard/LinkingCharts.dpr`)
+   - Multi-chart dashboard
+   - Synchronized charts
+   - Database integration
+
+3. **StandardSeriesDemo** (`FMX/StandardSeriesDemo/`)
+   - All standard chart types
+   - Platform-specific examples
+   - Animation effects
+
+## Common customizations
+
+Here are some common customization code snippets:
+
+### Customize axes
+
+```pascal
+// Set axis range
+Chart1.LeftAxis.SetMinMax(0, 100);
+
+// Format axis labels
+Chart1.BottomAxis.LabelStyle := talValue;
+Chart1.LeftAxis.LabelsFormat.Font.Size := 10;
+
+// Add grid lines
+Chart1.LeftAxis.Grid.Visible := True;
+Chart1.LeftAxis.MinorGrid.Visible := True;
+```
+
+### Customize legend
+
+```pascal
+// Position legend
+Chart1.Legend.Alignment := laBottom;
+Chart1.Legend.LegendStyle := lsSeries;
+
+// Customize appearance
+Chart1.Legend.Shadow.Visible := True;
+Chart1.Legend.Font.Size := 12;
+Chart1.Legend.Symbol.Width := 20;
+```
+
+### Enable zooming and panning
+
+```pascal
+uses VCLTee.TeeTools;
+
+var
+  ZoomTool: TChartTool;
+  PanTool: TPanningTool;
+
+begin
+  // Add zoom tool
+  ZoomTool := TZoomTool.Create(Chart1);
+  Chart1.Tools.Add(ZoomTool);
+  
+  // Add pan tool
+  PanTool := TPanningTool.Create(Chart1);
+  Chart1.Tools.Add(PanTool);
+end;
+```
+
+### Export chart to PDF
+
+```pascal
+uses VCLTee.TeeExport, VCLTee.TeePDFCanvas;
+
+procedure TForm1.ExportToPDF(const FileName: string);
+var
+  PDFExport: TPDFExportFormat;
+begin
+  PDFExport := TPDFExportFormat.Create;
+  try
+    PDFExport.Panel := Chart1;
+    PDFExport.SaveToFile(FileName);
+  finally
+    PDFExport.Free;
+  end;
+end;
+```
+
+## IDE compatibility
+
+The samples support multiple IDE versions:
+
+- **RAD Studio XE2** through **RAD Studio 12.2 Athens**
+- **Delphi XE2** through **Delphi 12.2**
+- **C++ Builder XE2** through **C++ Builder 12.2**
+
+<Info>
+  Project files are version-specific (e.g., `.dproj` for Delphi). Some samples may have multiple project files for different IDE versions.
+</Info>
+
+## Getting help
+
+<CardGroup cols={2}>
+  <Card title="Support options" icon="life-ring" href="https://www.steema.com/support_options">
+    Get help from Steema's support team
+  </Card>
+  <Card title="Documentation" icon="book" href="https://www.steema.com/docs/teechart/vclfmx/">
+    Browse the complete TeeChart documentation
+  </Card>
+  <Card title="Forum" icon="comments" href="https://www.steema.com/support/viewforum.php">
+    Ask questions in the community forum
+  </Card>
+  <Card title="GitHub" icon="github" href="https://github.com/Steema/TeeChart-VCL-FMX-Samples">
+    Report issues or contribute examples
+  </Card>
+</CardGroup>

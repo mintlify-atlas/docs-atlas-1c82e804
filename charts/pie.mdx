@@ -1,0 +1,369 @@
+---
+title: Pie Charts
+description: Display data as circular sectors to show proportions and percentages
+---
+
+## Overview
+
+Pie charts represent data as slices of a circular pie, where each slice's size is proportional to its value. They're ideal for showing part-to-whole relationships and percentage distributions. TeeChart supports various pie chart styles including 3D pies, exploded slices, semi-circles, and donut charts.
+
+**Use cases:**
+- Showing part-to-whole relationships
+- Displaying percentage distributions
+- Comparing proportions of a total
+- Simple categorical data visualization (limited categories)
+
+## Series Classes
+
+**TPieSeries** - Standard pie charts
+**TDonutSeries** - Pie charts with hollow center
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ExplodeBiggest` | Integer | Pixels to explode largest slice |
+| `Explode` | Array | Explode individual slices |
+| `AngleSize` | Integer | Total angle (360 for full circle, 180 for semi-circle) |
+| `RotationAngle` | Integer | Starting angle rotation (0-360) |
+| `Circled` | Boolean | Draw circle around pie |
+| `Dark3D` | Boolean | Apply 3D shading effect |
+| `EdgeStyle` | TPieEdgeStyle | Edge appearance: `edFlat`, `edCurved` |
+| `Gradient` | TChartGradient | Configure gradient fills |
+| `Shadow` | TShadow | Shadow effect settings |
+| `Marks` | TSeriesMarks | Configure slice labels |
+| `OtherSlice` | TPieOtherSlice | Group small slices together |
+
+## Code Examples
+
+### Basic Pie Chart
+
+From VCL/TeeNew/SeriesType_Pie.pas:88:
+
+```pascal
+uses
+  TeEngine, Series, TeeProcs, Chart;
+
+procedure CreateBasicPieChart(PieSeries: TPieSeries);
+begin
+  PieSeries.FillSampleValues(8);
+  
+  // Use curved edges for modern appearance
+  PieSeries.EdgeStyle := edCurved;
+end;
+```
+
+### Exploded Pie Slices
+
+From VCL/TeeNew/SeriesType_Pie.pas:78:
+
+```pascal
+procedure ExplodeBiggestSlice(PieSeries: TPieSeries);
+begin
+  // Explode the biggest slice by 30 pixels
+  PieSeries.ExplodeBiggest := 30;
+end;
+
+procedure ExplodeSpecificSlice(PieSeries: TPieSeries; SliceIndex: Integer);
+begin
+  // Explode a specific slice
+  PieSeries.Explode[SliceIndex] := 20;
+end;
+```
+
+### Semi-Circle Pie Chart
+
+From VCL/TeeNew/SeriesType_Pie.pas:47:
+
+```pascal
+procedure CreateSemiCirclePie(PieSeries: TPieSeries);
+begin
+  // Display as semi-circle (180 degrees)
+  PieSeries.AngleSize := 180;
+  
+  // Full circle
+  // PieSeries.AngleSize := 360;
+end;
+```
+
+### Pie Chart with Shadow
+
+From VCL/TeeNew/SeriesType_Pie.pas:58:
+
+```pascal
+procedure AddShadowEffect(PieSeries: TPieSeries);
+begin
+  PieSeries.Shadow.HorizSize := 40;
+  PieSeries.Shadow.VertSize := 40;
+  PieSeries.Shadow.Color := clGray;
+  PieSeries.Shadow.Transparency := 50;
+end;
+
+procedure RemoveShadow(PieSeries: TPieSeries);
+begin
+  PieSeries.Shadow.HorizSize := 0;
+  PieSeries.Shadow.VertSize := 0;
+end;
+```
+
+### 3D Pie Chart
+
+From VCL/TeeNew/SeriesType_Pie.pas:84:
+
+```pascal
+procedure Enable3DPie(Chart: TChart);
+begin
+  // Enable 3D view
+  Chart.View3D := True;
+  Chart.Chart3DPercent := 25;
+  
+  // Optional: Enable 3D shading
+  TPieSeries(Chart.Series[0]).Dark3D := True;
+end;
+```
+
+### Pie Chart with Gradient
+
+From VCL/TeeNew/Pie_Gradient.pas:34:
+
+```pascal
+procedure ApplyGradientToPie(PieSeries: TPieSeries);
+begin
+  PieSeries.FillSampleValues;
+  
+  // Enable gradient for all slices
+  with PieSeries.Gradient do
+  begin
+    Visible := True;
+    Direction := gdRadial;  // Radial gradient for circular effect
+    StartColor := clWhite;
+    EndColor := clBlue;
+  end;
+end;
+```
+
+### Donut Chart
+
+```pascal
+uses
+  TeEngine, TeeDonut;
+
+procedure CreateDonutChart;
+var
+  DonutSeries: TDonutSeries;
+begin
+  DonutSeries := TDonutSeries.Create(Chart1);
+  Chart1.AddSeries(DonutSeries);
+  DonutSeries.FillSampleValues(8);
+  
+  // Configure donut hole size (0-100%)
+  DonutSeries.DonutPercent := 50;
+end;
+```
+
+### Multiple Pie Charts
+
+From VCL/TeeNew/Pie_Multi.pas (example pattern):
+
+```pascal
+procedure CreateMultiplePies;
+var
+  Pie1, Pie2: TPieSeries;
+begin
+  Pie1 := TPieSeries.Create(Chart1);
+  Pie2 := TPieSeries.Create(Chart1);
+  
+  Chart1.AddSeries(Pie1);
+  Chart1.AddSeries(Pie2);
+  
+  Pie1.FillSampleValues(4);
+  Pie2.FillSampleValues(4);
+  
+  // Position pies side by side
+  Pie1.CustomXRadius := 80;
+  Pie1.CustomYRadius := 80;
+  Pie1.XCenter := 25;  // Percentage of chart width
+  Pie1.YCenter := 50;
+  
+  Pie2.CustomXRadius := 80;
+  Pie2.CustomYRadius := 80;
+  Pie2.XCenter := 75;
+  Pie2.YCenter := 50;
+end;
+```
+
+## Customization Options
+
+### Slice Colors
+
+```pascal
+// Add slices with custom colors
+PieSeries.Add(25, 'Category A', clRed);
+PieSeries.Add(35, 'Category B', clBlue);
+PieSeries.Add(40, 'Category C', clGreen);
+
+// Change color of existing slice
+PieSeries.Colors[0] := clYellow;
+```
+
+### Marks and Labels
+
+```pascal
+with PieSeries.Marks do
+begin
+  Visible := True;
+  Style := smsLabelPercent;  // Show label and percentage
+  // Other styles: smsValue, smsPercent, smsLabel, smsLabelValue
+  
+  // Auto-position marks to avoid overlap
+  AutoPosition := True;
+  
+  // Arrow from mark to slice
+  Arrow.Visible := True;
+  Arrow.Color := clBlack;
+end;
+```
+
+### Mark Position
+
+From VCL/TeeNew/Pie_AutoMarkPosition.pas (example pattern):
+
+```pascal
+procedure ConfigureMarkPosition(PieSeries: TPieSeries);
+begin
+  // Auto-position to prevent overlap
+  PieSeries.Marks.AutoPosition := True;
+  
+  // Customize mark distance from pie
+  PieSeries.MarksPosPercent := 120;  // 120% of radius
+end;
+```
+
+### Rotation
+
+```pascal
+// Rotate the entire pie
+PieSeries.RotationAngle := 45;  // Degrees (0-360)
+
+// Animate rotation
+procedure RotatePie;
+var
+  i: Integer;
+begin
+  for i := 0 to 360 do
+  begin
+    PieSeries.RotationAngle := i;
+    Chart1.Invalidate;
+    Application.ProcessMessages;
+  end;
+end;
+```
+
+### Other Slice (Group Small Values)
+
+From VCL/TeeNew/Pie_OtherLegend.pas (example pattern):
+
+```pascal
+procedure GroupSmallSlices(PieSeries: TPieSeries);
+begin
+  with PieSeries.OtherSlice do
+  begin
+    Style := poaBelowPercent;  // Group slices below certain percentage
+    Value := 5;  // Group slices below 5%
+    Text := 'Other';  // Label for grouped slice
+    Color := clGray;
+  end;
+end;
+```
+
+### Lighting Effect
+
+From VCL/TeeNew/Pie_Lighting.pas (example pattern):
+
+```pascal
+procedure AddLighting(PieSeries: TPieSeries);
+begin
+  Chart1.View3D := True;
+  
+  // Enable dark 3D shading
+  PieSeries.Dark3D := True;
+  
+  // Adjust 3D depth
+  Chart1.Chart3DPercent := 30;
+end;
+```
+
+## Advanced Features
+
+### Frame and Border
+
+From VCL/TeeNew/Pie_FrameBorder.pas (example pattern):
+
+```pascal
+procedure AddFrameBorder(PieSeries: TPieSeries);
+begin
+  // Add circle around pie
+  PieSeries.Circled := True;
+  PieSeries.CircleBackColor := clWhite;
+  
+  // Customize pie pen (border)
+  PieSeries.Pen.Visible := True;
+  PieSeries.Pen.Color := clBlack;
+  PieSeries.Pen.Width := 2;
+end;
+```
+
+### Slice Heights (3D)
+
+From VCL/TeeNew/Pie_SliceHeights.pas (example pattern):
+
+```pascal
+procedure SetSliceHeights(PieSeries: TPieSeries);
+begin
+  Chart1.View3D := True;
+  
+  // Set different heights for slices in 3D
+  PieSeries.SliceHeight[0] := 20;
+  PieSeries.SliceHeight[1] := 40;
+  PieSeries.SliceHeight[2] := 30;
+end;
+```
+
+### Custom Positioning
+
+```pascal
+// Position pie in custom location
+PieSeries.XCenter := 50;  // X position (percentage of chart width)
+PieSeries.YCenter := 50;  // Y position (percentage of chart height)
+
+// Custom radius
+PieSeries.CustomXRadius := 100;  // Horizontal radius in pixels
+PieSeries.CustomYRadius := 100;  // Vertical radius in pixels
+```
+
+### Click Detection
+
+```pascal
+procedure TForm1.Chart1ClickSeries(Sender: TCustomChart; 
+  Series: TChartSeries; ValueIndex: Integer; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  // Explode clicked slice
+  TPieSeries(Series).Explode[ValueIndex] := 20;
+end;
+```
+
+## Best Practices
+
+1. **Limit number of slices** - Too many slices make the chart hard to read (5-7 slices recommended)
+2. **Use OtherSlice** - Group small values into an "Other" category
+3. **Order slices** - Arrange from largest to smallest for clarity
+4. **Avoid 3D when precision matters** - 3D can distort perception of sizes
+5. **Use clear labels** - Ensure marks don't overlap
+
+## Related Chart Types
+
+- **Donut Charts** - Pie with hollow center
+- **Bar Charts** - Better for comparing many categories
+- **Area Charts** - Show trends over time instead of proportions
+- **Gauge Charts** - Display single value as percentage

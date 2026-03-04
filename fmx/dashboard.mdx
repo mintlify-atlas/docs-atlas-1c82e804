@@ -1,0 +1,522 @@
+---
+title: 'Dashboard Samples'
+description: 'Advanced dashboard examples with multiple interactive charts and data integration in TeeChart FMX'
+icon: 'table-cells'
+---
+
+## Overview
+
+The Dashboard samples demonstrate professional, data-driven applications with multiple synchronized charts, database integration, and cross-platform responsive design.
+
+**Sample Location:** `FMX/Dashboard/`
+
+<Info>
+The Dashboard sample is a comprehensive example of real-world business intelligence application, featuring interactive charts, data filtering, and web export capabilities.
+</Info>
+
+## Dashboard Application Architecture
+
+### Project Structure
+
+```
+Dashboard/
+├── Home.pas              # Main dashboard form
+├── Home.fmx              # Dashboard layout
+├── DataModule.pas        # Database connection
+├── FileLauncher.pas      # Cross-platform file handling
+└── LinkingCharts.dpr     # Project file
+```
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Interactive Charts" icon="chart-mixed">
+    Multiple chart types working together
+  </Card>
+  
+  <Card title="Database Integration" icon="database">
+    FireDAC queries with live data binding
+  </Card>
+  
+  <Card title="Cross-Chart Linking" icon="link">
+    Click events synchronize related charts
+  </Card>
+  
+  <Card title="Web Export" icon="file-export">
+    Export dashboard data to HTML/JSON
+  </Card>
+</CardGroup>
+
+## Dashboard Components
+
+The dashboard includes multiple synchronized chart types:
+
+### 1. World Map Series
+
+Interactive world map showing sales by country.
+
+```pascal
+MapSeries: TWorldSeries;
+MapChart: TDBChart;
+
+procedure TDashForm.ConfigureMapChart;
+begin
+  MapChart.ColorPaletteIndex := 3;
+  MapChart.Hover.Visible := False;
+  
+  // Add tooltip on hover
+  MapChart.Tools.Add(TMarksTipTool);
+  (MapChart.Tools[0] as TMarksTipTool).Style := smsLabelValue;
+  (MapChart.Tools[0] as TMarksTipTool).Font.Size := 20;
+  (MapChart.Tools[0] as TMarksTipTool).Font.Color := TAlphaColorRec.Royalblue;
+  
+  FillCountryData;
+end;
+
+procedure TDashForm.FillCountryData;
+var
+  aCountry: string;
+  aValue: double;
+  i: integer;
+begin
+  FDQuery1.Close;
+  FDQuery1.Open();
+  
+  FDQuery1.First;
+  while (not FDQuery1.Eof) do
+  begin
+    aValue := FDQuery1.Fields[0].AsFloat;
+    aCountry := FDQuery1.FieldByName('Country_name').AsString;
+    
+    // Set values on map
+    for i := 0 to MapSeries.Count-1 do
+    begin
+      if UpperCase(MapSeries.Labels[i]) = UpperCase(aCountry) then
+        MapSeries.ZValue[i] := aValue;
+    end;
+    
+    FDQuery1.Next;
+  end;
+end;
+```
+
+### 2. Donut Chart
+
+Display sales breakdown by country or region.
+
+```pascal
+DonutSeries: TDonutSeries;
+DonutChart: TDBChart;
+
+procedure TDashForm.ConfigureDonutChart;
+begin
+  DonutChart.Hover.Visible := False;
+  DonutSeries.Marks.FontSeriesColor := True;
+  
+  {$IFDEF IOS}
+    DonutSeries.Marks.Visible := False;
+  {$ENDIF}
+end;
+
+// Handle donut slice clicks
+procedure TDashForm.DonutChartClickSeries(Sender: TCustomChart;
+  Series: TChartSeries; ValueIndex: Integer; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  ValueIndexCountry := ValueIndex;
+  
+  // Update area chart for selected country
+  FillAreaSeriesBySelectedCountry(ValueIndexCountry);
+  
+  // Trigger animations
+  TotalSalesIconAnimation.Start;
+  ColorAnimation1.Start;
+  AreaAnimation.Play;
+end;
+```
+
+### 3. Bar Chart
+
+Sales by continent with custom bar styling.
+
+```pascal
+BarChart: TDBChart;
+Series4: TBarSeries;
+Series5: TBarSeries;
+
+procedure TDashForm.ConfigureBarChart;
+begin
+  BarChart.Hover.Visible := False;
+  _salesbycontinentView.Active := True;
+  
+  {$IFDEF IOS}
+    BarChart.Legend.Font.Size := 10;
+  {$ENDIF}
+end;
+
+// Custom bar styling based on selection
+procedure TDashForm.Series4GetBarStyle(Sender: TCustomBarSeries;
+  ValueIndex: Integer; var TheBarStyle: TBarStyle);
+var 
+  oldColor: TAlphaColor;
+begin
+  oldColor := Sender.Color;
+  
+  if (ValueIndex = IndexBarClicked) and (BarSeriesClicked = Sender) then
+  begin
+    TheBarStyle := bsBevel;
+    Sender.NormalBarColor := TAlphaColor(BluesPalette[5]);
+  end
+  else begin
+    TheBarStyle := bsRectangle;
+    Sender.NormalBarColor := oldColor;
+  end;
+end;
+```
+
+### 4. Area Chart with Scroll Pager
+
+Time-series data with interactive range selection.
+
+```pascal
+AreaChart: TDBChart;
+AreaSeries: TAreaSeries;
+ChartTool3: TScrollPagerTool;
+
+procedure TDashForm.ConfigureAreaChart;
+begin
+  AreaChart.Hover.Visible := False;
+  AreaChart.AllowZoom := False;
+  
+  // Configure scroll pager subchart
+  ChartTool3.SubChartTool.Charts.Items[0].Chart.Hover.Visible := False;
+  ChartTool3.SubChartTool.Charts.Items[0].Chart.Series[0].Color := 
+    BarChart.Series[1].Color;
+end;
+
+// Handle scroll events
+procedure TDashForm.ChartTool3Scrolled(Sender: TObject);
+begin
+  Scrolled := true;
+end;
+
+procedure TDashForm.AreaChartMouseUp(Sender: TObject; 
+  Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+begin
+  if Scrolled then
+  begin
+    if AStartYear <> -1 then
+    begin
+      if DoScroll then
+      begin
+        // Refresh data based on selected range
+        AStartYear := ChartTool3.ColorBandTool.StartValue;
+        AEndYear := ChartTool3.ColorBandTool.EndValue;
+        
+        RefreshBarChart(Round(AStartYear), Round(AEndYear));
+        RefreshGrid(Round(AStartYear), Round(AEndYear));
+        UpdateTotalSalesByCountryBetweenLabels(
+          DonutSeries.Labels.Labels[ValueIndexCountry], 
+          AStartYear, AEndYear);
+      end;
+    end;
+    Scrolled := False;
+  end;
+end;
+```
+
+### 5. TeeGrid Integration
+
+Tabular data display synchronized with charts.
+
+```pascal
+TeeGrid1: TTeeGrid;
+
+procedure TDashForm.RefreshGrid(AStartValue, AEndValue: Integer);
+begin
+  Fact_ordersqueryView.Active := False;
+  Fact_ordersqueryView.Close;
+  
+  if (AStartValue <> -1) and (AEndValue <> -1) then
+  begin
+    Fact_ordersqueryView.SQL.Text := 
+      'SELECT * FROM (SELECT Fact_Orders.ID, Fact_Orders.Cod_Customer, ' +
+      'Fact_Orders.Orderdate, Fact_Orders.Invoice_year, ' +
+      'Fact_Orders.Invoice_num, Fact_Orders.Product_code, ' +
+      'Fact_Orders.Pack_code FROM Fact_Orders) ' +
+      'WHERE Invoice_year >= ' + AStartValue.ToString +
+      ' AND Invoice_year <= ' + AEndValue.ToString;
+  end;
+  
+  Fact_ordersqueryView.Open;
+  Fact_ordersqueryView.Active := True;
+end;
+```
+
+## Database Integration
+
+### FireDAC Configuration
+
+```pascal
+uses
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error,
+  FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
+  FireDAC.FMXUI.Wait, FireDAC.Stan.Param, FireDAC.DatS,
+  FireDAC.DApt.Intf, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, FMXTee.DBChart;
+
+procedure TDashForm.Init;
+begin
+  DataModule1.TechproducssqliteConnection.Connected := true;
+  
+  // Configure data sources
+  _salesbycountryView.Active := true;
+  _salesbyyearcontinentView.Active := true;
+end;
+```
+
+### Data Queries
+
+```pascal
+_salesbycountryView: TFDQuery;
+_salesbyyearcountryView: TFDQuery;
+_salesbycontinentView: TFDQuery;
+_salesbyyearcontinentView: TFDQuery;
+
+procedure TDashForm.FillAreaSeriesBySelectedCountry(AValueIndex: integer);
+begin
+  // Clear and reassign data source
+  AreaSeries.Clear;
+  AreaSeries.DataSources.Clear;
+  AreaSeries.DataSource := _salesbyyearcountryView;
+  
+  // Refresh query with country filter
+  _salesbyyearcountryView.Close;
+  _salesbyyearcountryView.Params.Items[0].AsString := 
+    DonutSeries.Labels.Labels[AValueIndex];
+  _salesbyyearcountryView.Open();
+  
+  // Update chart title
+  AreaChart.Title.Text.Text := 
+    'Sales by Country : ' + DonutSeries.Labels.Labels[AValueIndex];
+end;
+```
+
+## Animation Orchestration
+
+```pascal
+procedure TDashForm.CreateAnimations;
+begin
+  // Bar Chart Animation
+  BarAnimation := TSeriesAnimationTool.Create(Self);
+  BarChart.Animations.Add(BarAnimation);
+  BarAnimation.StartAtMin := False;
+  BarAnimation.DrawEvery := 1;
+  BarAnimation.OnStop := StopBarAnimation;
+  
+  // Area Chart Animation
+  AreaAnimation := TSeriesAnimationTool.Create(Self);
+  AreaChart.Animations.Add(AreaAnimation);
+  AreaAnimation.StartAtMin := False;
+  AreaAnimation.DrawEvery := 1;
+  AreaAnimation.OnStop := StopAreaAnimation;
+  
+  // Donut Chart Animation
+  DonutAnimation := TSeriesAnimationTool.Create(Self);
+  DonutChart.Animations.Add(DonutAnimation);
+  DonutAnimation.StartAtMin := False;
+  DonutAnimation.DrawEvery := 1;
+  DonutAnimation.OnStop := StopDonutAnimation;
+end;
+
+// Animation chain: Donut → Bar → Area
+procedure TDashForm.StopDonutAnimation(Sender: TObject);
+begin
+  AnimateBarChart;
+end;
+
+procedure TDashForm.StopBarAnimation(Sender: TObject);
+begin
+  AnimateAreaChart;
+end;
+
+procedure TDashForm.StopAreaAnimation(Sender: TObject);
+begin
+  // Update indicators after animation completes
+  UpdateTotalSalesByCountryBetweenLabels(
+    DonutSeries.Labels.Labels[ValueIndexCountry],
+    ChartTool3.ColorBandTool.StartValue,
+    ChartTool3.ColorBandTool.EndValue);
+end;
+```
+
+## Web Export
+
+Export dashboard data to web formats (HTML, JSON).
+
+```pascal
+procedure TDashForm.BExportToWebClick(Sender: TObject);
+var
+  GridDataAsStr, epath, appPath, URL: String;
+begin
+  // Export MapChart manually to JSON
+  ExportMapSeries(epath + '\MapChart.JSON');
+  
+  // Export DonutChart
+  with TSeriesDataJSON.Create(DonutChart, nil) do
+  try
+    IncludeIndex := True;
+    SaveToFile(epath + '\DonutChart.JSON');
+  finally
+    Free;
+  end;
+  
+  // Export BarChart
+  with TSeriesDataJSON.Create(BarChart, nil) do
+  try
+    IncludeIndex := True;
+    SaveToFile(epath + '\BarChart.JSON');
+  finally
+    Free;
+  end;
+  
+  // Export AreaChart
+  with TSeriesDataJSON.Create(AreaChart, nil) do
+  try
+    IncludeIndex := True;
+    SaveToFile(epath + '\AreaChart.JSON');
+  finally
+    Free;
+  end;
+  
+  // Export TeeGrid data
+  GridDataAsStr := TJSONData.From(TeeGrid1.Grid, nil, True);
+  ExportTeeGridData(epath + '\TeeGrid.JSON', GridDataAsStr);
+  
+  // Export indicators
+  ExportIndicatorsData(epath + '\Variables.js');
+  
+  // Open in browser
+  URL := 'http://localhost/dashboard/reports/index.html';
+  {$IFDEF MSWINDOWS}
+  TFileLauncher.Open(url);
+  {$ENDIF MSWINDOWS}
+end;
+```
+
+## Platform-Specific Adaptations
+
+### Font Size Adjustments
+
+```pascal
+procedure TDashForm.Init;
+begin
+  {$IFDEF MACOS}
+    Layout4.Height := 192;
+    LBTotalSales.TextSettings.Font.Size := 14;
+    Label5.TextSettings.Font.Size := 14;
+  {$ELSE}
+    Layout4.Height := 256;
+    LBTotalSales.TextSettings.Font.Size := 18;
+    Label5.TextSettings.Font.Size := 18;
+  {$ENDIF}
+  
+  {$IF DEFINED(iOS) or DEFINED(ANDROID)}
+    LBTotalSales.TextSettings.Font.Size := 10;
+    Label5.TextSettings.Font.Size := 10;
+  {$ENDIF}
+end;
+```
+
+### Conditional Features
+
+```pascal
+// Chart Editor (not available on iOS)
+procedure TDashForm.AreaChartDblClick(Sender: TObject);
+{$IFNDEF IOS}
+var 
+  ChartEditor: TChartEditor;
+{$ENDIF}
+begin
+  {$IFNDEF IOS}
+  ChartEditor := TChartEditor.Create(Self);
+  ChartEditor.Chart := TChart(Sender);
+  ChartEditor.Execute;
+  {$ENDIF}
+end;
+```
+
+## Color Palette
+
+Custom color schemes for consistent branding.
+
+```pascal
+const
+  BluesPalette: Array[0..8] of TAlphaColor =
+  (
+    $FFD6E1FA,
+    $FF7797D1,
+    $FF4466a3,
+    $FF3b548c,
+    $FF3B548C,
+    $FF2B406B,
+    $FF1C2A47,
+    $FF121C2F,
+    $FF0C121F
+  );
+
+procedure ApplyColorPalette;
+var
+  idx: integer;
+begin
+  idx := AnsiIndexStr(Continent, ['AF','AS','EU','NA','OC','SA']);
+  MapSeries.ValueColor[i] := TAlphaColor(BluesPalette[idx]);
+end;
+```
+
+## Best Practices
+
+<Note>
+1. **Synchronize charts** - Use click events to link related visualizations
+2. **Optimize queries** - Use parameterized queries for dynamic filtering
+3. **Handle animations** - Chain animations for smooth visual flow
+4. **Platform adaptation** - Adjust UI for different screen sizes
+5. **Data caching** - Cache query results when possible
+6. **User feedback** - Show loading states during data refresh
+</Note>
+
+## Layout Patterns
+
+### Grid Panel Layout
+
+```pascal
+GridPanelLayout1: TGridPanelLayout;
+
+// Organize multiple charts in responsive grid
+GridPanelLayout1.ControlCollection.AddControl(Chart1);
+GridPanelLayout1.ControlCollection.AddControl(Chart2);
+GridPanelLayout1.ControlCollection.AddControl(Chart3);
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Cross-Platform Guide" icon="mobile" href="/fmx/cross-platform">
+    Optimize for all platforms
+  </Card>
+  
+  <Card title="Database Samples" icon="database" href="/features/database-integration">
+    More database examples
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [Dashboard Demo Screenshot](https://www.steema.com/uploads/products/TeeChartIOS_iPad2.png)
+- [TeeChart DBChart Documentation](https://www.steema.com/product/vcl)
+- [FireDAC Documentation](https://docwiki.embarcadero.com/RADStudio/en/FireDAC)
+
+<Tip>
+The Dashboard sample is production-ready code that demonstrates enterprise-level features including database integration, export capabilities, and cross-platform compatibility.
+</Tip>

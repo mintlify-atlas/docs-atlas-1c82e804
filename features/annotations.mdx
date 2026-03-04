@@ -1,0 +1,409 @@
+---
+title: 'Annotations'
+description: 'Add text annotations, callouts, and labels to TeeChart charts'
+icon: 'comment'
+---
+
+Annotations allow you to add explanatory text, callouts, and labels to your charts. TeeChart's `TAnnotationTool` provides flexible positioning and styling options.
+
+## Overview
+
+The Annotation Tool is a Chart Tool that displays text at specific positions on the chart. It supports:
+
+- Fixed position annotations
+- Callout arrows pointing to specific data points
+- Custom formatting and styling
+- Interactive positioning
+- Multiple annotations per chart
+
+**Location**: `TeeTools.pas`
+
+## Basic Usage
+
+### Adding an Annotation Tool
+
+```pascal
+uses TeeTools;
+
+var
+  Annotation: TAnnotationTool;
+begin
+  Annotation := TAnnotationTool.Create(Self);
+  Annotation.ParentChart := Chart1;
+  Annotation.Text := 'Important Data Point';
+  Annotation.Shape.Visible := True;
+end;
+```
+
+**Source**: `Tool_Annotation.pas:18`
+
+### Activating/Deactivating
+
+```pascal
+// Toggle annotation visibility
+Annotation.Active := True;  // Show
+Annotation.Active := False; // Hide
+```
+
+**Source**: `Tool_Annotation.pas:44`
+
+## Positioning
+
+### Fixed Position
+
+Place annotation at specific chart coordinates:
+
+```pascal
+Annotation.Left := 100;   // Pixels from left
+Annotation.Top := 50;     // Pixels from top
+Annotation.Position := ppLeftTop;  // Position reference point
+```
+
+### Position Constants
+
+```pascal
+ppLeftTop       // Top-left corner
+ppLeftBottom    // Bottom-left corner  
+ppRightTop      // Top-right corner
+ppRightBottom   // Bottom-right corner
+ppCenter        // Center of chart
+ppCustom        // Custom position
+```
+
+## Callouts
+
+Callouts are arrows that point from the annotation to a specific chart location.
+
+### Basic Callout
+
+```pascal
+// Enable callout arrow
+Annotation.Callout.Visible := True;
+Annotation.Callout.Arrow.Visible := True;
+
+// Point to a series value
+Annotation.Callout.XPosition := Series1.CalcXPos(Index);
+Annotation.Callout.YPosition := Series1.CalcYPos(Index);
+Annotation.Callout.ZPosition := 0;
+```
+
+**Source**: `Tool_AnnotationCallout.pas:82`
+
+### Styling the Callout Arrow
+
+```pascal
+// Arrow appearance
+Annotation.Callout.Arrow.Color := clRed;
+Annotation.Callout.Arrow.Width := 2;
+Annotation.Callout.Arrow.Style := psSolid;
+
+// Arrow head
+Annotation.Callout.Arrow.StartStyle := assNone;
+Annotation.Callout.Arrow.EndStyle := assArrow;
+```
+
+**Source**: `Tool_AnnotationCallout.pas:103`
+
+### Interactive Callout Example
+
+Create a callout that follows the mouse:
+
+```pascal
+procedure TForm1.Chart1MouseMove(
+  Sender: TObject; 
+  Shift: TShiftState; 
+  X, Y: Integer);
+var
+  NearestIndex: Integer;
+begin
+  // Find nearest point to mouse
+  NearestIndex := NearestPoint(Series1, X, Y);
+  
+  if NearestIndex <> -1 then
+  begin
+    // Update annotation text
+    Annotation.Text := 'Point: ' + IntToStr(NearestIndex) + #13 +
+                       'Value: ' + Series1.ValueMarkText[NearestIndex];
+    
+    // Position callout at the point
+    with Annotation.Callout do
+    begin
+      Visible := True;
+      XPosition := Series1.CalcXPos(NearestIndex);
+      YPosition := Series1.CalcYPos(NearestIndex);
+      ZPosition := 0;
+    end;
+  end;
+end;
+
+// Helper function to find nearest point
+function NearestPoint(
+  ASeries: TChartSeries; 
+  X, Y: Integer): Integer;
+var
+  Difference, TmpDif, t: Integer;
+begin
+  Result := -1;
+  Difference := -1;
+  
+  for t := 0 to ASeries.Count - 1 do
+  begin
+    TmpDif := Round(TeeDistance(
+      ASeries.CalcXPos(t) - X,
+      ASeries.CalcYPos(t) - Y
+    ));
+    
+    if (Difference = -1) or (TmpDif < Difference) then
+    begin
+      Difference := TmpDif;
+      Result := t;
+    end;
+  end;
+end;
+```
+
+**Source**: `Tool_AnnotationCallout.pas:43`
+
+### Click-to-Position Callout
+
+```pascal
+procedure TForm1.Chart1ClickSeries(
+  Sender: TCustomChart;
+  Series: TChartSeries; 
+  ValueIndex: Integer; 
+  Button: TMouseButton;
+  Shift: TShiftState; 
+  X, Y: Integer);
+begin
+  // Position callout at clicked point
+  Annotation.Text := 'Point: ' + IntToStr(ValueIndex) + #13 +
+                     'Value: ' + Series.ValueMarkText[ValueIndex];
+  
+  with Annotation.Callout do
+  begin
+    Visible := True;
+    XPosition := Series.CalcXPos(ValueIndex);
+    YPosition := Series.CalcYPos(ValueIndex);
+    ZPosition := 0;
+  end;
+end;
+```
+
+**Source**: `Tool_AnnotationCallout.pas:129`
+
+## Text Formatting
+
+### Multi-Line Text
+
+```pascal
+// Use #13 for line breaks
+Annotation.Text := 'Line 1' + #13 + 'Line 2' + #13 + 'Line 3';
+```
+
+### Font Properties
+
+```pascal
+Annotation.Shape.Font.Name := 'Arial';
+Annotation.Shape.Font.Size := 12;
+Annotation.Shape.Font.Color := clBlack;
+Annotation.Shape.Font.Style := [fsBold, fsItalic];
+```
+
+### Text Alignment
+
+```pascal
+Annotation.Shape.Alignment := taLeftJustify;  // taLeftJustify, taCenter, taRightJustify
+Annotation.Shape.TextAlignment := taLeftJustify;
+```
+
+## Shape and Background
+
+### Shape Properties
+
+```pascal
+// Background
+Annotation.Shape.Visible := True;
+Annotation.Shape.Color := clYellow;
+Annotation.Shape.Transparency := 30;  // 0-100%
+
+// Border
+Annotation.Shape.Pen.Visible := True;
+Annotation.Shape.Pen.Color := clBlack;
+Annotation.Shape.Pen.Width := 1;
+Annotation.Shape.Pen.Style := psSolid;
+
+// Rounded corners
+Annotation.Shape.Rounded := True;
+Annotation.Shape.RoundSize := 10;
+```
+
+### Shadow
+
+```pascal
+Annotation.Shape.Shadow.Visible := True;
+Annotation.Shape.Shadow.Color := clGray;
+Annotation.Shape.Shadow.Width := 3;
+Annotation.Shape.Shadow.HorizSize := 4;
+Annotation.Shape.Shadow.VertSize := 4;
+```
+
+### Gradient Background
+
+```pascal
+Annotation.Shape.Gradient.Visible := True;
+Annotation.Shape.Gradient.StartColor := clWhite;
+Annotation.Shape.Gradient.EndColor := clSilver;
+Annotation.Shape.Gradient.Direction := gdTopBottom;
+```
+
+## Interactive Features
+
+### Click Event
+
+```pascal
+procedure TForm1.AnnotationClick(Sender: TObject);
+begin
+  ShowMessage('Annotation clicked!');
+  // Toggle visibility, show details, etc.
+end;
+
+begin
+  Annotation.OnClick := AnnotationClick;
+end;
+```
+
+**Source**: `Tool_AnnotationClick.pas`
+
+### Dragging and Resizing
+
+```pascal
+// Allow user to drag annotation
+Annotation.AllowDrag := True;
+
+// Allow user to resize annotation
+Annotation.AllowResize := True;
+```
+
+## 3D Annotations
+
+Annotations work in 3D charts:
+
+```pascal
+Chart1.View3D := True;
+
+// Position in 3D space
+Annotation.Left := 100;
+Annotation.Top := 50;
+Annotation.DepthPosition := 50;  // Z-axis position
+```
+
+## Common Use Cases
+
+### Highlight Peak Value
+
+```pascal
+var
+  MaxIndex: Integer;
+  MaxValue: Double;
+begin
+  // Find maximum value
+  MaxIndex := Series1.YValues.Locate(Series1.YValues.MaxValue);
+  MaxValue := Series1.YValues.MaxValue;
+  
+  // Create annotation
+  with TAnnotationTool.Create(Self) do
+  begin
+    ParentChart := Chart1;
+    Text := 'Peak: ' + FormatFloat('0.00', MaxValue);
+    
+    // Position callout at peak
+    Callout.Visible := True;
+    Callout.Arrow.Visible := True;
+    Callout.XPosition := Series1.CalcXPos(MaxIndex);
+    Callout.YPosition := Series1.CalcYPos(MaxIndex);
+  end;
+end;
+```
+
+### Data Point Labels
+
+Label specific interesting points:
+
+```pascal
+procedure AddPointLabel(Index: Integer; LabelText: String);
+var
+  Ann: TAnnotationTool;
+begin
+  Ann := TAnnotationTool.Create(Self);
+  Ann.ParentChart := Chart1;
+  Ann.Text := LabelText;
+  
+  // Position near point
+  Ann.Left := Series1.CalcXPos(Index) + 10;
+  Ann.Top := Series1.CalcYPos(Index) - 30;
+  
+  // Style
+  Ann.Shape.Color := clInfoBk;
+  Ann.Shape.Rounded := True;
+end;
+```
+
+### Threshold Indicators
+
+Mark threshold levels:
+
+```pascal
+var
+  ThresholdAnnotation: TAnnotationTool;
+begin
+  ThresholdAnnotation := TAnnotationTool.Create(Self);
+  ThresholdAnnotation.ParentChart := Chart1;
+  ThresholdAnnotation.Text := 'Warning Threshold';
+  ThresholdAnnotation.Position := ppLeftTop;
+  ThresholdAnnotation.Shape.Color := clRed;
+  ThresholdAnnotation.Shape.Transparency := 20;
+end;
+```
+
+### Chart Watermark
+
+```pascal
+var
+  Watermark: TAnnotationTool;
+begin
+  Watermark := TAnnotationTool.Create(Self);
+  Watermark.ParentChart := Chart1;
+  Watermark.Text := 'CONFIDENTIAL';
+  Watermark.Position := ppCenter;
+  Watermark.Shape.Font.Size := 48;
+  Watermark.Shape.Font.Color := clGray;
+  Watermark.Shape.Transparency := 80;
+  Watermark.Shape.Visible := False;  // Text only, no background
+end;
+```
+
+## Editing Annotations
+
+Use the built-in editor for interactive configuration:
+
+```pascal
+uses EditChar;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  EditChartTool(Self, Annotation);
+end;
+```
+
+**Source**: `Tool_Annotation.pas:39`
+
+## Related Topics
+
+<CardGroup cols={2}>
+  <Card title="Legends" icon="list" href="/features/legends">
+    Customize chart legends
+  </Card>
+  <Card title="Chart Tools" icon="wrench" href="/features/annotations">
+    Other interactive chart tools
+  </Card>
+</CardGroup>

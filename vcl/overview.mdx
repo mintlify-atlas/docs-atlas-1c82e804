@@ -1,0 +1,158 @@
+---
+title: VCL Samples Overview
+description: Comprehensive overview of TeeChart VCL samples for RAD Studio, Delphi and C++ Builder
+icon: 'chart-mixed'
+---
+
+## Introduction
+
+The TeeChart VCL samples repository contains over 600 examples demonstrating the full capabilities of TeeChart Pro VCL for RAD Studio, Delphi, and C++ Builder. These samples showcase chart types, interactive features, data visualization techniques, and advanced customization options.
+
+## Sample Categories
+
+The VCL samples are organized into the following categories:
+
+<CardGroup cols={2}>
+  <Card title="Standard Series" icon="chart-line" href="/vcl/standard-series">
+    Bar, Line, Area, Pie, Point series with extensive customization options
+  </Card>
+  
+  <Card title="Financial Charts" icon="chart-candlestick" href="/vcl/financial-charts">
+    Candle, OHLC, Volume charts for financial data visualization
+  </Card>
+  
+  <Card title="Statistical Charts" icon="chart-scatter" href="/vcl/statistical-charts">
+    Box plots, Histograms, Error bars for statistical analysis
+  </Card>
+  
+  <Card title="Gauges" icon="gauge" href="/vcl/gauges">
+    Circular, Linear, Knob, and Activity gauges for dashboard displays
+  </Card>
+  
+  <Card title="3D Charts" icon="cube" href="/vcl/3d-charts">
+    Surface, Contour, Point3D, Tower charts with 3D rendering
+  </Card>
+  
+  <Card title="Maps" icon="map" href="/vcl/maps">
+    World maps, geographic data visualization, and map layers
+  </Card>
+</CardGroup>
+
+## Key Sample Projects
+
+### TeeNew Demo
+
+The **TeeNew** directory contains the most comprehensive demo showcasing TeeChart VCL functionality with over 600 individual samples. This is the primary reference for learning TeeChart features.
+
+Location: `~/workspace/source/VCL/TeeNew/`
+
+### Specialized Projects
+
+<AccordionGroup>
+  <Accordion title="TeeChartOffice">
+    Advanced office-style charting application with data import, analysis tools, and export capabilities.
+  </Accordion>
+  
+  <Accordion title="TeeMaker">
+    Chart builder tool demonstrating runtime chart creation and customization.
+  </Accordion>
+  
+  <Accordion title="Map Layers">
+    Geographic visualization with multiple map layers, FIPS codes, and spherical projections.
+  </Accordion>
+  
+  <Accordion title="DBChart Aggregates">
+    Database integration examples showing data aggregation and real-time updates.
+  </Accordion>
+</AccordionGroup>
+
+## Requirements
+
+<Info>
+  You'll need TeeChart Pro VCL evaluation or registered version to run the examples. Fully functional evaluation version available at [steema.com/downloads/vcl](https://www.steema.com/downloads/vcl)
+</Info>
+
+## Getting Started
+
+<Steps>
+  <Step title="Install TeeChart VCL">
+    Download and install TeeChart Pro VCL for your RAD Studio, Delphi, or C++ Builder version.
+  </Step>
+  
+  <Step title="Open Sample Project">
+    Navigate to the sample directory and open the `.dproj` or `.dpr` file in your IDE.
+  </Step>
+  
+  <Step title="Build and Run">
+    Compile the project and run to see the sample in action.
+  </Step>
+  
+  <Step title="Explore the Code">
+    Examine the source code to understand implementation details and techniques.
+  </Step>
+</Steps>
+
+## Sample Structure
+
+Each sample typically includes:
+
+- **`.pas`** - Pascal source code with chart implementation
+- **`.dfm`** - Form definition with visual component layout
+- **`.dpr`** - Project file for standalone samples
+- **`.dproj`** - Project configuration for RAD Studio
+
+## Code Conventions
+
+Samples follow these common patterns:
+
+```pascal
+unit SampleName;
+{$I TeeDefs.inc}
+
+interface
+
+uses
+  Base, TeEngine, Series, TeeProcs, Chart;
+
+type
+  TSampleForm = class(TBaseForm)
+    Series1: TChartSeries;
+    procedure FormCreate(Sender: TObject);
+  end;
+
+implementation
+
+procedure TSampleForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues(10);
+end;
+
+initialization
+  RegisterClass(TSampleForm);
+end.
+```
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="Animations" icon="play">
+    `Animations/` - Chart animation and transitions
+  </Card>
+  
+  <Card title="Export" icon="file-export">
+    Multiple samples for PDF, Excel, HTML, SVG, and image export
+  </Card>
+  
+  <Card title="Real-time Data" icon="clock">
+    `FastLine_Realtime.pas` and `RingBuffer/` for live data streaming
+  </Card>
+  
+  <Card title="Custom Drawing" icon="paintbrush">
+    Canvas samples showing custom rendering techniques
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+Explore the specific sample categories to dive deeper into each chart type and feature set.

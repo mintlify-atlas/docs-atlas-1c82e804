@@ -1,0 +1,480 @@
+---
+title: FMX Demo Application
+description: FireMonkey (FMX) demo showcasing cross-platform TeeChart capabilities for Windows, macOS, iOS, and Android
+---
+
+The **FMX Demo** is a comprehensive FireMonkey application demonstrating TeeChart's cross-platform capabilities. Build once and deploy to Windows, macOS, iOS, and Android with native look and feel.
+
+## Overview
+
+The FMX Demo showcases:
+
+- **Cross-Platform** - Same codebase runs on all major platforms
+- **Modern UI** - Native FireMonkey styling and animations
+- **Touch Support** - Optimized for touch and gesture interactions
+- **Mobile Ready** - Examples designed for mobile and tablet devices
+- **Professional Features** - Full TeeChart feature set in FMX
+
+## Location
+
+```
+~/workspace/source/FMX/Demo/
+```
+
+## Project Files
+
+The demo includes multiple project configurations:
+
+- **TeeChart_Standard_Firemonkey_Demo.dpr** - Standard edition demo
+- **TeeChart_Pro_Firemonkey_Demo.dpr** - Professional edition demo  
+- **TeeChart_Lite_Firemonkey_Demo.dpr** - Lite edition demo
+
+## Demo Structure
+
+The demo is organized into focused categories:
+
+### Standard Series
+
+**Location:** `~/workspace/source/FMX/Demo/Standard/`
+
+Basic chart types optimized for FireMonkey:
+
+- **DemoArea.pas** - Area chart examples
+- **DemoBar.pas** - Bar chart examples
+- **DemoLine.pas** - Line chart examples
+- **DemoPie.pas** - Pie chart examples
+- **DemoBubble.pas** - Bubble chart examples
+- **DemoArrow.pas** - Arrow series examples
+- **DemoFastLine.pas** - High-performance line charts
+- **DemoGantt.pas** - Gantt chart examples
+- **DemoHorizArea.pas** - Horizontal area charts
+- **DemoHorizBar.pas** - Horizontal bar charts
+- **DemoHorizLine.pas** - Horizontal line charts
+- **DemoPoint.pas** - Point series examples
+- **DemoShape.pas** - Shape series examples
+
+Each example demonstrates:
+- Series configuration
+- Data population
+- Visual customization
+- Touch-friendly interactions
+
+### Animations
+
+**Location:** `~/workspace/source/FMX/Demo/Animations/`
+
+FireMonkey's powerful animation capabilities:
+
+- **DemoAnimBars.pas** - Animated bar charts
+  - Smooth value transitions
+  - Staggered animations
+  - Easing functions
+
+- **DemoAnimLines.pas** - Animated line charts
+  - Growing lines effect
+  - Point-by-point animation
+  - Synchronized series
+
+- **DemoAnimPie.pas** - Animated pie charts
+  - Slice explosion
+  - Rotation effects
+  - Value changes
+
+- **DemoAnimPoints.pas** - Animated point series
+  - Scatter animation
+  - Point appearance effects
+  - Size transitions
+
+- **DemoAnimSeries.pas** - General series animations
+  - Fade in/out
+  - Series transitions
+  - Multiple animation types
+
+Animations enhance:
+- User engagement
+- Data comprehension
+- Professional appearance
+- Visual feedback
+
+### Database Integration
+
+**Location:** `~/workspace/source/FMX/Demo/Database/`
+
+Connect charts to data sources:
+
+- **ChartAsDataset.pas** - Expose chart as dataset
+  - Chart data as TDataSet
+  - Bi-directional binding
+  - Database integration
+
+- **DatasetField.pas** - Dataset field binding
+  - Direct field binding
+  - Automatic updates
+  - Multiple series from datasets
+
+- **DemoCrossTab.pas** - CrossTab visualization
+  - Pivot table display
+  - Multi-dimensional data
+  - Automatic aggregation
+
+- **DemoDB.pas** - Database-connected charts
+  - Live database connection
+  - Query-based charts
+  - Data refresh
+
+Database features:
+- FireDAC integration
+- LiveBindings support
+- Automatic data updates
+- Cross-platform data access
+
+### Export Functionality
+
+**Location:** `~/workspace/source/FMX/Demo/Export/`
+
+Export charts in various formats:
+
+- **ExportImage.pas** - Image export (PNG, JPEG, BMP)
+  - High-resolution export
+  - Custom dimensions
+  - Quality settings
+
+- **ExportPDF.pas** - PDF export
+  - Vector-based PDF
+  - Embedded fonts
+  - Multi-page support
+
+Export capabilities:
+- Save to file or stream
+- Share via platform APIs
+- Email integration
+- Print support
+
+### Functions and Analysis
+
+**Location:** `~/workspace/source/FMX/Demo/Functions/`
+
+Mathematical and statistical functions:
+
+- Average and moving average
+- Smoothing functions
+- Trend analysis
+- Standard deviation
+- Custom functions
+
+Function examples show:
+- Function configuration
+- Source series binding
+- Period settings
+- Real-time calculation
+
+### Professional Series
+
+**Location:** `~/workspace/source/FMX/Demo/Pro/`
+
+Advanced chart types (Pro edition):
+
+- 3D Surface charts
+- Contour plots
+- Point3D series
+- Vector fields
+- ColorGrid visualization
+- Tower charts
+- TriSurface charts
+
+Pro features include:
+- Full 3D rendering
+- OpenGL acceleration
+- Complex visualizations
+- Scientific charting
+
+### Chart Tools
+
+**Location:** `~/workspace/source/FMX/Demo/Tools/`
+
+Interactive chart tools:
+
+- Annotation tools
+- ColorLine and ColorBand
+- Cursor tool
+- Legend tools
+- Zoom and pan
+- Mark tips
+
+Tools demonstrate:
+- Touch gestures
+- Tool customization
+- Event handling
+- Tool combinations
+
+### LiveBindings
+
+**Location:** `~/workspace/source/FMX/Demo/LiveBindings/`
+
+FireMonkey's visual binding framework:
+
+- Bind charts to data sources
+- Bi-directional data flow
+- Expression-based bindings
+- Design-time configuration
+
+LiveBindings enable:
+- No-code data binding
+- Automatic synchronization
+- Complex data relationships
+- RAD development
+
+## Running the FMX Demo
+
+### Desktop Platforms
+
+1. Open one of the .dpr project files in RAD Studio
+2. Select Windows or macOS target platform
+3. Compile and run
+4. Navigate through categories using the demo UI
+
+### Mobile Platforms
+
+1. Configure iOS or Android SDK in RAD Studio
+2. Select mobile target platform
+3. Connect device or start simulator/emulator
+4. Deploy and run
+
+Mobile considerations:
+- Touch-optimized controls
+- Platform-specific styling
+- Resolution scaling
+- Performance optimization
+
+## Key Features Demonstrated
+
+### Cross-Platform Rendering
+
+FMX uses platform-native graphics:
+- **Windows:** Direct2D/Direct3D
+- **macOS:** Quartz/Metal
+- **iOS:** OpenGL ES/Metal
+- **Android:** OpenGL ES
+
+Benefits:
+- Hardware acceleration
+- High performance
+- Native appearance
+- Consistent behavior
+
+### Touch and Gestures
+
+Optimized for touch input:
+- **Pinch-to-Zoom** - Two-finger zoom
+- **Pan** - Touch and drag scrolling
+- **Tap** - Series selection
+- **Long Press** - Context actions
+
+Gesture support:
+- Multi-touch support
+- Platform gesture recognition
+- Custom gesture handling
+
+### Responsive Layout
+
+Adapts to different screen sizes:
+- Phone layouts (small screens)
+- Tablet layouts (medium screens)
+- Desktop layouts (large screens)
+- Orientation changes
+
+Layout features:
+- Anchors and alignment
+- Relative positioning
+- Scale-aware controls
+- Platform styles
+
+### Performance Optimization
+
+FMX-specific optimizations:
+- GPU-accelerated rendering
+- Efficient series drawing
+- Cached graphics
+- Async operations
+
+## Code Structure
+
+### Base Form
+
+**File:** `Base.pas`
+
+Common base class for all examples:
+- Shared functionality
+- Consistent styling
+- Navigation support
+- Utility methods
+
+### Typical Example Structure
+
+```pascal
+unit DemoBar;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FMX.Types, FMX.Controls,
+  FMX.Forms, FMX.StdCtrls, FMXTee.Engine, FMXTee.Procs,
+  FMXTee.Chart, FMXTee.Series, Base;
+
+type
+  TDemoBarForm = class(TBaseForm)
+    Chart1: TChart;
+    Series1: TBarSeries;
+    procedure FormCreate(Sender: TObject);
+  end;
+
+implementation
+
+procedure TDemoBarForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues;
+  Chart1.Title.Text := 'Bar Chart Demo';
+end;
+
+end.
+```
+
+## FMX vs VCL Differences
+
+### Component Names
+
+- VCL: `VCLTee.Chart`, `VCLTee.Series`
+- FMX: `FMXTee.Chart`, `FMXTee.Series`
+
+### Graphics
+
+- VCL: Windows GDI/GDI+
+- FMX: Platform-native (Direct2D, Metal, OpenGL ES)
+
+### Styling
+
+- VCL: Windows themes
+- FMX: Platform styles (Material, Cupertino, etc.)
+
+### Events
+
+- Similar event model
+- FMX adds touch/gesture events
+- Platform-specific event handling
+
+## Mobile-Specific Features
+
+### Platform Services
+
+Access native platform features:
+- Share sheet integration
+- Photo library access
+- Sensor data (accelerometer, GPS)
+- Platform dialogs
+
+### Deployment
+
+iOS deployment:
+- Code signing configuration
+- Provisioning profiles
+- App Store preparation
+
+Android deployment:
+- APK generation
+- Permissions configuration
+- Google Play preparation
+
+## Best Practices
+
+### Performance
+
+1. **Use FastLine** for real-time data
+2. **Limit point count** on mobile devices
+3. **Enable hardware acceleration**
+4. **Cache static content**
+5. **Optimize animations**
+
+### Touch UX
+
+1. **Large hit targets** (minimum 44x44 points)
+2. **Clear visual feedback**
+3. **Support gestures**
+4. **Avoid hover-dependent features**
+5. **Test on actual devices**
+
+### Cross-Platform
+
+1. **Test on all target platforms**
+2. **Use platform services appropriately**
+3. **Respect platform conventions**
+4. **Handle different screen sizes**
+5. **Consider performance differences**
+
+## Example: Creating an FMX Chart
+
+```pascal
+procedure TForm1.CreateChart;
+var
+  Chart: TChart;
+  Series: TLineSeries;
+begin
+  // Create chart
+  Chart := TChart.Create(Self);
+  Chart.Parent := Self;
+  Chart.Align := TAlignLayout.Client;
+  
+  // Create series
+  Series := TLineSeries.Create(Chart);
+  Chart.AddSeries(Series);
+  
+  // Populate data
+  Series.FillSampleValues;
+  
+  // Configure appearance
+  Chart.Title.Text := 'Cross-Platform Chart';
+  Chart.Legend.Visible := True;
+  
+  // Enable touch
+  Chart.Zoom.Allow := True;
+  Chart.Panning.Allow := pmBoth;
+end;
+```
+
+## Comparison with VCL
+
+| Feature | VCL Demo (TeeNew) | FMX Demo |
+|---------|-------------------|----------|
+| **Examples** | 687 examples | ~50 examples |
+| **Focus** | Comprehensive features | Cross-platform essentials |
+| **Platforms** | Windows only | Windows, macOS, iOS, Android |
+| **Graphics** | GDI/GDI+ | Platform-native |
+| **Touch** | Limited | Full support |
+| **Animations** | Basic | Advanced |
+| **Styling** | Windows themes | Platform styles |
+
+## Related Resources
+
+- [TeeNew Demo](/examples/teenew-demo) - Comprehensive VCL examples
+- [Basic Examples](/examples/basic) - Getting started
+- [Intermediate Examples](/examples/intermediate) - Mid-level features
+- [Advanced Examples](/examples/advanced) - Complex scenarios
+
+## Tips for FMX Development
+
+1. **Start with Standard demo** - Learn core concepts
+2. **Explore Animations** - Enhance user experience
+3. **Test touch gestures** - Essential for mobile
+4. **Use LiveBindings** - Rapid data binding
+5. **Profile performance** - Optimize for target platform
+6. **Respect platform UX** - Follow platform guidelines
+
+## Next Steps
+
+After exploring the FMX Demo:
+
+1. Build a cross-platform chart application
+2. Experiment with animations and transitions
+3. Integrate with mobile platform features
+4. Explore [TeeMaker](/examples/teemaker-demo) for 3D visualization
+5. Review [API Reference](/api) for detailed documentation

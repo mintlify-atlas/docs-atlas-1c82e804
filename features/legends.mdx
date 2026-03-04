@@ -1,0 +1,338 @@
+---
+title: 'Legends'
+description: 'Customize chart legends in TeeChart VCL/FMX'
+icon: 'list'
+---
+
+TeeChart legends provide visual keys to identify series and data points in your charts. The legend system is highly customizable with support for symbols, checkboxes, scrolling, and multiple legends.
+
+## Overview
+
+The `TChartLegend` class controls all legend properties and appearance. Access it through `Chart1.Legend`.
+
+**Location**: `TeeProcs.pas`
+
+## Key Properties
+
+### Position and Layout
+
+```pascal
+// Position
+Chart1.Legend.Alignment := laRight;  // laLeft, laRight, laTop, laBottom
+Chart1.Legend.HorizMargin := 10;
+Chart1.Legend.VertMargin := 10;
+
+// Custom position
+Chart1.Legend.CustomPosition := True;
+Chart1.Legend.Left := 100;
+Chart1.Legend.Top := 50;
+```
+
+**Source**: `Legend_CustomPos.pas`
+
+### Visibility and Style
+
+```pascal
+// Show/hide
+Chart1.Legend.Visible := True;
+
+// Legend style
+Chart1.Legend.LegendStyle := lsSeries;     // One item per series
+Chart1.Legend.LegendStyle := lsValues;     // One item per point
+Chart1.Legend.LegendStyle := lsLastValues; // Show last value only
+Chart1.Legend.LegendStyle := lsSeriesGroups; // Group series
+```
+
+**Source**: `Legend_Series.pas`, `Legend_SeriesGroups.pas`
+
+## Symbol Customization
+
+### Symbol Properties
+
+Control the appearance of legend symbols:
+
+```pascal
+// Symbol size
+Chart1.Legend.Symbol.Width := 30;
+Chart1.Legend.Symbol.DefaultPen := True;
+
+// Symbol position
+Chart1.Legend.Symbol.Position := spLeft;  // spLeft, spRight
+
+// Continuous gradient for contour/surface series
+Chart1.Legend.Symbol.Continuous := True;
+```
+
+**Source**: `Legend_Symbol.pas:49`
+
+### Symbol Border and Shadow
+
+```pascal
+// Symbol border
+Chart1.Legend.Symbol.Pen.Visible := True;
+Chart1.Legend.Symbol.Pen.Width := 2;
+Chart1.Legend.Symbol.Pen.Color := clBlack;
+
+// Symbol shadow
+Chart1.Legend.Symbol.Shadow.Visible := True;
+Chart1.Legend.Symbol.Shadow.Width := 3;
+Chart1.Legend.Symbol.Shadow.HorizSize := 2;
+Chart1.Legend.Symbol.VertSize := 2;
+```
+
+**Source**: `Legend_SymbolBorder.pas`, `Legend_SymbolsShadow.pas`
+
+### Symbol Gradient
+
+```pascal
+Chart1.Legend.Symbol.Gradient.Visible := True;
+Chart1.Legend.Symbol.Gradient.StartColor := clWhite;
+Chart1.Legend.Symbol.Gradient.EndColor := clBlue;
+```
+
+**Source**: `Legend_SymbolsGradient.pas`
+
+## Interactive Features
+
+### Checkboxes
+
+Enable interactive show/hide of series:
+
+```pascal
+Chart1.Legend.CheckBoxes := True;
+```
+
+When enabled, clicking checkboxes automatically toggles series visibility.
+
+**Source**: `Legend_CheckBox.pas:42`
+
+### Legend Scrolling
+
+#### Basic Scrolling
+
+```pascal
+// Manual scrolling
+Chart1.Legend.FirstValue := 10;  // Start showing from item 10
+Chart1.Legend.MaxRows := 5;      // Show maximum 5 rows
+```
+
+**Source**: `Legend_Scroll.pas`, `Legend_MaxRows.pas`
+
+#### Scrollbar Tool
+
+Add an interactive scrollbar to the legend:
+
+```pascal
+uses TeeLegendScrollBar;
+
+var
+  LegendScrollBar: TLegendScrollBar;
+begin
+  LegendScrollBar := TLegendScrollBar.Create(Self);
+  LegendScrollBar.ParentChart := Chart1;
+end;
+```
+
+**Handle scroll events**:
+
+```pascal
+procedure TForm1.LegendScrollBarScrolled(Sender: TObject);
+begin
+  Label1.Caption := 'First Value: ' + IntToStr(Chart1.Legend.FirstValue);
+end;
+```
+
+**Source**: `Legend_Scrollbar.pas:47`
+
+## Text Formatting
+
+### Font and Color
+
+```pascal
+// Legend font
+Chart1.Legend.Font.Name := 'Arial';
+Chart1.Legend.Font.Size := 10;
+Chart1.Legend.Font.Color := clBlack;
+Chart1.Legend.Font.Style := [fsBold];
+
+// Individual item colors
+Chart1.Legend.FontSeriesColor := True;  // Use series color for text
+```
+
+**Source**: `Legend_FontColor.pas`
+
+### Text Style
+
+```pascal
+// Text alignment
+Chart1.Legend.TextStyle := ltsPlain;      // Plain text
+Chart1.Legend.TextStyle := ltsLeftValue;  // Value on left
+Chart1.Legend.TextStyle := ltsRightValue; // Value on right
+Chart1.Legend.TextStyle := ltsLeftPercent; // Percentage on left
+Chart1.Legend.TextStyle := ltsRightPercent; // Percentage on right
+Chart1.Legend.TextStyle := ltsValue;      // Value only
+Chart1.Legend.TextStyle := ltsPercent;    // Percentage only
+```
+
+**Source**: `Legend_TextStyle.pas`
+
+### Custom Text
+
+Add custom items to the legend:
+
+```pascal
+// Add text item
+Chart1.Legend.DividingLines.Add(5);  // Add dividing line at position 5
+```
+
+**Source**: `Legend_AddText.pas`
+
+## Spacing and Layout
+
+### Spacing Properties
+
+```pascal
+// Vertical spacing
+Chart1.Legend.VertSpacing := 5;  // Pixels between items
+
+// Gap between symbol and text
+Chart1.Legend.TextSymbolGap := 10;
+
+// Column widths
+Chart1.Legend.ColumnWidthAuto := False;
+Chart1.Legend.ColumnWidths[0] := 100;
+```
+
+**Source**: `Legend_VertSpa.pas`, `Legend_TextSymbolGap.pas`, `Legend_Widths.pas`
+
+### Multi-Column Layout
+
+```pascal
+Chart1.Legend.MaxNumRows := 10;  // Maximum rows before new column
+Chart1.Legend.HorizMargin := 20;  // Spacing between columns
+```
+
+## Advanced Features
+
+### Multiple Legends
+
+Draw separate legends for different series:
+
+```pascal
+procedure TForm1.Chart1AfterDraw(Sender: TObject);
+begin
+  with Chart1.Legend do
+  begin
+    // Draw first legend for Series1
+    CustomPosition := False;
+    Series := Series1;
+    
+    // Draw second legend for Series2
+    Top := 125;
+    Series := Series2;
+    DrawLegend;
+    
+    // Reset for next paint
+    CustomPosition := False;
+    Series := Series1;
+  end;
+end;
+```
+
+**Source**: `Legend_Multi.pas:32`
+
+### Legend Title
+
+```pascal
+Chart1.Legend.Title.Text.Add('Sales Data');
+Chart1.Legend.Title.Font.Style := [fsBold];
+Chart1.Legend.Title.Font.Size := 12;
+Chart1.Legend.Title.Visible := True;
+```
+
+**Source**: `Legend_Title.pas`
+
+### Current Page Display
+
+Show current page information:
+
+```pascal
+Chart1.Legend.CurrentPage := True;
+```
+
+**Source**: `Legend_CurrentPage.pas`
+
+## Custom Legend Items
+
+Manually control legend item display:
+
+```pascal
+// Show/hide specific items
+Chart1.Legend.Items[0].Visible := False;
+
+// Custom item text
+Chart1.Legend.Items[0].Text := 'Custom Label';
+
+// Custom item color
+Chart1.Legend.Items[0].Color := clRed;
+```
+
+**Source**: `Legend_Items.pas`
+
+## Common Use Cases
+
+### Minimal Legend (High Performance)
+
+```pascal
+// For real-time charts, hide legend to improve speed
+Chart1.Legend.Visible := False;
+// OR
+Chart1.Legend.Hide;
+```
+
+### Series Groups
+
+Organize related series:
+
+```pascal
+Chart1.Legend.LegendStyle := lsSeriesGroups;
+Series1.Title := 'Group A - Sales';
+Series2.Title := 'Group A - Costs';
+Series3.Title := 'Group B - Sales';
+```
+
+**Source**: `Legend_SeriesGroups.pas`
+
+### Image in Legend
+
+Display custom images:
+
+```pascal
+Chart1.Legend.Symbol.Visible := False;
+// Use OnGetLegendRect and OnDrawLegend events to draw custom images
+```
+
+**Source**: `Legend_Image.pas`
+
+### Position as Percentage
+
+Position legend relative to chart size:
+
+```pascal
+Chart1.Legend.CustomPosition := True;
+Chart1.Legend.LeftPercent := 10;  // 10% from left
+Chart1.Legend.TopPercent := 5;    // 5% from top
+```
+
+**Source**: `Legend_PositionPercent.pas`
+
+## Related Topics
+
+<CardGroup cols={2}>
+  <Card title="Series Types" icon="chart-line" href="/charts/bar">
+    Different chart series types
+  </Card>
+  <Card title="Annotations" icon="comment" href="/features/annotations">
+    Add text and callouts to charts
+  </Card>
+</CardGroup>

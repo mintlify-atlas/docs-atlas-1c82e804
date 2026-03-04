@@ -1,0 +1,475 @@
+---
+title: 'Animation Samples'
+description: 'Dynamic chart animations and transitions in TeeChart FireMonkey applications'
+icon: 'play'
+---
+
+## Overview
+
+TeeChart FMX provides powerful animation capabilities to create engaging, dynamic data visualizations. The animation samples demonstrate smooth transitions, series animations, and interactive effects.
+
+**Sample Location:** `FMX/Demo/Animations/`
+
+<Info>
+Animations enhance user experience by providing visual feedback during data updates and making transitions between chart states smooth and professional.
+</Info>
+
+## Animation Types
+
+### Bar Transitions
+
+Animated transitions between different bar chart modes (side-by-side, stacked, etc.).
+
+**Sample:** `DemoAnimBars.pas`
+
+```pascal
+unit DemoAnimBars;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FMX.Types, FMX.Controls, FMX.Forms,
+  FMX.StdCtrls, FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart,
+  FMXTee.Animations.Tools, FMXTee.Animate, FMX.Controls.Presentation;
+
+type
+  TBarTransitions = class(TForm)
+    Chart1: TChart;
+    Button1: TButton;
+    ChartAnimation1: TTeeAnimationTool;
+    Series3: TBarSeries;
+    Series2: TBarSeries;
+    Series1: TBarSeries;
+    ChartAnimation2: TTeeAnimationTool;
+    Button2: TButton;
+    CheckBox1: TCheckBox;
+    procedure FormCreate(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure CheckBox1Change(Sender: TObject);
+  end;
+
+implementation
+
+procedure TBarTransitions.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Set animation duration
+  ChartAnimation1.Animations[0].Duration := 500; // milliseconds
+  
+  // Fill with sample data
+  Chart1.SeriesList.FillSampleValues;
+end;
+
+procedure TBarTransitions.Button1Click(Sender: TObject);
+var 
+  tmp: TSeriesTransitionAnimation;
+begin
+  tmp := (ChartAnimation1.Animations[0] as TSeriesTransitionAnimation);
+  
+  // Capture state before change
+  tmp.Before;
+  
+  // Change multibar mode
+  if Series1.MultiBar = mbSelfStack then
+     Series1.MultiBar := mbNone
+  else
+     Series1.MultiBar := TMultiBar(Ord(Series1.MultiBar) + 1);
+  
+  // Animate transition
+  tmp.After;
+end;
+
+procedure TBarTransitions.Button2Click(Sender: TObject);
+begin
+  // Transforms work best in 2D mode
+  Chart1.View3D := False;
+  CheckBox1.IsChecked := False;
+  
+  // Play the animation
+  ChartAnimation2.Play;
+end;
+
+procedure TBarTransitions.CheckBox1Change(Sender: TObject);
+begin
+  Chart1.View3D := CheckBox1.IsChecked;
+end;
+```
+
+**Key Concepts:**
+- `TTeeAnimationTool` - Main animation controller
+- `TSeriesTransitionAnimation` - Smooth transitions between states
+- `Before()` and `After()` - Capture states for interpolation
+- `Duration` - Animation length in milliseconds
+
+### Line Animations
+
+Animate line series drawing and transitions.
+
+**Sample:** `DemoAnimLines.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+begin
+  // Create animation tool
+  Animation1 := TSeriesAnimationTool.Create(Self);
+  Chart1.Animations.Add(Animation1);
+  
+  // Configure animation
+  Animation1.Series := Series1;
+  Animation1.StartAtMin := True;
+  Animation1.DrawEvery := 1;
+  Animation1.Duration := 2000; // 2 seconds
+  
+  // Fill data
+  Series1.FillSampleValues;
+end;
+
+procedure ButtonPlayClick(Sender: TObject);
+begin
+  Animation1.Play;
+end;
+```
+
+### Pie Animations
+
+Animate pie chart expansion and rotation.
+
+**Sample:** `DemoAnimPie.pas`
+
+```pascal
+unit DemoAnimPie;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FMX.Types, FMX.Controls, FMX.Forms,
+  FMX.StdCtrls, FMXTee.Engine, FMXTee.Series, FMXTee.Procs,
+  FMXTee.Chart, FMXTee.Animate, FMXTee.Animations.Tools,
+  FMX.Controls.Presentation;
+
+type
+  TAnimationPieSeries = class(TForm)
+    Chart1: TChart;
+    Play: TButton;
+    Series1: TPieSeries;
+    procedure FormCreate(Sender: TObject);
+    procedure PlayClick(Sender: TObject);
+  private
+    Anim: TTeeAnimationTool;
+  end;
+
+implementation
+
+procedure TAnimationPieSeries.FormCreate(Sender: TObject);
+var 
+  PieAnim: TNumberAnimation;
+begin
+  inherited;
+  
+  // Create animation tool
+  Anim := TTeeAnimationTool.Create(Self);
+  Chart1.Animations.Add(Anim);
+  
+  // Create number animation for pie angle
+  PieAnim := TNumberAnimation.Create(Self);
+  PieAnim.Instance := Series1;
+  PieAnim.PropertyName := 'AngleSize';
+  PieAnim.EndValue := 360;
+  
+  Anim.Animations.Add(PieAnim);
+end;
+
+procedure TAnimationPieSeries.PlayClick(Sender: TObject);
+begin
+  Anim.Play;
+end;
+```
+
+**Animation Effect:** The pie gradually expands from 0° to 360°, creating a sweeping reveal effect.
+
+### Point Animations
+
+Animate point series with fade-in and movement effects.
+
+**Sample:** `DemoAnimPoints.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+begin
+  // Create animation
+  Animation1 := TSeriesAnimationTool.Create(Self);
+  Chart1.Animations.Add(Animation1);
+  
+  // Configure for points
+  Animation1.Series := Series1;
+  Animation1.StartAtMin := True;
+  Animation1.Kind := akFadeIn;  // Points fade in
+  
+  Series1.FillSampleValues(30);
+end;
+```
+
+### Series Animations
+
+Generic series animation with multiple effects.
+
+**Sample:** `DemoAnimSeries.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+begin
+  // Create series animation
+  SeriesAnim := TSeriesAnimationTool.Create(Self);
+  Chart1.Animations.Add(SeriesAnim);
+  
+  SeriesAnim.Series := Series1;
+  SeriesAnim.Duration := 1500;
+  SeriesAnim.DrawEvery := 2;  // Draw every 2 points for speed
+  
+  Series1.FillSampleValues(100);
+end;
+```
+
+## Animation Properties
+
+### TTeeAnimationTool Properties
+
+```pascal
+// Duration in milliseconds
+Animation.Duration := 1000;
+
+// Loop the animation
+Animation.Loop := True;
+
+// Delay before starting
+Animation.Delay := 500;
+
+// Easing function
+Animation.Interpolation := TAnimationInterpolation.Linear;
+// Options: Linear, Quadratic, Cubic, Quartic, Quintic, 
+//          Sinusoidal, Exponential, Circular, Elastic, 
+//          Back, Bounce
+```
+
+### TSeriesAnimationTool Properties
+
+```pascal
+SeriesAnim.Series := Series1;           // Target series
+SeriesAnim.StartAtMin := True;          // Start from minimum value
+SeriesAnim.DrawEvery := 1;              // Draw every N points
+SeriesAnim.Duration := 2000;            // Animation duration
+SeriesAnim.OnStart := AnimStartHandler; // Event handlers
+SeriesAnim.OnStop := AnimStopHandler;
+```
+
+## Dashboard with Animations
+
+The Dashboard sample (`FMX/Dashboard/`) demonstrates advanced animation coordination.
+
+```pascal
+procedure TDashForm.CreateAnimations;
+begin
+  // Bar Chart Animation
+  BarAnimation := TSeriesAnimationTool.Create(Self);
+  BarChart.Animations.Add(BarAnimation);
+  BarAnimation.StartAtMin := False;
+  BarAnimation.DrawEvery := 1;
+  BarAnimation.OnStop := StopBarAnimation;
+  
+  // Area Chart Animation
+  AreaAnimation := TSeriesAnimationTool.Create(Self);
+  AreaChart.Animations.Add(AreaAnimation);
+  AreaAnimation.StartAtMin := False;
+  AreaAnimation.DrawEvery := 1;
+  AreaAnimation.OnStop := StopAreaAnimation;
+  
+  // Donut Chart Animation
+  DonutAnimation := TSeriesAnimationTool.Create(Self);
+  DonutChart.Animations.Add(DonutAnimation);
+  DonutAnimation.StartAtMin := False;
+  DonutAnimation.DrawEvery := 1;
+  DonutAnimation.OnStop := StopDonutAnimation;
+end;
+
+// Chain animations together
+procedure TDashForm.StopDonutAnimation(Sender: TObject);
+begin
+  AnimateBarChart;
+end;
+
+procedure TDashForm.StopBarAnimation(Sender: TObject);
+begin
+  AnimateAreaChart;
+end;
+
+procedure TDashForm.AnimateBarChart;
+begin
+  BarAnimation.Play;
+end;
+
+procedure TDashForm.AnimateAreaChart;
+begin
+  AreaAnimation.Play;
+end;
+```
+
+## Transition Animations
+
+### Series Transitions
+
+```pascal
+procedure AnimateDataChange;
+var
+  Transition: TSeriesTransitionAnimation;
+begin
+  Transition := (ChartAnimation.Animations[0] as TSeriesTransitionAnimation);
+  
+  // Capture before state
+  Transition.Before;
+  
+  // Modify data
+  Series1.Clear;
+  Series1.FillSampleValues;
+  
+  // Animate to new state
+  Transition.After;
+end;
+```
+
+### Property Animations
+
+```pascal
+procedure AnimateProperty;
+var
+  PropAnim: TNumberAnimation;
+begin
+  PropAnim := TNumberAnimation.Create(Self);
+  PropAnim.Instance := Chart1;
+  PropAnim.PropertyName := 'Chart3DPercent';
+  PropAnim.StartValue := 0;
+  PropAnim.EndValue := 50;
+  PropAnim.Duration := 1000;
+  
+  AnimTool.Animations.Add(PropAnim);
+  AnimTool.Play;
+end;
+```
+
+## Animation Events
+
+```pascal
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  Animation1 := TSeriesAnimationTool.Create(Self);
+  
+  // Assign event handlers
+  Animation1.OnStart := OnAnimationStart;
+  Animation1.OnStop := OnAnimationStop;
+  Animation1.OnProgress := OnAnimationProgress;
+end;
+
+procedure TForm1.OnAnimationStart(Sender: TObject);
+begin
+  Button1.Enabled := False;
+  StatusLabel.Text := 'Animating...';
+end;
+
+procedure TForm1.OnAnimationStop(Sender: TObject);
+begin
+  Button1.Enabled := True;
+  StatusLabel.Text := 'Ready';
+end;
+
+procedure TForm1.OnAnimationProgress(Sender: TObject);
+begin
+  ProgressBar1.Value := Animation1.Progress;
+end;
+```
+
+## Performance Considerations
+
+### Optimizing Animations
+
+```pascal
+// For large datasets, draw fewer points during animation
+Animation1.DrawEvery := 5;  // Draw every 5th point
+
+// Reduce animation duration for snappier feel
+Animation1.Duration := 500;  // Half a second
+
+// Disable unnecessary features during animation
+procedure OnAnimationStart(Sender: TObject);
+begin
+  Chart1.Legend.Visible := False;
+  Series1.Marks.Visible := False;
+end;
+
+procedure OnAnimationStop(Sender: TObject);
+begin
+  Chart1.Legend.Visible := True;
+  Series1.Marks.Visible := True;
+end;
+```
+
+## Interactive Animations
+
+Combine animations with user interaction:
+
+```pascal
+procedure OnChartClick(Sender: TCustomChart; Series: TChartSeries;
+  ValueIndex: Integer; Button: TMouseButton; Shift: TShiftState; 
+  X, Y: Integer);
+begin
+  // Animate in response to user click
+  Transition.Before;
+  Series.Color := RandomColor;
+  Transition.After;
+end;
+```
+
+## Cross-Platform Animations
+
+Animations work consistently across all FMX platforms:
+
+```pascal
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+  // Slightly faster animations on mobile
+  Animation1.Duration := 750;
+{$ELSE}
+  // Standard duration on desktop
+  Animation1.Duration := 1000;
+{$ENDIF}
+```
+
+## Best Practices
+
+<Note>
+1. **Keep animations short** - 500-1500ms is typically ideal
+2. **Use appropriate easing** - Linear for data, easing for UI elements
+3. **Disable during animation** - Prevent user interaction during transitions
+4. **Chain related animations** - Use OnStop events to sequence animations
+5. **Test on target platforms** - Performance varies by device
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Dashboard Examples" icon="table-cells" href="/fmx/dashboard">
+    See animations in complex dashboards
+  </Card>
+  
+  <Card title="Cross-Platform Tips" icon="mobile" href="/fmx/cross-platform">
+    Platform-specific optimization
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [TeeChart Animation Tools Documentation](https://www.steema.com/product/vcl)
+- [FireMonkey Animation Framework](https://docwiki.embarcadero.com/RADStudio/en/FireMonkey_Animation_Effects)
+
+<Tip>
+Experiment with different interpolation types to find the most appropriate animation feel for your data visualization needs.
+</Tip>

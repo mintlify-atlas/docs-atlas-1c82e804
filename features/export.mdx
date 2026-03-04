@@ -1,0 +1,518 @@
+---
+title: 'Export'
+description: 'Export TeeChart charts to various formats including images, PDF, and data files'
+icon: 'file-export'
+---
+
+TeeChart provides comprehensive export capabilities to save charts as images, documents, and data files. Export your charts to over 20 different formats.
+
+## Overview
+
+TeeChart supports two main export categories:
+
+1. **Image/Document Formats** - Visual representation of charts
+2. **Data Formats** - Underlying chart data
+
+## Quick Export
+
+### Universal Export Dialog
+
+Show a dialog with all export options:
+
+```pascal
+uses TeExport;
+
+procedure TForm1.ExportButtonClick(Sender: TObject);
+begin
+  TeeExport(Self, Chart1);
+end;
+```
+
+This displays a dialog where users can select the format and configure options.
+
+**Source**: `Export_PDF.pas:47`, `Export_JPEG.pas:40`
+
+## Image Formats
+
+### JPEG Export
+
+```pascal
+uses TeeJPEG;
+
+procedure TForm1.SaveAsJPEG(Sender: TObject);
+begin
+  TeeSavePanel(TJPEGExportFormat, Chart1);
+end;
+```
+
+**Features**:
+- Configurable compression quality
+- Fast export
+- Widely compatible
+- Smaller file sizes
+
+**Source**: `Export_JPEG.pas:34`
+
+### PNG Export
+
+```pascal
+uses TeePNG;
+
+procedure TForm1.SaveAsPNG(Sender: TObject);
+begin
+  TeeSavePanel(TPNGExportFormat, Chart1);
+end;
+```
+
+**Features**:
+- Lossless compression
+- Transparency support
+- High quality
+- Web-friendly
+
+**Source**: `Export_PNG.pas`
+
+### GIF Export
+
+```pascal
+uses TeeGIF;
+
+procedure TForm1.SaveAsGIF(Sender: TObject);
+begin
+  TeeSavePanel(TGIFExportFormat, Chart1);
+end;
+```
+
+**Source**: `Export_GIF.pas`
+
+### BMP Export
+
+```pascal
+uses TeeBMP;
+
+procedure TForm1.SaveAsBMP(Sender: TObject);
+begin
+  TeeSavePanel(TBMPExportFormat, Chart1);
+end;
+```
+
+### PCX Export
+
+```pascal
+uses TeePCX;
+
+procedure TForm1.SaveAsPCX(Sender: TObject);
+begin
+  TeeSavePanel(TPCXExportFormat, Chart1);
+end;
+```
+
+**Source**: `Export_PCX.pas`
+
+### Windows Metafile
+
+```pascal
+uses TeeMetafile;
+
+procedure TForm1.SaveAsMetafile(Sender: TObject);
+begin
+  TeeSavePanel(TMetafileExportFormat, Chart1);
+end;
+```
+
+**Features**:
+- Vector format (scalable)
+- Windows-native format
+- High quality at any size
+- Small file size
+
+**Source**: `Export_Metafile.pas`
+
+## Document Formats
+
+### PDF Export
+
+```pascal
+uses TeePDFCanvas, TeePDFOptions;
+
+procedure TForm1.SaveAsPDF(Sender: TObject);
+begin
+  TeeSavePanel(TPDFExportFormat, Chart1);
+end;
+```
+
+**Features**:
+- Vector format
+- Professional output
+- Cross-platform compatible
+- Configurable compression
+
+**Source**: `Export_PDF.pas:40`
+
+### Multiple Charts to PDF
+
+Export multiple charts to a single PDF:
+
+```pascal
+uses TeePDFCanvas;
+
+procedure TForm1.ExportMultipleChartsToPDF(const FileName: String);
+var
+  PDF: TPDFExportFormat;
+begin
+  PDF := TPDFExportFormat.Create;
+  try
+    PDF.Panel := Chart1;
+    PDF.SaveToFile(FileName);
+    
+    // Add more charts to same PDF
+    PDF.Panel := Chart2;
+    PDF.SaveToFile(FileName);  // Appends to existing file
+    
+    PDF.Panel := Chart3;
+    PDF.SaveToFile(FileName);
+  finally
+    PDF.Free;
+  end;
+end;
+```
+
+**Source**: `Export_PDF_Multiple.pas`
+
+### SVG Export
+
+```pascal
+uses TeeSVGCanvas;
+
+procedure TForm1.SaveAsSVG(Sender: TObject);
+begin
+  TeeSavePanel(TSVGExportFormat, Chart1);
+end;
+```
+
+**Features**:
+- Scalable vector format
+- Web-compatible
+- CSS styling support
+- Small file size
+- Interactive elements support
+
+**Source**: `Export_SVG.pas:44`
+
+### VML Export
+
+Vector Markup Language for older browsers:
+
+```pascal
+uses TeeVMLCanvas;
+
+procedure TForm1.SaveAsVML(Sender: TObject);
+begin
+  TeeSavePanel(TVMLExportFormat, Chart1);
+end;
+```
+
+**Source**: `Export_VML.pas`
+
+### XAML Export
+
+For WPF/Silverlight applications:
+
+```pascal
+uses TeeXAMLCanvas;
+
+procedure TForm1.SaveAsXAML(Sender: TObject);
+begin
+  TeeSavePanel(TXAMLExportFormat, Chart1);
+end;
+```
+
+**Source**: `Export_XAML.pas`
+
+## Data Formats
+
+### Excel Export
+
+Export chart data to Microsoft Excel:
+
+```pascal
+uses TeeStore;
+
+procedure TForm1.ExportToExcel(Sender: TObject);
+var
+  SaveDialog: TSaveDialog;
+begin
+  SaveDialog := TSaveDialog.Create(Self);
+  try
+    SaveDialog.Filter := 'Excel Files (*.xls)|*.xls';
+    
+    if SaveDialog.Execute then
+    begin
+      with TSeriesDataXLS.Create(Chart1, nil) do  // nil = all series
+      try
+        IncludeIndex := True;    // Include point index column
+        IncludeHeader := True;   // Include column headers
+        
+        SaveToFile(SaveDialog.FileName);
+      finally
+        Free;
+      end;
+    end;
+  finally
+    SaveDialog.Free;
+  end;
+end;
+```
+
+**Source**: `Export_Excel.pas:41`
+
+### HTML Table Export
+
+Export data as HTML table:
+
+```pascal
+uses TeeStore;
+
+procedure TForm1.ExportToHTML(Sender: TObject);
+begin
+  with TSeriesDataHTML.Create(Chart1, nil) do
+  try
+    IncludeIndex := True;
+    IncludeHeader := True;
+    SaveToFile('chart_data.html');
+  finally
+    Free;
+  end;
+end;
+```
+
+**Source**: `Export_HTML.pas:46`
+
+### XML Export
+
+Export data as XML:
+
+```pascal
+uses TeeStore;
+
+procedure TForm1.ExportToXML(Sender: TObject);
+begin
+  with TSeriesDataXML.Create(Chart1, nil) do
+  try
+    SaveToFile('chart_data.xml');
+  finally
+    Free;
+  end;
+end;
+```
+
+**Source**: `Export_XML.pas`
+
+### Text/CSV Export
+
+Export as comma-separated values:
+
+```pascal
+uses TeeStore;
+
+procedure TForm1.ExportToCSV(Sender: TObject);
+begin
+  with TSeriesDataText.Create(Chart1, nil) do
+  try
+    IncludeIndex := True;
+    IncludeHeader := True;
+    Separator := ',';  // CSV separator
+    SaveToFile('chart_data.csv');
+  finally
+    Free;
+  end;
+end;
+```
+
+**Source**: `Export_Text.pas`
+
+## Advanced Export Options
+
+### Custom DPI
+
+Control export resolution:
+
+```pascal
+uses TeeJPEG;
+
+procedure TForm1.ExportHighResJPEG(Sender: TObject);
+var
+  JPEGExport: TJPEGExportFormat;
+begin
+  JPEGExport := TJPEGExportFormat.Create;
+  try
+    JPEGExport.Panel := Chart1;
+    JPEGExport.Width := 1920;   // Custom width
+    JPEGExport.Height := 1080;  // Custom height
+    JPEGExport.SaveToFile('high_res_chart.jpg');
+  finally
+    JPEGExport.Free;
+  end;
+end;
+```
+
+**Source**: `Export_DPI.pas`
+
+### Export to String
+
+Export chart as string (for embedding):
+
+```pascal
+function ChartAsString(AChart: TChart): String;
+var
+  Stream: TStringStream;
+begin
+  Stream := TStringStream.Create('');
+  try
+    AChart.SaveToStream(Stream);
+    Result := Stream.DataString;
+  finally
+    Stream.Free;
+  end;
+end;
+```
+
+**Source**: `Export_Chart_as_String.pas`
+
+### Email Export
+
+Export and send via email:
+
+```pascal
+uses TeExport;
+
+procedure TForm1.EmailChart(Sender: TObject);
+var
+  TempFile: String;
+begin
+  TempFile := GetTempDir + 'chart.jpg';
+  
+  // Export to temporary file
+  TeeSavePanel(TJPEGExportFormat, Chart1, TempFile);
+  
+  // Send via email (implementation depends on email library)
+  SendEmailWithAttachment('report@example.com', 
+                         'Chart Report', 
+                         'See attached chart', 
+                         TempFile);
+end;
+```
+
+**Source**: `Export_Email.pas`
+
+## Common Use Cases
+
+### Export for Web
+
+Best formats for web use:
+
+```pascal
+// Static image - PNG for quality
+TeeSavePanel(TPNGExportFormat, Chart1);
+
+// Interactive - SVG for scalability
+TeeSavePanel(TSVGExportFormat, Chart1);
+
+// Data table - HTML
+with TSeriesDataHTML.Create(Chart1, nil) do
+try
+  SaveToFile('chart_data.html');
+finally
+  Free;
+end;
+```
+
+### Export for Print
+
+Best formats for printing:
+
+```pascal
+// High resolution PDF
+TeeSavePanel(TPDFExportFormat, Chart1);
+
+// Or vector metafile
+TeeSavePanel(TMetafileExportFormat, Chart1);
+```
+
+### Export for Reports
+
+Export for inclusion in reports:
+
+```pascal
+// Professional documents - PDF
+TeeSavePanel(TPDFExportFormat, Chart1);
+
+// Office documents - High-res PNG or Metafile
+TeeSavePanel(TPNGExportFormat, Chart1);
+TeeSavePanel(TMetafileExportFormat, Chart1);
+```
+
+### Batch Export
+
+Export multiple charts:
+
+```pascal
+procedure TForm1.BatchExport(Charts: array of TChart; 
+                             const BasePath: String);
+var
+  i: Integer;
+begin
+  for i := Low(Charts) to High(Charts) do
+  begin
+    TeeSavePanel(TPNGExportFormat, 
+                 Charts[i], 
+                 BasePath + 'chart_' + IntToStr(i) + '.png');
+  end;
+end;
+```
+
+### Export with White Background
+
+Ensure clean export:
+
+```pascal
+procedure TForm1.ExportWithWhiteBackground(Sender: TObject);
+var
+  OldColor: TColor;
+begin
+  OldColor := Chart1.Color;
+  try
+    Chart1.Color := clWhite;
+    Chart1.BevelOuter := bvNone;
+    TeeSavePanel(TPDFExportFormat, Chart1);
+  finally
+    Chart1.Color := OldColor;
+  end;
+end;
+```
+
+**Source**: `Export_PDF.pas:52`
+
+## Export Format Reference
+
+| Format | Type | Use Case | Quality | File Size |
+|--------|------|----------|---------|----------|
+| PDF | Vector | Documents, Print | Excellent | Small |
+| SVG | Vector | Web, Scalable | Excellent | Small |
+| PNG | Raster | Web, General | High | Medium |
+| JPEG | Raster | Photos, Web | Good | Small |
+| Metafile | Vector | Windows Apps | Excellent | Small |
+| Excel | Data | Analysis | N/A | Medium |
+| CSV | Data | Import/Export | N/A | Small |
+| HTML | Data | Web Tables | N/A | Small |
+
+## Related Topics
+
+<CardGroup cols={2}>
+  <Card title="Bar Charts" icon="chart-bar" href="/charts/bar">
+    Export bar charts with custom styling
+  </Card>
+  <Card title="Line Charts" icon="chart-line" href="/charts/line">
+    Export line charts and trends
+  </Card>
+</CardGroup>

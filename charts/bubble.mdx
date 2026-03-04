@@ -1,0 +1,398 @@
+---
+title: Bubble Charts
+description: Display three-dimensional data using X, Y coordinates and bubble size
+---
+
+## Overview
+
+Bubble charts are scatter plots where each data point is represented by a bubble. The position on the X and Y axes represents two dimensions of data, while the bubble size (radius) represents a third dimension. This makes bubble charts ideal for visualizing relationships between three variables simultaneously.
+
+**Use cases:**
+- Showing relationships between three variables
+- Comparing data across multiple dimensions
+- Portfolio analysis and risk assessment
+- Population studies and demographics
+- Scientific data visualization
+
+## Series Class
+
+**TBubbleSeries** - The primary class for creating bubble charts
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Pointer` | TSeriesPointer | Configure bubble appearance and style |
+| `Pointer.Style` | TSeriesPointerStyle | Bubble shape: `psCircle`, `psRectangle`, etc. |
+| `Pointer.HorizSize` | Integer | Base horizontal size |
+| `Pointer.VertSize` | Integer | Base vertical size |
+| `Marks` | TSeriesMarks | Configure value labels |
+| `XValues` | TChartValueList | X-axis values |
+| `YValues` | TChartValueList | Y-axis values |
+| `RadiusValues` | TChartValueList | Bubble radius values |
+| `Transparency` | Integer | Bubble transparency (0-100) |
+
+## Code Examples
+
+### Basic Bubble Chart
+
+From VCL/TeeNew/SeriesType_Bubble.pas:78:
+
+```pascal
+uses
+  TeEngine, Series, BubbleCh, TeeProcs, Chart;
+
+procedure CreateBasicBubbleChart(BubbleSeries: TBubbleSeries);
+var
+  t: Integer;
+begin
+  BubbleSeries.Clear;
+  
+  for t := 1 to 100 do
+    BubbleSeries.AddBubble(
+      Date + t,                          // X value (date)
+      Random(ChartSamplesMax),           // Y value
+      ChartSamplesMax / (20 + Random(25)), // Radius value
+      '',                                // Label string
+      GetDefaultColor(t)                 // Color
+    );
+end;
+```
+
+### Bubble Chart with Custom Styles
+
+From VCL/TeeNew/SeriesType_Bubble.pas:54:
+
+```pascal
+procedure ConfigureBubbleStyle(BubbleSeries: TBubbleSeries; StyleIndex: Integer);
+begin
+  // Set pointer style (shape of bubbles)
+  BubbleSeries.Pointer.Style := TSeriesPointerStyle(StyleIndex);
+  // Options: psCircle, psRectangle, psTriangle, psCross, etc.
+end;
+
+// Allow each bubble to have different style
+function GetPointerStylePerBubble(Sender: TChartSeries; 
+  ValueIndex: Integer): TSeriesPointerStyle;
+begin
+  Result := TSeriesPointerStyle(Random(Ord(High(TSeriesPointerStyle))));
+end;
+
+procedure SetupRandomStyles(BubbleSeries: TBubbleSeries);
+begin
+  BubbleSeries.OnGetPointerStyle := GetPointerStylePerBubble;
+end;
+```
+
+### Adding Individual Bubbles
+
+```pascal
+procedure AddCustomBubbles(BubbleSeries: TBubbleSeries);
+begin
+  BubbleSeries.Clear;
+  
+  // AddBubble parameters: (X, Y, Radius, Label, Color)
+  BubbleSeries.AddBubble(10, 50, 15, 'Small', clRed);
+  BubbleSeries.AddBubble(25, 75, 30, 'Medium', clBlue);
+  BubbleSeries.AddBubble(40, 60, 45, 'Large', clGreen);
+  BubbleSeries.AddBubble(60, 85, 25, 'Another', clYellow);
+end;
+```
+
+### Bubble Chart with Transparency
+
+From VCL/TeeNew/Bubble_Transparency.pas (example pattern):
+
+```pascal
+procedure SetBubbleTransparency(BubbleSeries: TBubbleSeries);
+begin
+  // Set transparency to see overlapping bubbles
+  BubbleSeries.Transparency := 50;  // 0 = opaque, 100 = fully transparent
+  
+  // Enable pointer draw mode for better overlap rendering
+  BubbleSeries.Pointer.Draw3D := False;
+end;
+```
+
+### Bubble Chart with Gradient Fill
+
+From VCL/TeeNew/Bubble_Gradient.pas (example pattern):
+
+```pascal
+procedure ApplyGradientToBubbles(BubbleSeries: TBubbleSeries);
+begin
+  with BubbleSeries.Pointer.Gradient do
+  begin
+    Visible := True;
+    Direction := gdRadial;  // Radial gradient for spherical effect
+    StartColor := clWhite;
+    EndColor := clBlue;
+  end;
+  
+  // Make bubbles look more 3D
+  BubbleSeries.Pointer.Pen.Visible := True;
+  BubbleSeries.Pointer.Pen.Color := clNavy;
+end;
+```
+
+### 3D Bubble Chart
+
+From VCL/TeeNew/Series_Bubble3D.pas (example pattern):
+
+```pascal
+procedure Create3DBubbleChart;
+var
+  Bubble3D: TBubbleSeries;
+begin
+  Bubble3D := TBubbleSeries.Create(Chart1);
+  Chart1.AddSeries(Bubble3D);
+  
+  // Enable 3D view
+  Chart1.View3D := True;
+  Chart1.Chart3DPercent := 30;
+  
+  // Configure 3D appearance
+  Bubble3D.Pointer.Draw3D := True;
+  Bubble3D.Pointer.Depth := 20;
+  
+  Bubble3D.FillSampleValues();
+end;
+```
+
+## Customization Options
+
+### Bubble Appearance
+
+```pascal
+with BubbleSeries.Pointer do
+begin
+  // Shape
+  Style := psCircle;  // psRectangle, psTriangle, psDiamond, etc.
+  
+  // Size (base size, actual size determined by radius value)
+  HorizSize := 10;
+  VertSize := 10;
+  
+  // Border
+  Pen.Visible := True;
+  Pen.Color := clBlack;
+  Pen.Width := 1;
+  
+  // Fill
+  Brush.Style := bsSolid;
+  Brush.Color := clBlue;
+  
+  // Gradient fill
+  Gradient.Visible := True;
+  Gradient.Direction := gdRadial;
+end;
+```
+
+### Color by Value
+
+```pascal
+procedure ColorBubblesByValue(BubbleSeries: TBubbleSeries);
+var
+  i: Integer;
+  ColorValue: TColor;
+begin
+  for i := 0 to BubbleSeries.Count - 1 do
+  begin
+    // Color based on Y value
+    if BubbleSeries.YValue[i] > 75 then
+      ColorValue := clRed
+    else if BubbleSeries.YValue[i] > 50 then
+      ColorValue := clYellow
+    else
+      ColorValue := clGreen;
+    
+    BubbleSeries.Colors[i] := ColorValue;
+  end;
+end;
+```
+
+### Custom Marks
+
+```pascal
+procedure ConfigureBubbleMarks(BubbleSeries: TBubbleSeries);
+begin
+  with BubbleSeries.Marks do
+  begin
+    Visible := True;
+    Style := smsLabel;  // Show labels only
+    Arrow.Visible := False;
+    
+    // Customize appearance
+    Transparent := True;
+    Font.Size := 10;
+    Font.Style := [fsBold];
+  end;
+end;
+
+// Custom mark text
+procedure OnGetMarkText(Sender: TChartSeries; ValueIndex: Integer; 
+  var MarkText: String);
+begin
+  MarkText := Format('X:%.1f Y:%.1f R:%.1f', [
+    Sender.XValue[ValueIndex],
+    Sender.YValue[ValueIndex],
+    TBubbleSeries(Sender).RadiusValues[ValueIndex]
+  ]);
+end;
+```
+
+### Zoom and Pan
+
+From VCL/TeeNew/SeriesType_Bubble.pas:63:
+
+```pascal
+procedure SetupZoomControls(Chart: TChart);
+begin
+  // Enable zooming
+  Chart.Zoom.Allow := True;
+  Chart.Zoom.Direction := tzdBoth;
+  
+  // Enable panning
+  Chart.Panning.Allow := pmBoth;
+end;
+
+// Programmatic zoom
+procedure ZoomIn(Chart: TChart);
+begin
+  Chart.ZoomPercent(110);  // Zoom in 10%
+end;
+
+procedure ZoomOut(Chart: TChart);
+begin
+  Chart.ZoomPercent(90);  // Zoom out 10%
+end;
+```
+
+## Advanced Features
+
+### Dynamic Bubble Sizing
+
+```pascal
+procedure ScaleBubbleSizes(BubbleSeries: TBubbleSeries; ScaleFactor: Double);
+var
+  i: Integer;
+begin
+  for i := 0 to BubbleSeries.Count - 1 do
+  begin
+    BubbleSeries.RadiusValues[i] := 
+      BubbleSeries.RadiusValues[i] * ScaleFactor;
+  end;
+  
+  Chart1.Invalidate;
+end;
+```
+
+### Click Detection
+
+```pascal
+procedure TForm1.Chart1ClickSeries(Sender: TCustomChart; 
+  Series: TChartSeries; ValueIndex: Integer; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  Bubble: TBubbleSeries;
+begin
+  Bubble := Series as TBubbleSeries;
+  
+  ShowMessage(Format(
+    'Bubble %d' + #13 +
+    'X: %.2f' + #13 +
+    'Y: %.2f' + #13 +
+    'Radius: %.2f', [
+    ValueIndex,
+    Bubble.XValue[ValueIndex],
+    Bubble.YValue[ValueIndex],
+    Bubble.RadiusValues[ValueIndex]
+  ]));
+end;
+```
+
+### Multiple Bubble Series
+
+```pascal
+procedure CreateMultipleBubbleSeries;
+var
+  Bubble1, Bubble2: TBubbleSeries;
+begin
+  Bubble1 := TBubbleSeries.Create(Chart1);
+  Bubble2 := TBubbleSeries.Create(Chart1);
+  
+  Chart1.AddSeries(Bubble1);
+  Chart1.AddSeries(Bubble2);
+  
+  // Configure first series
+  Bubble1.Title := 'Group A';
+  Bubble1.SeriesColor := clBlue;
+  Bubble1.Transparency := 50;
+  
+  // Configure second series
+  Bubble2.Title := 'Group B';
+  Bubble2.SeriesColor := clRed;
+  Bubble2.Transparency := 50;
+  
+  // Add data to both series
+  Bubble1.FillSampleValues();
+  Bubble2.FillSampleValues();
+end;
+```
+
+### Animated Bubbles
+
+```pascal
+procedure AnimateBubbles(BubbleSeries: TBubbleSeries);
+var
+  i, Frame: Integer;
+begin
+  for Frame := 1 to 50 do
+  begin
+    for i := 0 to BubbleSeries.Count - 1 do
+    begin
+      // Grow and shrink bubbles
+      BubbleSeries.RadiusValues[i] := 
+        BubbleSeries.RadiusValues[i] * (1 + Sin(Frame * 0.1) * 0.1);
+    end;
+    
+    Chart1.Invalidate;
+    Application.ProcessMessages;
+    Sleep(30);
+  end;
+end;
+```
+
+### Axis Configuration
+
+```pascal
+procedure ConfigureAxesForBubbles(Chart: TChart);
+begin
+  // Bottom axis (X)
+  Chart.BottomAxis.Automatic := True;
+  Chart.BottomAxis.Title.Caption := 'X Axis';
+  
+  // Left axis (Y)
+  Chart.LeftAxis.Automatic := True;
+  Chart.LeftAxis.Title.Caption := 'Y Axis';
+  
+  // Equal scaling for accurate bubble shapes
+  Chart.BottomAxis.AutomaticMaximum := True;
+  Chart.LeftAxis.AutomaticMaximum := True;
+end;
+```
+
+## Best Practices
+
+1. **Limit number of bubbles** - Too many bubbles create clutter (consider sampling)
+2. **Use transparency** - Helps see overlapping bubbles
+3. **Provide legend** - Explain what size represents
+4. **Scale appropriately** - Bubble size should be meaningful and visible
+5. **Consider axes scales** - Equal scales prevent distortion
+
+## Related Chart Types
+
+- **Point/Scatter Charts** - Similar but without size variation
+- **3D Point Charts** - Add Z-axis dimension
+- **Area Charts** - Show filled regions instead of points
+- **Line Charts** - Connect related data points

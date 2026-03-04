@@ -1,0 +1,571 @@
+---
+title: 'Performance Optimization'
+description: 'Advanced techniques for high-performance charting with large datasets and real-time updates'
+icon: 'gauge-high'
+---
+
+## Overview
+
+TeeChart provides multiple optimization strategies for handling large datasets, real-time updates, and high-performance visualization requirements. This guide covers advanced techniques including FastLine series, Ring Buffers, canvas selection, and rendering optimizations.
+
+## Ring Buffer Series
+
+### What is a Ring Buffer?
+
+A ring buffer (circular buffer) is a specialized data structure optimized for continuous data streams. When the buffer is full, new data overwrites the oldest values, creating a scrolling effect perfect for real-time monitoring.
+
+**Source:** `VCL/RingBuffer/readme.md:5`
+
+> The ring buffer is an array you can specify its type and length, and then just keep adding points to the buffer. When the buffer is full, points will be added from the start of the buffer again.
+
+### Creating Ring Buffer Series
+
+**Source:** `VCL/RingBuffer/readme.md:17`
+
+```delphi
+// Creating the line series:
+var 
+  Line: TRingBuffer<Single>;
+begin
+  Line := TRingBuffer<Single>.Create(Self);
+  Line.Buffer.Resize(1000);
+  Line.ParentChart := Chart1;
+end;
+
+// Adding new points to the series:
+Line.Buffer.Append(123);
+Line.Buffer.Append(456);
+```
+
+### XY Ring Buffer
+
+**Source:** `VCL/RingBuffer/MainUnit.pas:100`
+
+```delphi
+procedure TFormRingBuffer.RecreateSeries;
+var 
+  t: Integer;
+begin
+  LastX := 0;
+  Chart1.FreeAllSeries;
+  
+  SetLength(Lines, StrToInt(CBSeries.Text));
+  
+  for t := 0 to High(Lines) do
+  begin
+    Lines[t] := TRingBufferXY.Create(Self);
+    Lines[t].Buffer.Resize(MaxPoints);
+    Lines[t].Antialias := CBAntialias.Checked;
+    Lines[t].Pointer.Visible := CBStyle.ItemIndex = 1;
+    Lines[t].ParentChart := Chart1;
+  end;
+end;
+```
+
+### Ring Buffer API
+
+**Source:** `VCL/RingBuffer/TeeRingBuffer.pas:60`
+
+```delphi
+type
+  TRingBuffer<T> = record
+  public
+    Current, Count: Integer;
+    Items: Array of T;
+    
+    procedure Append(const P: T);        // Add point
+    procedure Clear;                      // Clear all points
+    function Empty: Boolean;              // Check if empty
+    function Full: Boolean;               // Check if full
+    function Last: T;                     // Get last point
+    procedure Resize(const ACount: Integer);  // Change capacity
+    function Size: Integer;               // Get capacity
+  end;
+```
+
+### Performance Characteristics
+
+**From:** `VCL/RingBuffer/TeeRingBuffer.pas:18`
+
+**Advantages:**
+- Does not use typical XValues/YValues arrays (faster)
+- Optimized memory allocation
+- Constant-time append operation
+- No memory reallocation during updates
+
+**Limitations:**
+- No 3D display support
+- No null (missing) point values
+- No stairs line mode
+- Fixed buffer size
+
+## FastLine Series
+
+### Basic Usage
+
+**Source:** `FMX/Demo/Standard/DemoFastLine.pas:16`
+
+```delphi
+type
+  TFastLineDemoSeries = class(TForm)
+    Chart1: TChart;
+    Series1: TFastLineSeries;
+    Series2: TFastLineSeries;
+    Series3: TFastLineSeries;
+  end;
+
+procedure TFastLineDemoSeries.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Chart1.SeriesList.FillSampleValues(1000);  // 1000 points per series
+end;
+```
+
+### FastLine vs Line Series
+
+| Feature | TLineSeries | TFastLineSeries |
+|---------|-------------|----------------|
+| Speed | Moderate | Very Fast |
+| Points/Lines | Lines with markers | Lines only |
+| 3D Support | Full | Limited |
+| Color per Point | Yes | No |
+| Null Points | Yes | Limited |
+| Best Use | < 1,000 points | > 1,000 points |
+
+### Optimizing FastLine
+
+```delphi
+with Series1 do
+begin
+  // Performance optimizations
+  DrawAllPoints := False;     // Auto-reduce points when zoomed out
+  FastPen := True;            // Use faster pen drawing
+  AutoRepaint := False;       // Manual refresh control
+  
+  // Add data
+  for i := 0 to 100000 do
+    Add(Random(100));
+  
+  ParentChart.Invalidate;     // Single refresh
+end;
+```
+
+## Canvas Selection
+
+### Performance Comparison
+
+**Source:** `VCL/RingBuffer/readme.md:32`
+
+> **Performance Rankings:**
+> 1. OpenGL canvas - Fastest for Windows/VCL (many lines and points)
+> 2. Skia canvas - Faster than GDI+
+> 3. GDI+ - Good quality, moderate speed  
+> 4. Legacy GDI - Fast but lacks antialiasing ("jaggy" lines)
+>
+> Firemonkey (especially 64bit with RAD 13.0+) is faster than VCL.
+
+### Enabling OpenGL Canvas
+
+**Source:** `VCL/RingBuffer/MainUnit.pas:69`
+
+```delphi
+{$DEFINE USE_OPENGL} // OpenGL fast graphics (needs TeeChart "Pro" version)
+{$IFDEF USE_OPENGL}
+uses
+  TeeGLCanvas;
+{$ENDIF}
+
+// Later in code:
+TeeOpenGL1.Active := True;
+```
+
+### Enabling Skia Canvas
+
+**Source:** `VCL/RingBuffer/MainUnit.pas:74`
+
+```delphi
+{$DEFINE USE_SKIA} // Skia fast graphics (needs TeeChart "Pro" version)
+{$IFDEF USE_SKIA}
+uses
+  TeeSkia;
+{$ENDIF}
+```
+
+### Canvas Configuration
+
+```delphi
+// For maximum performance with quality
+procedure ConfigureCanvas;
+begin
+  {$IFDEF USE_OPENGL}
+  TeeOpenGL1.Active := True;
+  TeeOpenGL1.AntiAliasLines := True;
+  {$ENDIF}
+  
+  {$IFDEF USE_SKIA}
+  // Skia automatically provides high-quality rendering
+  {$ENDIF}
+end;
+```
+
+## Real-Time Updates
+
+### Idle Processing Pattern
+
+**Source:** `VCL/RingBuffer/MainUnit.pas:143`
+
+```delphi
+procedure TFormRingBuffer.CBRunClick(Sender: TObject);
+begin
+  if CBRun.Checked then
+    Application.OnIdle := Idle
+  else
+    Application.OnIdle := nil;
+end;
+
+procedure TFormRingBuffer.Idle(Sender: TObject; var Done: Boolean);
+begin
+  AddNewPoint;  // Add data during idle time
+  Done := False;  // Continue processing
+end;
+```
+
+### Timer-Based Updates
+
+```delphi
+procedure TForm1.Timer1Timer(Sender: TObject);
+var
+  i: Integer;
+begin
+  Chart1.AutoRepaint := False;
+  try
+    // Add multiple points per timer tick
+    for i := 0 to 10 do
+      RingBuffer.Buffer.Append(GetNextValue);
+  finally
+    Chart1.AutoRepaint := True;
+  end;
+end;
+```
+
+### Horizontal Scrolling Optimization
+
+**Source:** `VCL/RingBuffer/readme.md:8`
+
+> Horizontal scrolling is done by code as a speed optimization.
+
+```delphi
+procedure TForm1.AddNewPoint;
+begin
+  Inc(LastX);
+  RingBuffer.Buffer.Append(TPointFloat.Create(LastX, Random(100)));
+  
+  // Manual axis scrolling (faster than auto-scale)
+  if LastX > Chart1.Axes.Bottom.Maximum then
+  begin
+    Chart1.Axes.Bottom.SetMinMax(LastX - 1000, LastX);
+  end;
+end;
+```
+
+## Batch Operations
+
+### Disable Auto-Repaint
+
+```delphi
+procedure TForm1.AddManyPoints;
+var
+  i: Integer;
+begin
+  Chart1.AutoRepaint := False;
+  try
+    for i := 0 to 100000 do
+      Series1.Add(Random(100));
+  finally
+    Chart1.AutoRepaint := True;
+    Chart1.Invalidate;
+  end;
+end;
+```
+
+### Pre-Allocate Capacity
+
+```delphi
+procedure TForm1.LoadLargeDataset;
+begin
+  // Pre-allocate to avoid memory reallocations
+  Series1.Count := 100000;
+  
+  for i := 0 to 99999 do
+  begin
+    Series1.XValue[i] := i;
+    Series1.YValue[i] := DataArray[i];
+  end;
+end;
+```
+
+### Bulk Data Loading
+
+```delphi
+procedure TForm1.LoadFromArray(const X, Y: array of Double);
+begin
+  Assert(Length(X) = Length(Y));
+  
+  Series1.Clear;
+  Chart1.AutoRepaint := False;
+  try
+    Series1.XValues.Value := X;  // Bulk assignment
+    Series1.YValues.Value := Y;
+  finally
+    Chart1.AutoRepaint := True;
+    Chart1.Invalidate;
+  end;
+end;
+```
+
+## Memory Optimization
+
+### Series Memory Usage
+
+```delphi
+// Each series stores arrays of TChartValue (Double)
+// Memory per point ≈ 16-24 bytes (X, Y, optional label/color)
+
+// For 1 million points:
+// Memory ≈ 16-24 MB per series
+
+procedure CheckMemoryUsage;
+var
+  MemPerPoint: Integer;
+begin
+  MemPerPoint := SizeOf(TChartValue) * 2;  // X and Y
+  ShowMessage(Format('Memory for 1M points: %d MB', 
+    [MemPerPoint * 1000000 div (1024*1024)]));
+end;
+```
+
+### Ring Buffer Memory
+
+```delphi
+// Ring Buffer uses fixed memory
+RingBuffer.Buffer.Resize(10000);  // Fixed size
+
+// Traditional series grows dynamically
+Series1.Add(...);  // May reallocate
+```
+
+### Free Unused Series
+
+```delphi
+procedure TForm1.ClearUnusedSeries;
+begin
+  Chart1.FreeAllSeries;  // Remove all series and free memory
+end;
+```
+
+## Drawing Optimizations
+
+### Reduce Visual Elements
+
+```delphi
+procedure OptimizeForPerformance;
+begin
+  with Chart1 do
+  begin
+    // Disable expensive features
+    Legend.Visible := False;
+    Title.Visible := False;
+    
+    // Simplify axes
+    Axes.Left.Grid.Visible := False;
+    Axes.Bottom.Grid.Visible := False;
+    Axes.Left.MinorGrid.Visible := False;
+    Axes.Bottom.MinorGrid.Visible := False;
+    
+    // Disable shadows
+    Shadow.Visible := False;
+    
+    // Reduce 3D overhead
+    View3D := False;
+  end;
+  
+  with Series1 do
+  begin
+    // Disable marks
+    Marks.Visible := False;
+    
+    // Disable pointer symbols
+    Pointer.Visible := False;
+  end;
+end;
+```
+
+### Anti-Aliasing Trade-offs
+
+**Source:** `VCL/RingBuffer/MainUnit.pas:104`
+
+```delphi
+procedure TFormRingBuffer.CBAntialiasClick(Sender: TObject);
+var 
+  t: Integer;
+begin
+  // Toggle anti-aliasing for performance
+  for t := 0 to High(Lines) do
+    Lines[t].Antialias := CBAntialias.Checked;
+end;
+```
+
+**Trade-off:**
+- Antialiasing ON: Better quality, slower (20-40% overhead)
+- Antialiasing OFF: Maximum speed, aliased edges
+
+## Benchmarking
+
+### Measuring Render Time
+
+```delphi
+uses
+  System.Diagnostics;  // TStopwatch
+
+procedure TForm1.BenchmarkRender;
+var
+  SW: TStopwatch;
+begin
+  SW := TStopwatch.StartNew;
+  
+  Chart1.Draw;  // Force full redraw
+  
+  SW.Stop;
+  Label1.Caption := Format('Render: %.2f ms', 
+    [SW.ElapsedMilliseconds * 1.0]);
+end;
+```
+
+### Benchmark Loop
+
+**Source:** `VCL/RingBuffer/MainUnit.pas:44`
+
+```delphi
+procedure TFormRingBuffer.Benchmark;
+var
+  SW: TStopwatch;
+  Count: Integer;
+begin
+  Count := 0;
+  SW := TStopwatch.StartNew;
+  
+  while SW.ElapsedMilliseconds < 5000 do  // 5 second test
+  begin
+    AddNewPoint;
+    Inc(Count);
+  end;
+  
+  ShowMessage(Format('Points/sec: %d', 
+    [Count div 5]));
+end;
+```
+
+## Performance Tips Summary
+
+### 1. Choose the Right Series Type
+
+| Dataset Size | Recommended Series | Notes |
+|--------------|-------------------|---------|
+| < 1,000 | TLineSeries | Full features |
+| 1K - 100K | TFastLineSeries | Good balance |
+| > 100K | TRingBuffer | Best for streaming |
+| Real-time | TRingBuffer | Optimal for continuous data |
+
+### 2. Canvas Selection Priority
+
+1. **OpenGL** - Best for 3D and large datasets
+2. **Skia** - Best quality/performance balance
+3. **GDI+** - Good for moderate datasets  
+4. **GDI** - Legacy, avoid for new projects
+
+### 3. Update Strategies
+
+```delphi
+// Bad: Individual updates
+for i := 0 to 1000 do
+  Series1.Add(Data[i]);  // 1000 repaints!
+
+// Good: Batch updates
+Chart1.AutoRepaint := False;
+for i := 0 to 1000 do
+  Series1.Add(Data[i]);
+Chart1.Invalidate;  // Single repaint
+```
+
+### 4. Axis Optimization
+
+```delphi
+// Bad: Auto-scale on every update
+Chart1.Axes.Left.Automatic := True;
+
+// Good: Manual range (when known)
+Chart1.Axes.Left.SetMinMax(0, 100);
+Chart1.Axes.Bottom.SetMinMax(StartTime, EndTime);
+```
+
+### 5. Memory Management
+
+```delphi
+// Ring Buffer: Fixed memory
+RingBuffer.Buffer.Resize(10000);  // Allocate once
+
+// Regular Series: Pre-allocate
+Series1.Count := 10000;  // Avoid reallocations
+```
+
+## Expert Tips
+
+### Monitoring Performance
+
+```delphi
+procedure TForm1.ShowPerformanceStats;
+begin
+  with Chart1 do
+  begin
+    Caption := Format('Series: %d | Points: %d | Render: %.1f ms',
+      [SeriesCount, Series[0].Count, LastRenderTime]);
+  end;
+end;
+```
+
+### Progressive Loading
+
+```delphi
+procedure TForm1.LoadDataProgressively;
+var
+  ChunkSize: Integer;
+begin
+  ChunkSize := 1000;
+  
+  // Load in chunks to maintain responsiveness
+  for i := 0 to (TotalPoints div ChunkSize) - 1 do
+  begin
+    LoadChunk(i * ChunkSize, ChunkSize);
+    Application.ProcessMessages;  // Keep UI responsive
+  end;
+end;
+```
+
+### Thread-Safe Updates
+
+```delphi
+procedure TDataThread.AddDataPoint(X, Y: Double);
+begin
+  TThread.Queue(nil, procedure
+  begin
+    Chart1.Series[0].Add(X, Y);
+  end);
+end;
+```
+
+## See Also
+
+- [OpenGL Rendering](/advanced/opengl-rendering) - Hardware acceleration
+- [Custom Drawing](/advanced/custom-drawing) - Canvas techniques
+- [FastLine Series](https://www.steema.com/docs/teechart/vcl)
+- [Ring Buffer Sample](/samples/vcl/ringbuffer)

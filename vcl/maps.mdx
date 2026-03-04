@@ -1,0 +1,546 @@
+---
+title: Map Visualization
+description: World maps, geographic data, and map layer samples
+icon: 'map'
+---
+
+## Overview
+
+TeeChart VCL provides comprehensive mapping capabilities for geographic data visualization. The map series support world maps, country boundaries, state/province regions, custom map layers, and integration with geographic databases.
+
+## World Map Series
+
+The WorldSeries component displays world maps with country boundaries and geographic features.
+
+### Basic World Map
+
+**Location:** `Map_Layers/Unit_Maps.pas`
+
+```pascal
+unit Unit_Maps;
+
+type
+  TFormMaps = class(TForm)
+    Chart1: TChart;
+    Series1: TWorldSeries;
+    ChartTool1: TMarksTipTool;
+  end;
+
+procedure TFormMaps.FormCreate(Sender: TObject);
+begin
+  Chart1.AutoRepaint := False;
+  
+  // Disable overflow checking for large coordinates
+  Chart1.Axes.Left.IUseTeeMaxPixelPos := True;
+  Chart1.Axes.Bottom.IUseTeeMaxPixelPos := True;
+  Chart1.Axes.FastCalc := True;
+  
+  // Load world map data
+  Series1.LoadFromFile('WorldMap.shp');  // Shapefile
+  
+  // Map appearance
+  Series1.Pen.Color := clBlack;
+  Series1.Pen.Width := 1;
+  Series1.Color := clWhite;
+  
+  Chart1.AutoRepaint := True;
+end;
+```
+
+**Key Features:**
+- Shapefile (.shp) support
+- Country boundary rendering
+- Interactive tooltips
+- Zoom and pan capabilities
+
+### Map with Layers
+
+**Location:** `Map_Layers/Unit_Maps.pas`
+
+```pascal
+procedure LoadMultipleLayers;
+begin
+  // Base world map
+  WorldLayer := TWorldSeries.Create(Self);
+  WorldLayer.ParentChart := Chart1;
+  WorldLayer.LoadFromFile('World.shp');
+  WorldLayer.Color := clMoneyGreen;
+  
+  // Country borders
+  BorderLayer := TMapSeries.Create(Self);
+  BorderLayer.ParentChart := Chart1;
+  BorderLayer.LoadFromFile('Borders.shp');
+  BorderLayer.Pen.Color := clBlack;
+  BorderLayer.Pen.Width := 2;
+  
+  // Cities (point data)
+  CitiesLayer := TMapSeries.Create(Self);
+  CitiesLayer.ParentChart := Chart1;
+  CitiesLayer.LoadFromFile('Cities.shp');
+  CitiesLayer.Pointer.Style := psCircle;
+  CitiesLayer.Pointer.HorizSize := 3;
+  CitiesLayer.Pointer.VertSize := 3;
+  CitiesLayer.Pointer.Color := clRed;
+end;
+```
+
+### Map Layer Types
+
+<Tabs>
+  <Tab title="Polygon Layers">
+    Display filled regions (countries, states, districts)
+    
+    ```pascal
+    PolygonLayer := TMapSeries.Create(Self);
+    PolygonLayer.LoadFromFile('Countries.shp');
+    PolygonLayer.Brush.Color := clSkyBlue;
+    PolygonLayer.Pen.Color := clNavy;
+    ```
+  </Tab>
+  
+  <Tab title="Line Layers">
+    Display linear features (roads, rivers, borders)
+    
+    ```pascal
+    RiverLayer := TMapSeries.Create(Self);
+    RiverLayer.LoadFromFile('Rivers.shp');
+    RiverLayer.Pen.Color := clBlue;
+    RiverLayer.Pen.Width := 2;
+    ```
+  </Tab>
+  
+  <Tab title="Point Layers">
+    Display point locations (cities, markers, POIs)
+    
+    ```pascal
+    CityLayer := TMapSeries.Create(Self);
+    CityLayer.LoadFromFile('Cities.shp');
+    CityLayer.Pointer.Style := psCircle;
+    CityLayer.ShowLabels := True;
+    ```
+  </Tab>
+</Tabs>
+
+## Spherical Maps
+
+Display maps on a 3D sphere for globe visualization.
+
+**Location:** `Map_Spherical_FIPS/Unit1.pas`
+
+```pascal
+unit Map_Spherical;
+
+type
+  TSphericalMapForm = class(TForm)
+    Chart1: TChart;
+    WorldSeries1: TWorldSeries;
+    RotateTool1: TRotateTool;
+  end;
+
+procedure TSphericalMapForm.FormCreate(Sender: TObject);
+begin
+  // Enable 3D spherical projection
+  Chart1.View3D := True;
+  
+  // Configure spherical map
+  WorldSeries1.MapProjection := mpSpherical;
+  WorldSeries1.LoadFromFile('World.shp');
+  
+  // 3D view settings
+  Chart1.View3DOptions.Rotation := 345;
+  Chart1.View3DOptions.Elevation := 345;
+  Chart1.View3DOptions.Perspective := 0;  // Orthogonal
+  
+  // Enable interactive rotation
+  RotateTool1.Active := True;
+end;
+```
+
+### Map Projections
+
+<AccordionGroup>
+  <Accordion title="Geographic (Equirectangular)">
+    Default projection with simple lat/lon mapping
+    ```pascal
+    WorldSeries1.MapProjection := mpGeographic;
+    ```
+  </Accordion>
+  
+  <Accordion title="Mercator">
+    Conformal cylindrical projection
+    ```pascal
+    WorldSeries1.MapProjection := mpMercator;
+    ```
+  </Accordion>
+  
+  <Accordion title="Spherical (3D Globe)">
+    3D spherical projection on globe
+    ```pascal
+    WorldSeries1.MapProjection := mpSpherical;
+    Chart1.View3D := True;
+    ```
+  </Accordion>
+  
+  <Accordion title="Lambert">
+    Conic conformal projection
+    ```pascal
+    WorldSeries1.MapProjection := mpLambert;
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Choropleth Maps
+
+Color-code regions based on data values.
+
+```pascal
+procedure CreateChoroplethMap;
+var
+  i: Integer;
+  CountryCode: String;
+  Value: Double;
+begin
+  WorldSeries1.LoadFromFile('World.shp');
+  
+  // Color countries based on data
+  for i := 0 to WorldSeries1.Count - 1 do
+  begin
+    CountryCode := WorldSeries1.Labels[i];
+    Value := GetDataForCountry(CountryCode);
+    
+    // Color based on value range
+    if Value < 10 then
+      WorldSeries1.ValueColor[i] := clGreen
+    else if Value < 50 then
+      WorldSeries1.ValueColor[i] := clYellow
+    else
+      WorldSeries1.ValueColor[i] := clRed;
+  end;
+  
+  // Add legend showing color scale
+  AddColorLegend(Chart1, 0, 100);
+end;
+```
+
+## Interactive Map Features
+
+### Zoom and Pan
+
+```pascal
+uses TeeTools;
+
+procedure EnableMapNavigation;
+var
+  ZoomTool: TZoomTool;
+  PanTool: TPanningTool;
+begin
+  // Add zoom tool
+  ZoomTool := TZoomTool.Create(Self);
+  ZoomTool.ParentChart := Chart1;
+  ZoomTool.Active := True;
+  
+  // Add pan tool
+  PanTool := TPanningTool.Create(Self);
+  PanTool.ParentChart := Chart1;
+  PanTool.Active := True;
+  PanTool.MouseButton := mbRight;  // Right-click to pan
+end;
+```
+
+### Region Selection
+
+```pascal
+procedure TFormMaps.WorldSeries1ClickShape(Sender: TCustomMapSeries;
+  ShapeIndex: Integer);
+var
+  RegionName: String;
+begin
+  // Get clicked region
+  RegionName := WorldSeries1.Labels[ShapeIndex];
+  
+  // Highlight selected region
+  WorldSeries1.ValueColor[ShapeIndex] := clYellow;
+  
+  // Show region details
+  ShowMessage(Format('Selected: %s', [RegionName]));
+  
+  // Zoom to selected region
+  ZoomToShape(WorldSeries1, ShapeIndex);
+end;
+```
+
+### Tooltips and Marks
+
+```pascal
+procedure ConfigureMapTooltips;
+var
+  MarksTip: TMarksTipTool;
+begin
+  // Add tooltip tool
+  MarksTip := TMarksTipTool.Create(Self);
+  MarksTip.ParentChart := Chart1;
+  MarksTip.Active := True;
+  
+  // Configure tooltip appearance
+  MarksTip.MouseDelay := 100;
+  MarksTip.Style := smsLabel;
+  
+  // Custom tooltip text
+  WorldSeries1.OnGetMarkText := WorldSeries1GetMarkText;
+end;
+
+procedure TFormMaps.WorldSeries1GetMarkText(Sender: TChartSeries;
+  ValueIndex: Integer; var MarkText: String);
+begin
+  // Custom tooltip content
+  MarkText := Format('%s\nPopulation: %s\nArea: %s km²', [
+    WorldSeries1.Labels[ValueIndex],
+    GetPopulation(ValueIndex),
+    GetArea(ValueIndex)
+  ]);
+end;
+```
+
+## FIPS Code Integration
+
+Work with FIPS (Federal Information Processing Standards) codes.
+
+**Location:** `Map_Spherical_FIPS/Unit1.pas`
+
+```pascal
+procedure LoadMapWithFIPS;
+begin
+  // Load map with FIPS codes
+  WorldSeries1.LoadFromFile('USA_FIPS.shp');
+  
+  // Access by FIPS code
+  StateIndex := WorldSeries1.FindShapeByFIPS('06');  // California
+  
+  if StateIndex >= 0 then
+  begin
+    WorldSeries1.ValueColor[StateIndex] := clRed;
+    WorldSeries1.Labels[StateIndex] := 'California';
+  end;
+end;
+```
+
+## Custom Map Data
+
+### Adding Custom Shapes
+
+```pascal
+procedure AddCustomRegion;
+var
+  MapSeries: TMapSeries;
+  Points: array of TPoint;
+begin
+  MapSeries := TMapSeries.Create(Self);
+  MapSeries.ParentChart := Chart1;
+  
+  // Define polygon points
+  SetLength(Points, 5);
+  Points[0] := TPoint.Create(-100, 40);
+  Points[1] := TPoint.Create(-90, 40);
+  Points[2] := TPoint.Create(-90, 35);
+  Points[3] := TPoint.Create(-100, 35);
+  Points[4] := Points[0];  // Close polygon
+  
+  // Add custom shape
+  MapSeries.AddShape(Points);
+  MapSeries.Labels[MapSeries.Count - 1] := 'Custom Region';
+end;
+```
+
+### Loading from Database
+
+```pascal
+procedure LoadMapFromDatabase;
+begin
+  // Connect to geographic database
+  Query1.SQL.Text := 'SELECT Shape, Name, PopulationData FROM GeoData';
+  Query1.Open;
+  
+  while not Query1.Eof do
+  begin
+    // Load shape geometry
+    MapSeries1.LoadShapeFromBlob(Query1.FieldByName('Shape'));
+    
+    // Set properties
+    MapSeries1.Labels[MapSeries1.Count - 1] := 
+      Query1.FieldByName('Name').AsString;
+    
+    // Color by population
+    ColorByValue(MapSeries1.Count - 1, 
+      Query1.FieldByName('PopulationData').AsFloat);
+    
+    Query1.Next;
+  end;
+end;
+```
+
+## Map Samples Overview
+
+<CardGroup cols={2}>
+  <Card title="Map_Layers" icon="layer-group">
+    **Location:** `Map_Layers/`
+    
+    Multiple layer management, shapefile loading, interactive navigation
+  </Card>
+  
+  <Card title="Map_Spherical_FIPS" icon="globe">
+    **Location:** `Map_Spherical_FIPS/`
+    
+    3D spherical maps with FIPS code integration
+  </Card>
+  
+  <Card title="TeeMaps" icon="map-location-dot">
+    **Location:** `TeeMaps/`
+    
+    Advanced mapping samples and utilities
+  </Card>
+</CardGroup>
+
+## Map Styling and Appearance
+
+<AccordionGroup>
+  <Accordion title="Border Styling">
+    ```pascal
+    // Region borders
+    MapSeries1.Pen.Color := clBlack;
+    MapSeries1.Pen.Width := 2;
+    MapSeries1.Pen.Style := psSolid;
+    
+    // Gradient fills
+    MapSeries1.Gradient.Visible := True;
+    MapSeries1.Gradient.Direction := gdTopBottom;
+    ```
+  </Accordion>
+  
+  <Accordion title="Label Positioning">
+    ```pascal
+    // Show region labels
+    MapSeries1.ShowLabels := True;
+    MapSeries1.Marks.Visible := True;
+    MapSeries1.Marks.Style := smsLabel;
+    
+    // Label font
+    MapSeries1.Marks.Font.Size := 8;
+    MapSeries1.Marks.Font.Style := [fsBold];
+    ```
+  </Accordion>
+  
+  <Accordion title="Transparency">
+    ```pascal
+    // Layer transparency for overlays
+    MapSeries1.Transparency := 50;
+    MapSeries1.Pen.Transparency := 0;  // Opaque borders
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Performance Optimization
+
+For large map datasets:
+
+<Steps>
+  <Step title="Disable Auto-Repaint">
+    ```pascal
+    Chart1.AutoRepaint := False;
+    try
+      // Load all map layers
+    finally
+      Chart1.AutoRepaint := True;
+    end;
+    ```
+  </Step>
+  
+  <Step title="Use Fast Calculations">
+    ```pascal
+    Chart1.Axes.FastCalc := True;
+    Chart1.Axes.Left.IUseTeeMaxPixelPos := True;
+    Chart1.Axes.Bottom.IUseTeeMaxPixelPos := True;
+    ```
+  </Step>
+  
+  <Step title="Simplify Geometry">
+    Use simplified shapefiles for zoomed-out views
+  </Step>
+  
+  <Step title="Limit Visible Regions">
+    Only render regions within current zoom extent
+  </Step>
+</Steps>
+
+## Shapefile Support
+
+TeeChart supports ESRI Shapefile format (.shp, .shx, .dbf):
+
+```pascal
+procedure LoadShapefile;
+begin
+  // Load shapefile with associated files
+  MapSeries1.LoadFromFile('WorldMap.shp');
+  // Automatically loads .shx (index) and .dbf (attributes)
+  
+  // Access attribute data
+  for i := 0 to MapSeries1.Count - 1 do
+  begin
+    CountryName := MapSeries1.GetAttribute(i, 'NAME');
+    Population := MapSeries1.GetAttribute(i, 'POP');
+  end;
+end;
+```
+
+## Export Map Charts
+
+Export maps to various formats:
+
+```pascal
+procedure ExportMap;
+begin
+  // Export to image
+  Chart1.SaveToBitmapFile('WorldMap.bmp');
+  Chart1.SaveToJPEGFile('WorldMap.jpg');
+  
+  // Export to vector format
+  Chart1.SaveToMetafile('WorldMap.emf');
+  Chart1.SaveToPDFFile('WorldMap.pdf');
+  
+  // Export with high resolution
+  Chart1.SaveToBitmapFile('WorldMap_HR.png', 
+    Chart1.Width * 2, Chart1.Height * 2);
+end;
+```
+
+## Related Samples
+
+<CardGroup cols={2}>
+  <Card title="3D Charts" href="/vcl/3d-charts">
+    3D surface and contour visualization
+  </Card>
+  
+  <Card title="Statistical Charts" href="/vcl/statistical-charts">
+    Statistical analysis on geographic data
+  </Card>
+  
+  <Card title="Export">
+    Export maps to reports and documents
+  </Card>
+  
+  <Card title="Database Integration">
+    Connect maps to geographic databases
+  </Card>
+</CardGroup>
+
+## Map Sample List
+
+Complete list of map-related samples:
+
+- `Map_Layers/Unit_Maps.pas` - Multi-layer map visualization
+- `Map_Spherical_FIPS/Unit1.pas` - 3D spherical maps with FIPS
+- `TeeMaps/` - Advanced mapping utilities
+- Map projection samples
+- Choropleth map examples
+- Interactive navigation samples
+- Custom shapefile loading
+- Database integration examples

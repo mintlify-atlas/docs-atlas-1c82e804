@@ -1,0 +1,465 @@
+---
+title: Contour Charts
+description: Display 3D data as 2D contour lines showing levels of equal value
+---
+
+## Overview
+
+Contour charts represent three-dimensional data in two dimensions by drawing lines that connect points of equal value (isolines). Like topographic maps showing elevation, contour charts are ideal for visualizing continuous data fields, identifying patterns, and displaying areas of equal value. They can be displayed in 2D or 3D and often complement surface charts.
+
+**Use cases:**
+- Topographic and terrain mapping
+- Temperature and weather patterns
+- Scientific field data visualization
+- Stress and strain analysis
+- Density and concentration maps
+- Mathematical function visualization
+
+## Series Class
+
+**TContourSeries** - The primary class for creating contour charts
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `NumLevels` | Integer | Number of contour levels to display |
+| `YPosition` | Double | Y-axis position of contour plane in 3D |
+| `YPositionLevel` | Boolean | Auto-position levels vertically |
+| `ColorEachPoint` | Boolean | Use different colors per level |
+| `AutomaticLevels` | Boolean | Automatically calculate level values |
+| `OnGetLevel` | TContourLevelEvent | Customize individual level values and colors |
+| `Pen` | TPen | Customize contour line appearance |
+| `Marks` | TSeriesMarks | Configure level labels |
+| `Pointer` | TSeriesPointer | Show data points |
+| `SmoothSegments` | Integer | Number of segments for smooth curves |
+
+## Code Examples
+
+### Basic Contour Chart
+
+From VCL/TeeNew/SeriesType_Contour.pas:50:
+
+```pascal
+uses
+  TeEngine, TeeSurfa, TeeProcs, Chart, TeeTools;
+
+procedure CreateBasicContour(ContourSeries: TContourSeries; Chart: TChart);
+var
+  X, Z: Integer;
+begin
+  // Add XYZ points to the Contour series
+  with ContourSeries do
+  begin
+    Clear;
+    for X := -10 to 10 do
+      for Z := -10 to 10 do
+        AddXYZ(X, CalculateValue(X, Z), Z, '', clTeeColor);
+  end;
+  
+  // Specify how many contour levels
+  ContourSeries.NumLevels := 10;
+  
+  // Set Y position to middle of data range
+  with ContourSeries do
+    YPosition := (YValues.MaxValue + YValues.MinValue) / 2.0;
+  
+  // Improve chart appearance
+  Chart.Chart3DPercent := 100;
+end;
+
+function CalculateValue(X, Z: Integer): Double;
+var
+  AngleX, AngleZ: Double;
+begin
+  AngleX := ((X + 10) * 18.0) * Pi / 180.0;
+  AngleZ := ((Z + 10) * 18.0) * Pi / 180.0;
+  Result := 500.0 * (Sin(AngleX) + Sqr(Cos(AngleZ)));
+end;
+```
+
+### 2D Contour View
+
+From VCL/TeeNew/Contour_View2D.pas (example pattern):
+
+```pascal
+procedure Setup2DContour(Chart: TChart);
+begin
+  // Switch to 2D view for map-like display
+  Chart.View3D := False;
+  
+  // Optional: Hide walls in 2D
+  Chart.View3DWalls := False;
+end;
+```
+
+### Contour with Surface
+
+From VCL/TeeNew/SeriesType_Contour.pas:78:
+
+```pascal
+procedure CombineContourWithSurface(ContourSeries: TContourSeries; 
+  Chart: TChart);
+var
+  SurfaceSeries: TSurfaceSeries;
+begin
+  // Create surface series
+  SurfaceSeries := TSurfaceSeries.Create(Chart);
+  Chart.AddSeries(SurfaceSeries);
+  
+  // Use contour as data source for surface
+  SurfaceSeries.DataSource := ContourSeries;
+  
+  // Toggle surface visibility as needed
+  SurfaceSeries.Active := True;
+end;
+```
+
+### Custom Contour Levels
+
+From VCL/TeeNew/SeriesType_Contour.pas:92:
+
+```pascal
+procedure SetupCustomLevels(ContourSeries: TContourSeries);
+begin
+  ContourSeries.NumLevels := 10;
+  ContourSeries.OnGetLevel := GetContourLevel;
+end;
+
+procedure GetContourLevel(Sender: TContourSeries; LevelIndex: Integer; 
+  var Value: Double; var Color: TColor);
+begin
+  // Specify exact values for each level
+  case LevelIndex of
+    0: Value := 0;
+    1: Value := 100;
+    2: Value := 200;
+    3: Value := 300;
+    4: Value := 400;
+    5: Value := 500;
+    6: Value := 600;
+    7: Value := 700;
+    8: Value := 800;
+    9: Value := 900;
+  else
+    Value := LevelIndex * 100;
+  end;
+  
+  // Optional: Specify custom colors for specific levels
+  if Value = 500 then
+    Color := clRed;
+end;
+```
+
+### Filled Contours
+
+From VCL/TeeNew/Series_ContourFilled.pas (example pattern):
+
+```pascal
+procedure CreateFilledContour(ContourSeries: TContourSeries);
+begin
+  // Enable filled regions between contour lines
+  ContourSeries.YPositionLevel := False;
+  
+  // Use color for each level
+  ContourSeries.ColorEachPoint := True;
+  
+  // Use palette for automatic coloring
+  ContourSeries.UseColorRange := False;
+  ContourSeries.UsePalette := True;
+  ContourSeries.PaletteStyle := psRainbow;
+end;
+```
+
+### Contour Level Marks
+
+From VCL/TeeNew/Series_ContourLevelMarks.pas (example pattern):
+
+```pascal
+procedure ShowLevelMarks(ContourSeries: TContourSeries);
+begin
+  // Display marks on contour lines
+  with ContourSeries.Marks do
+  begin
+    Visible := True;
+    Style := smsValue;  // Show level values
+    BackColor := clYellow;
+    Transparent := False;
+    
+    // Prevent overlap
+    DrawEvery := 3;  // Draw every 3rd mark
+  end;
+end;
+```
+
+### Contour with Pointers
+
+From VCL/TeeNew/Series_ContourPointer.pas (example pattern):
+
+```pascal
+procedure ShowDataPoints(ContourSeries: TContourSeries);
+begin
+  // Show original data points
+  with ContourSeries.Pointer do
+  begin
+    Visible := True;
+    Style := psCircle;
+    HorizSize := 3;
+    VertSize := 3;
+    Pen.Color := clBlack;
+    Brush.Color := clWhite;
+  end;
+end;
+```
+
+## Customization Options
+
+### Contour Line Appearance
+
+```pascal
+with ContourSeries.Pen do
+begin
+  Visible := True;
+  Width := 2;
+  Color := clBlack;
+  Style := psSolid;  // psDot, psDash, etc.
+end;
+```
+
+### Color Each Level
+
+From VCL/TeeNew/SeriesType_Contour.pas:87:
+
+```pascal
+procedure ColorLevels(ContourSeries: TContourSeries);
+begin
+  ContourSeries.ColorEachPoint := True;
+  
+  // Colors will be assigned automatically based on palette or color range
+end;
+```
+
+### Y Position Control
+
+From VCL/TeeNew/SeriesType_Contour.pas:128:
+
+```pascal
+procedure SetContourPosition(ContourSeries: TContourSeries; Position: Double);
+begin
+  // Disable automatic positioning
+  ContourSeries.YPositionLevel := False;
+  
+  // Set specific Y position
+  ContourSeries.YPosition := Position;
+end;
+
+// Or use scrollbar for interactive positioning
+procedure ScrollBarChange(Sender: TObject; ScrollPos: Integer);
+begin
+  ContourSeries.YPosition := 1000 - ScrollPos;
+end;
+```
+
+### Smooth Contours
+
+From VCL/TeeNew/Contour_SmoothSegments.pas (example pattern):
+
+```pascal
+procedure SmoothContourLines(ContourSeries: TContourSeries);
+begin
+  // Increase segments for smoother curves
+  ContourSeries.SmoothSegments := 20;  // Default is 4
+end;
+```
+
+### Contour Palette
+
+From VCL/TeeNew/Contour_Palette.pas (example pattern):
+
+```pascal
+procedure SetContourPalette(ContourSeries: TContourSeries; Style: Integer);
+begin
+  ContourSeries.UsePalette := True;
+  
+  case Style of
+    0: ContourSeries.PaletteStyle := psPale;
+    1: ContourSeries.PaletteStyle := psStrong;
+    2: ContourSeries.PaletteStyle := psGrayscale;
+    3: ContourSeries.PaletteStyle := psRainbow;
+    4: ContourSeries.PaletteStyle := psInvGray;
+  end;
+end;
+```
+
+## Advanced Features
+
+### Contour with Footer/Legend
+
+From VCL/TeeNew/Contour_Foot.pas (example pattern):
+
+```pascal
+procedure AddContourLegend(Chart: TChart; ContourSeries: TContourSeries);
+begin
+  // Use chart footer to show level scale
+  Chart.Foot.Visible := True;
+  Chart.Foot.Text.Text := 'Contour Levels: ' + 
+    FloatToStr(ContourSeries.YValues.MinValue) + ' to ' +
+    FloatToStr(ContourSeries.YValues.MaxValue);
+end;
+```
+
+### OnBeforeDraw Event
+
+From VCL/TeeNew/Contour_OnBeforeDraw.pas (example pattern):
+
+```pascal
+procedure SetupBeforeDrawEvent(ContourSeries: TContourSeries);
+begin
+  ContourSeries.OnBeforeDrawValues := BeforeDrawContour;
+end;
+
+procedure BeforeDrawContour(Sender: TObject);
+begin
+  // Custom drawing code before contours are drawn
+  // Useful for background effects or custom rendering
+end;
+```
+
+### Interactive Level Adjustment
+
+```pascal
+procedure AdjustLevels(ContourSeries: TContourSeries; NewLevels: Integer);
+begin
+  ContourSeries.NumLevels := NewLevels;
+  
+  // Recalculate automatic levels
+  ContourSeries.AutomaticLevels := True;
+end;
+```
+
+### Rotate Contour in 3D
+
+```pascal
+uses
+  TeeTools;
+
+procedure EnableContourRotation(Chart: TChart);
+var
+  RotateTool: TRotateTool;
+begin
+  Chart.View3D := True;
+  
+  RotateTool := TRotateTool.Create(Chart);
+  Chart.Tools.Add(RotateTool);
+end;
+```
+
+### Export Contour Levels
+
+```pascal
+procedure ExportContourLevels(ContourSeries: TContourSeries; FileName: String);
+var
+  i: Integer;
+  Data: TStringList;
+  Value: Double;
+  Color: TColor;
+begin
+  Data := TStringList.Create;
+  try
+    Data.Add('Level,Value,Color');
+    
+    for i := 0 to ContourSeries.NumLevels - 1 do
+    begin
+      Value := 0;
+      Color := clNone;
+      
+      // Get level info
+      if Assigned(ContourSeries.OnGetLevel) then
+        ContourSeries.OnGetLevel(ContourSeries, i, Value, Color);
+      
+      Data.Add(Format('%d,%.2f,%s', [i, Value, ColorToString(Color)]));
+    end;
+    
+    Data.SaveToFile(FileName);
+  finally
+    Data.Free;
+  end;
+end;
+```
+
+### Highlight Specific Level
+
+```pascal
+procedure HighlightLevel(ContourSeries: TContourSeries; TargetLevel: Integer);
+begin
+  ContourSeries.OnGetLevel := 
+    procedure(Sender: TContourSeries; LevelIndex: Integer; 
+              var Value: Double; var Color: TColor)
+    begin
+      if LevelIndex = TargetLevel then
+      begin
+        // Make this level stand out
+        Color := clRed;
+        // Width would need custom drawing
+      end;
+    end;
+end;
+```
+
+### Contour from Grid Data
+
+```pascal
+procedure LoadGridData(ContourSeries: TContourSeries; GridData: array of array of Double);
+var
+  X, Z: Integer;
+begin
+  ContourSeries.Clear;
+  
+  for X := Low(GridData) to High(GridData) do
+    for Z := Low(GridData[X]) to High(GridData[X]) do
+      ContourSeries.AddXYZ(X, GridData[X][Z], Z);
+  
+  ContourSeries.NumLevels := 10;
+end;
+```
+
+### Polar Contour
+
+From VCL/PolarContour/UPolarContour.pas (example pattern):
+
+```pascal
+uses
+  TeePolar;
+
+procedure CreatePolarContour;
+var
+  PolarSeries: TPolarSeries;
+  ContourSeries: TContourSeries;
+begin
+  // Contour in polar coordinates
+  PolarSeries := TPolarSeries.Create(Chart1);
+  ContourSeries := TContourSeries.Create(Chart1);
+  
+  Chart1.AddSeries(PolarSeries);
+  Chart1.AddSeries(ContourSeries);
+  
+  // Configure for polar display
+  // ... (requires polar coordinate transformation)
+end;
+```
+
+## Best Practices
+
+1. **Choose appropriate number of levels** - Too few miss detail, too many create clutter (8-12 typically)
+2. **Use 2D for clarity** - 2D view is often clearer for contour interpretation
+3. **Color code thoughtfully** - Rainbow for progression, grayscale for technical
+4. **Label key levels** - Don't label every contour line
+5. **Provide scale reference** - Include legend or footer with value range
+6. **Combine with surface** - Show both contour and surface for complete picture
+
+## Related Chart Types
+
+- **Surface Charts** - 3D representation of the same data
+- **Heat Maps** - Color-coded intensity without contour lines
+- **Isometric Charts** - Alternative 3D visualization
+- **Polar Charts** - Contours in polar coordinates

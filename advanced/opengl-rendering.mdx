@@ -1,0 +1,456 @@
+---
+title: 'OpenGL Rendering'
+description: 'Hardware-accelerated chart rendering with OpenGL for maximum performance and visual quality'
+icon: 'cube'
+---
+
+## Overview
+
+TeeChart's OpenGL rendering engine provides hardware-accelerated graphics for superior performance and visual quality, especially with 3D charts, large datasets, and real-time visualization. The `TTeeOpenGL` component enables OpenGL rendering for any TChart.
+
+## Getting Started
+
+### Basic OpenGL Setup
+
+**Source:** `VCL/TeeNew/OpenGL_Editor.pas:16`
+
+```delphi
+type
+  TOpenGLEditorForm = class(TForm)
+    Chart1: TChart;
+    TeeOpenGL1: TTeeOpenGL;  // Add OpenGL component
+    Series1: TBar3DSeries;
+    procedure CheckBox1Click(Sender: TObject);
+  end;
+
+procedure TOpenGLEditorForm.CheckBox1Click(Sender: TObject);
+begin
+  Screen.Cursor := crHourGlass;
+  try
+    TeeOpenGL1.Active := CheckBox1.Checked;  // Enable/disable OpenGL
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+```
+
+### Required Units
+
+```delphi
+uses
+  TeeOpenGL,    // TTeeOpenGL component
+  TeeGLCanvas,  // OpenGL canvas implementation
+  OpenGL2;      // OpenGL API bindings (Windows)
+```
+
+**For Linux:**
+```delphi
+uses
+  OpenGLLinux;  // Linux OpenGL support
+```
+
+## OpenGL Canvas Features
+
+### 3D Object Rendering
+
+**Source:** `VCL/TeeNew/OpenGL_Canvas.pas:77`
+
+```delphi
+procedure TOpenGLCanvas.Chart1AfterDraw(Sender: TObject);
+var 
+  x: Integer;
+begin
+  With Chart1.Canvas do
+  begin
+    Brush.Style := bsSolid;
+    Pen.Style := psClear;
+    
+    if CheckBox1.Checked then 
+      Pen.Style := psSolid;
+    
+    Pen.Color := clBlack;
+    x := ChartXCenter;
+    
+    // Draw textured cube
+    if CheckBox2.Checked then 
+      Brush.Bitmap := MyBitmap1;
+    Cube(x-500, x+500, 500, 550, -500, 500, True);
+    
+    // Draw multiple cubes with different textures
+    if CheckBox2.Checked then 
+      Brush.Bitmap := MyBitmap0;
+    Cube(x-500, x-450, 0, 500, -500, 500, True);
+    Cube(x-450, x-100, 0, 500, -500, -400, True);
+    Cube(x-450, x-100, 0, 500, 400, 500, True);
+    
+    Brush.Bitmap := nil;
+    
+    // Draw colored shapes
+    Brush.Color := RGB(200, 200, 250);
+    if CheckBox2.Checked then 
+      Brush.Bitmap := MyBitmap2;
+  end;
+end;
+```
+
+### Texture Mapping
+
+Apply bitmap textures to 3D shapes:
+
+```delphi
+var
+  MyBitmap: TBitmap;
+begin
+  MyBitmap := TBitmap.Create;
+  try
+    MyBitmap.LoadFromFile('texture.bmp');
+    Chart1.Canvas.Brush.Bitmap := MyBitmap;
+    Chart1.Canvas.Cube(0, 100, 0, 100, 0, 100, True);
+  finally
+    Chart1.Canvas.Brush.Bitmap := nil;
+    MyBitmap.Free;
+  end;
+end;
+```
+
+## Advanced OpenGL Features
+
+### Surface Rendering
+
+**Source:** `VCL/TeeNew/OpenGL_Surface.pas`
+
+High-performance 3D surface charts:
+
+```delphi
+var
+  Series1: TSurfaceSeries;
+begin
+  Series1 := TSurfaceSeries.Create(Self);
+  Series1.ParentChart := Chart1;
+  
+  // Enable OpenGL for fast rendering
+  TeeOpenGL1.Active := True;
+  
+  // Configure surface
+  Series1.UseColorRange := True;
+  Series1.UsePalette := True;
+  Series1.IrregularGrid := False;
+  
+  // Fill with data
+  Series1.FillSampleValues(50);
+end;
+```
+
+### Anti-Aliasing
+
+**Source:** `VCL/TeeNew/OpenGL_AntiAlias.pas`
+
+Enable OpenGL anti-aliasing for smooth lines:
+
+```delphi
+TeeOpenGL1.Active := True;
+TeeOpenGL1.AntiAliasLines := True;
+TeeOpenGL1.AntiAliasPolygons := True;
+```
+
+### Light Direction Control
+
+**Source:** `VCL/TeeNew/OpenGL_LightDirection.pas`
+
+Control 3D lighting for realistic effects:
+
+```delphi
+Chart1.View3D := True;
+Chart1.Chart3DPercent := 100;
+
+// Configure lighting
+with Chart1.View3DOptions do
+begin
+  Zoom := 90;
+  Elevation := 345;
+  Rotation := 340;
+  Perspective := 50;
+  Orthogonal := False;
+end;
+```
+
+## Performance Examples
+
+### High-Performance Surface
+
+**Source:** `VCL/TeeNew/OpenGL_TriSurface.pas`
+
+Triangulated surface for complex 3D data:
+
+```delphi
+var
+  Series1: TTriSurfaceSeries;
+begin
+  Series1 := TTriSurfaceSeries.Create(Self);
+  Series1.ParentChart := Chart1;
+  
+  // OpenGL dramatically improves performance
+  TeeOpenGL1.Active := True;
+  
+  // Add irregular 3D points
+  Series1.Add(10, 20, 30);
+  Series1.Add(15, 25, 35);
+  // ... more points
+end;
+```
+
+### Real-Time Animation
+
+**Source:** `VCL/TeeNew/OpenGL_Football.pas`
+
+Animate 3D objects with timer:
+
+```delphi
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+  // Update rotation
+  Chart1.View3DOptions.Rotation := Chart1.View3DOptions.Rotation + 2;
+  
+  // Invalidate forces redraw (fast with OpenGL)
+  Chart1.Invalidate;
+end;
+```
+
+## OpenGL Configuration
+
+### Runtime Editor
+
+**Source:** `VCL/TeeNew/OpenGL_Editor.pas:36`
+
+```delphi
+uses
+  TeeGLEditor;  // Important for OpenGL editor at runtime!
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  ChartEditor1.Execute;  // Shows OpenGL tab in editor
+end;
+```
+
+### Programmatic Configuration
+
+```delphi
+with TeeOpenGL1 do
+begin
+  Active := True;
+  
+  // Anti-aliasing
+  AntiAliasLines := True;
+  AntiAliasPolygons := True;
+  
+  // Lighting
+  Light := True;
+  Ambient := 30;
+  Diffuse := 70;
+  Shininess := 50;
+  
+  // Performance
+  FastPoints := True;
+  FastLines := True;
+  
+  // Quality
+  HighQuality := True;
+end;
+```
+
+## Integration with TeeMaker
+
+### TeeMaker 3D Objects
+
+TeeMaker uses OpenGL for hardware-accelerated 3D object rendering:
+
+**Source:** `VCL/TeeMaker/TeeMakerMain.pas:27`
+
+```delphi
+uses
+  TeeMakerEditor, 
+  TeeProcs, 
+  TeeDraw3D, 
+  TeCanvas, 
+  TeeOpenGL,
+  TeeMakerControl, 
+  OpenGL2;
+```
+
+### GLSL Shaders
+
+Custom shader support for advanced effects:
+
+**Source:** `VCL/TeeMaker/TeeGLSLShaders.pas`
+
+```delphi
+procedure TMakerEditor1.BCompileShaderClick(Sender: TObject);
+begin
+  // Compile vertex and fragment shaders
+  CompileGLSLShader(
+    MemoVertexShader.Text,
+    MemoFragmentShader.Text
+  );
+end;
+```
+
+## Performance Characteristics
+
+### When to Use OpenGL
+
+**Ideal For:**
+- 3D charts with 100,000+ points
+- Real-time rotation/animation
+- Complex surface plots
+- Multiple series visualization
+- Interactive 3D exploration
+
+**Performance Gains:**
+- **2D Lines:** 2-5x faster than GDI
+- **3D Surfaces:** 10-50x faster than software rendering
+- **Real-time Updates:** 60+ FPS with large datasets
+- **Rotation:** Hardware accelerated, smooth at any angle
+
+### Benchmark Results
+
+From `VCL/RingBuffer/readme.md:32`:
+
+> OpenGL canvas is the fastest way in Windows and VCL to paint many lines and points.
+> Skia canvas is faster than GDI+.
+> Old legacy GDI is not that slow, but lacks antialias so lines become "jaggy".
+
+## Troubleshooting
+
+### OpenGL Not Available
+
+```delphi
+if not TeeOpenGL1.CanCreate then
+begin
+  ShowMessage('OpenGL not available on this system');
+  TeeOpenGL1.Active := False;
+end;
+```
+
+### Performance Issues
+
+1. **Reduce Anti-Aliasing**
+   ```delphi
+   TeeOpenGL1.AntiAliasLines := False;  // Faster rendering
+   ```
+
+2. **Disable Shadows**
+   ```delphi
+   Chart1.Shadow.Visible := False;
+   ```
+
+3. **Optimize Point/Line Count**
+   ```delphi
+   Series1.DrawAllPoints := False;  // Auto-reduce points
+   ```
+
+### Memory Management
+
+```delphi
+// Free OpenGL resources when done
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  TeeOpenGL1.Active := False;  // Release OpenGL context
+end;
+```
+
+## OpenGL Extensions
+
+### Querying Extensions
+
+**Source:** `VCL/TeeMaker/TeeMakerMain.pas:41`
+
+TeeMaker includes OpenGL extension viewer:
+
+```delphi
+// Display in TabGLExtensions
+MemoExtensions.Lines.Add(glGetString(GL_EXTENSIONS));
+MemoGLInfo.Lines.Add('Vendor: ' + glGetString(GL_VENDOR));
+MemoGLInfo.Lines.Add('Renderer: ' + glGetString(GL_RENDERER));
+MemoGLInfo.Lines.Add('Version: ' + glGetString(GL_VERSION));
+```
+
+### Advanced Features
+
+- **Vertex Buffer Objects (VBO)** - Fast geometry rendering
+- **Frame Buffer Objects (FBO)** - Off-screen rendering
+- **GLSL Shaders** - Custom visual effects
+- **Multi-sampling** - High-quality anti-aliasing
+
+## Cross-Platform Notes
+
+### Windows
+- Uses standard OpenGL 2.0+ implementation
+- Hardware acceleration via graphics driver
+- Best performance with discrete GPU
+
+### Linux
+**Source:** OpenGL samples use `OpenGLLinux` unit
+
+```delphi
+{$IFDEF LINUX}
+uses OpenGLLinux;
+{$ELSE}
+uses OpenGL2;
+{$ENDIF}
+```
+
+### macOS
+- OpenGL deprecated but still functional
+- Consider Metal for future projects
+
+## Expert Tips
+
+### 1. Initialize Early
+```delphi
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  // Activate OpenGL before adding data
+  TeeOpenGL1.Active := True;
+  Series1.FillSampleValues(10000);
+end;
+```
+
+### 2. Batch Updates
+```delphi
+Chart1.AutoRepaint := False;
+try
+  // Add many points
+  for i := 0 to 10000 do
+    Series1.Add(Random(100));
+finally
+  Chart1.AutoRepaint := True;
+  Chart1.Invalidate;
+end;
+```
+
+### 3. Use Appropriate Series Types
+```delphi
+// For massive datasets, use FastLine with OpenGL
+Series1 := TFastLineSeries.Create(Self);
+TeeOpenGL1.Active := True;
+```
+
+### 4. Monitor Performance
+```delphi
+procedure TForm1.MeasureRenderTime;
+var
+  Start: TDateTime;
+begin
+  Start := Now;
+  Chart1.Draw;
+  Label1.Caption := Format('Render: %.2f ms', 
+    [(Now - Start) * 24 * 60 * 60 * 1000]);
+end;
+```
+
+## See Also
+
+- [Custom Drawing](/advanced/custom-drawing) - Canvas drawing techniques
+- [Performance](/advanced/performance) - Optimization strategies  
+- [TeeMaker](/advanced/teeMaker) - 3D object creation with OpenGL
+- [TeeChart OpenGL Documentation](https://www.steema.com/docs/teechart/vcl)

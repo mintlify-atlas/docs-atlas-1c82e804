@@ -1,0 +1,479 @@
+---
+title: System Requirements
+description: System requirements, supported IDE versions, and installation prerequisites for TeeChart VCL/FMX samples
+---
+
+## Overview
+
+This page details the system requirements, supported development environments, and prerequisites needed to compile and run the TeeChart VCL/FMX samples.
+
+## Required Software
+
+### TeeChart Pro VCL/FMX
+
+<Warning>
+  **TeeChart Pro VCL/FMX evaluation or registered version is required** to compile and run the samples in this repository.
+</Warning>
+
+You can obtain the fully functional evaluation version from:
+
+**Download Page**: [https://www.steema.com/downloads/vcl](https://www.steema.com/downloads/vcl)
+
+<Note>
+  The evaluation version includes all professional features with no time limitations, allowing you to test all samples without restrictions.
+</Note>
+
+### Supported IDEs
+
+TeeChart VCL/FMX supports the following development environments:
+
+<Tabs>
+  <Tab title="RAD Studio">
+    **Embarcadero RAD Studio** (Full VCL and FireMonkey support):
+    
+    - RAD Studio 12 Athens
+    - RAD Studio 11 Alexandria
+    - RAD Studio 10.4 Sydney
+    - RAD Studio 10.3 Rio
+    - RAD Studio 10.2 Tokyo
+    - RAD Studio 10.1 Berlin
+    - RAD Studio 10 Seattle
+    - RAD Studio XE8
+    - RAD Studio XE7
+    - RAD Studio XE6
+    - RAD Studio XE5
+    - RAD Studio XE4
+    - RAD Studio XE3
+    - RAD Studio XE2
+    
+    <Tip>
+      RAD Studio includes both Delphi and C++ Builder, providing access to all VCL and FireMonkey samples.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Delphi">
+    **Embarcadero Delphi** (Object Pascal/Delphi language):
+    
+    - Delphi 12 Athens
+    - Delphi 11 Alexandria
+    - Delphi 10.4 Sydney
+    - Delphi 10.3 Rio
+    - Delphi 10.2 Tokyo
+    - Delphi 10.1 Berlin
+    - Delphi 10 Seattle
+    - Delphi XE8
+    - Delphi XE7
+    - Delphi XE6
+    - Delphi XE5
+    - Delphi XE4
+    - Delphi XE3
+    - Delphi XE2
+    - Delphi XE
+    - Delphi 2010
+    - Delphi 2009
+    
+    All Pascal-based samples (`.pas` files) can be compiled with Delphi.
+  </Tab>
+  
+  <Tab title="C++ Builder">
+    **Embarcadero C++ Builder** (C++ language):
+    
+    - C++ Builder 12 Athens
+    - C++ Builder 11 Alexandria
+    - C++ Builder 10.4 Sydney
+    - C++ Builder 10.3 Rio
+    - C++ Builder 10.2 Tokyo
+    - C++ Builder 10.1 Berlin
+    - C++ Builder 10 Seattle
+    - C++ Builder XE8
+    - C++ Builder XE7
+    - C++ Builder XE6
+    - C++ Builder XE5
+    - C++ Builder XE4
+    - C++ Builder XE3
+    - C++ Builder XE2
+    
+    Most samples are Delphi-based, but C++ Builder can compile them with appropriate project configurations.
+  </Tab>
+</Tabs>
+
+## System Requirements
+
+### For VCL Development (Windows)
+
+<AccordionGroup>
+  <Accordion title="Operating System">
+    - **Windows 11** (64-bit)
+    - **Windows 10** (32-bit and 64-bit)
+    - **Windows 8.1** (32-bit and 64-bit)
+    - **Windows 8** (32-bit and 64-bit)
+    - **Windows 7 SP1** (32-bit and 64-bit)
+    - **Windows Server 2019**
+    - **Windows Server 2016**
+    - **Windows Server 2012 R2**
+    - **Windows Server 2012**
+    
+    <Note>
+      VCL applications target Windows platforms only.
+    </Note>
+  </Accordion>
+  
+  <Accordion title="Hardware">
+    **Minimum Requirements:**
+    - **Processor**: 1 GHz or faster
+    - **RAM**: 2 GB (4 GB recommended)
+    - **Disk Space**: 500 MB for TeeChart installation
+    - **Display**: 1024x768 or higher resolution
+    
+    **Recommended for Development:**
+    - **Processor**: Multi-core 2 GHz or faster
+    - **RAM**: 8 GB or more
+    - **Disk Space**: 1 GB for samples and IDE
+    - **Display**: 1920x1080 or higher
+  </Accordion>
+</AccordionGroup>
+
+### For FireMonkey Development (Cross-platform)
+
+<AccordionGroup>
+  <Accordion title="Target Platforms">
+    **Desktop Platforms:**
+    - **Windows**: 32-bit and 64-bit (Windows 7 SP1 and later)
+    - **macOS**: 64-bit (macOS 10.14 Mojave and later)
+    - **Linux**: 64-bit (Ubuntu 18.04 and later, requires FMXLinux)
+    
+    **Mobile Platforms:**
+    - **iOS**: iOS 12.0 and later (iPhone, iPad, iPod Touch)
+    - **Android**: Android 6.0 (API level 23) and later
+    
+    <Tip>
+      One of the many advantages is that TeeChart will scale and fit to any screen size, making it perfect for cross-platform applications.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="macOS Development Requirements">
+    To deploy to macOS or iOS, you need:
+    
+    - **macOS system**: macOS 10.14 Mojave or later
+    - **Xcode**: Version 11.0 or later (from Mac App Store)
+    - **PAServer**: Platform Assistant Server (included with RAD Studio)
+    - **Apple Developer Account**: For iOS device deployment (not required for simulator)
+    
+    <Note>
+      macOS and iOS development require a physical Mac computer. RAD Studio connects to the Mac via PAServer for compilation and debugging.
+    </Note>
+  </Accordion>
+  
+  <Accordion title="Android Development Requirements">
+    To deploy to Android devices:
+    
+    - **Android SDK**: API Level 23 or higher
+    - **Android NDK**: R21 or later
+    - **Java Development Kit (JDK)**: JDK 8 or later
+    
+    These are typically configured during RAD Studio installation via the SDK Manager.
+  </Accordion>
+</AccordionGroup>
+
+## Installation Instructions
+
+<Steps>
+  <Step title="Install Your IDE">
+    If you haven't already, download and install RAD Studio, Delphi, or C++ Builder from:
+    
+    [https://www.embarcadero.com/products/rad-studio](https://www.embarcadero.com/products/rad-studio)
+    
+    <Note>
+      A free trial version of RAD Studio/Delphi/C++ Builder is available if you need to evaluate the IDE.
+    </Note>
+  </Step>
+  
+  <Step title="Download TeeChart Pro VCL/FMX">
+    1. Visit [https://www.steema.com/downloads/vcl](https://www.steema.com/downloads/vcl)
+    2. Download the **TeeChart Pro VCL/FMX** installer for your platform
+    3. Choose between evaluation (free) or registered version
+  </Step>
+  
+  <Step title="Run TeeChart Installer">
+    1. Run the downloaded installer executable
+    2. Follow the installation wizard
+    3. Select your installed RAD Studio/Delphi/C++ Builder versions
+    4. Choose installation options:
+       - **VCL Support**: For Windows VCL applications
+       - **FMX Support**: For FireMonkey cross-platform applications
+       - **Source Code**: Install TeeChart source files (recommended)
+       - **Help Files**: Install documentation and help integration
+    5. Complete the installation
+    
+    <Tip>
+      Install both VCL and FMX support if you have disk space, even if you primarily use one framework. This ensures all samples will compile.
+    </Tip>
+  </Step>
+  
+  <Step title="Verify Installation">
+    After installation, verify TeeChart is properly installed:
+    
+    1. Open RAD Studio/Delphi/C++ Builder
+    2. Create a new VCL or FireMonkey application
+    3. Check the **Tool Palette** for the **TeeChart** tab
+    4. You should see components like:
+       - `TChart` - Main chart component
+       - `TDBChart` - Database-aware chart
+       - `TChartListBox` - Chart series list
+       - Various series types
+    
+    <Warning>
+      If the TeeChart tab is missing, the installation may not have completed successfully. Reinstall TeeChart and ensure you select your IDE version.
+    </Warning>
+  </Step>
+  
+  <Step title="Clone the Samples Repository">
+    Now you're ready to get the samples:
+    
+    ```bash
+    git clone https://github.com/Steema/TeeChart-VCL-FMX-Samples.git
+    cd TeeChart-VCL-FMX-Samples
+    ```
+    
+    Or download as ZIP from the GitHub repository page.
+  </Step>
+</Steps>
+
+## Project File Versions
+
+Many samples include multiple project files for different IDE versions:
+
+<CodeGroup>
+```text Standard Project
+VCL/ActivityGauge/ActivityGauge.dproj     // Latest version
+```
+
+```text Version-Specific Projects
+FMX/Demo/TeeChart_Pro_Firemonkey_Demo.dproj      // Latest
+FMX/Demo_XE6/TeeChart_Pro_Firemonkey_Demo.dproj  // For XE6
+FMX/Demo_XE13/TeeChart_Lite_Firemonkey_Demo.dproj // For XE13
+```
+
+```text Legacy Projects
+VCL/TeeMaps/TeeMaps.dproj       // Current version
+VCL/TeeMaps/TeeMaps.dproj.2007  // For Delphi 2007
+```
+</CodeGroup>
+
+<Tip>
+  When opening a sample, use the project file that matches your IDE version. If multiple versions exist in separate folders (e.g., `Demo_XE6`), use that folder's project.
+</Tip>
+
+## Dependencies
+
+### Core Dependencies
+
+All samples require:
+
+- **TeeChart Pro VCL/FMX**: The main charting library
+- **RAD Studio/Delphi/C++ Builder**: The development environment
+
+### Optional Dependencies
+
+Some samples have additional requirements:
+
+<AccordionGroup>
+  <Accordion title="Database Samples">
+    Samples in the following directories require database support:
+    
+    - `VCL/DBChart aggregates/`
+    - `FMX/FishFacts/`
+    - `FMX/Dashboard/` (uses SQLite)
+    
+    **Required Components:**
+    - FireDAC or other database connectivity components (included in RAD Studio)
+    - SQLite driver (included in RAD Studio for SQLite samples)
+    
+    <Note>
+      The Dashboard sample includes a SQLite database file: `TechProductsLtd.sqlite`
+    </Note>
+  </Accordion>
+  
+  <Accordion title="TeeGrid Samples">
+    The Dashboard sample (`FMX/Dashboard/`) requires:
+    
+    - **TeeGrid VCL/FMX**: Grid component library
+    - Download from: [https://github.com/Steema/TeeGrid-VCL-FMX-Samples](https://github.com/Steema/TeeGrid-VCL-FMX-Samples)
+    
+    <Warning>
+      The Dashboard demo will not compile without TeeGrid installed.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="OpenGL Samples">
+    Advanced 3D samples using OpenGL acceleration require:
+    
+    - **OpenGL support**: Built into Windows, macOS, and Linux
+    - **Modern graphics card**: DirectX 9 compatible or later
+    
+    TeeChart includes OpenGL rendering support out of the box.
+  </Accordion>
+</AccordionGroup>
+
+## Compiler Directives and Conditionals
+
+Some samples use conditional compilation for different platforms:
+
+```pascal
+{$IFDEF MSWINDOWS}
+  // Windows-specific code
+{$ENDIF}
+
+{$IFDEF MACOS}
+  // macOS-specific code
+{$ENDIF}
+
+{$IFDEF ANDROID}
+  // Android-specific code
+{$ENDIF}
+
+{$IFDEF IOS}
+  // iOS-specific code
+{$ENDIF}
+```
+
+These directives allow the same source code to compile for multiple platforms.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Cannot find TeeChart units">
+    **Error**: `Unit VCLTee.TeEngine not found` or `Unit FMXTee.Engine not found`
+    
+    **Solutions:**
+    1. Verify TeeChart is installed for your IDE version
+    2. Check the library path in **Tools > Options > Language > Delphi > Library**
+    3. Ensure TeeChart paths are listed (should be auto-configured)
+    4. Reinstall TeeChart if paths are missing
+  </Accordion>
+  
+  <Accordion title="Project won't open in older IDE">
+    **Problem**: `.dproj` file format is too new for your IDE
+    
+    **Solutions:**
+    1. Look for version-specific project folders (e.g., `Demo_XE6/`)
+    2. Check for `.dproj.2007` or similar legacy project files
+    3. Create a new project and add the `.pas` files manually
+  </Accordion>
+  
+  <Accordion title="Dashboard sample won't compile">
+    **Error**: Missing TeeGrid units
+    
+    **Solution:**
+    1. Install TeeGrid from [https://github.com/Steema/TeeGrid-VCL-FMX-Samples](https://github.com/Steema/TeeGrid-VCL-FMX-Samples)
+    2. Or comment out TeeGrid-related code if you just need the chart examples
+  </Accordion>
+  
+  <Accordion title="Mobile deployment fails">
+    **Problem**: Cannot deploy to iOS or Android
+    
+    **Solutions:**
+    - **iOS**: Ensure Xcode is installed and PAServer is running on your Mac
+    - **Android**: Verify SDK/NDK paths in **Tools > Options > Deployment > SDK Manager**
+    - Check device connectivity and USB debugging (Android)
+    - Verify provisioning profiles (iOS)
+  </Accordion>
+</AccordionGroup>
+
+## Supported Chart Types
+
+TeeChart Pro VCL/FMX includes over 70 chart types. The samples demonstrate:
+
+<Tabs>
+  <Tab title="Standard">
+    - Line Series
+    - Bar Series
+    - Horizontal Bar
+    - Area Series
+    - Point Series
+    - Pie Series
+    - Donut Series
+    - Fast Line
+    - Arrow Series
+    - Bubble Series
+  </Tab>
+  
+  <Tab title="Financial">
+    - Candle (OHLC)
+    - Volume
+    - Point & Figure
+    - Equi-Volume
+    - Kagi
+    - Renko
+  </Tab>
+  
+  <Tab title="3D">
+    - 3D Surface
+    - Contour
+    - Tower
+    - Point3D
+    - Line3D
+    - Bar3D
+    - Waterfall
+  </Tab>
+  
+  <Tab title="Statistical">
+    - Box Plot
+    - Histogram
+    - Error Bar
+    - Error Point
+    - High-Low
+  </Tab>
+  
+  <Tab title="Specialized">
+    - Gantt
+    - Polar
+    - Radar
+    - Smith
+    - Gauge (Circular, Linear, Knob, Digital)
+    - Calendar
+    - Maps (World, Regions, Custom)
+  </Tab>
+</Tabs>
+
+## Performance Considerations
+
+For optimal performance:
+
+- **VCL**: Uses native Windows GDI/GDI+ rendering, fastest on Windows
+- **FMX**: Uses GPU acceleration where available, great for mobile
+- **Large Datasets**: Use FastLine series for 1M+ points
+- **Real-time**: See RingBuffer samples for efficient streaming data
+- **OpenGL**: Enable for hardware-accelerated 3D rendering
+
+<Tip>
+  The `VCL/RingBuffer/FastLine_RingBuffer.dproj` sample demonstrates handling high-frequency real-time data efficiently.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Follow the quick start guide to run your first sample
+  </Card>
+  <Card title="Introduction" icon="book" href="/introduction">
+    Learn more about TeeChart features and capabilities
+  </Card>
+  <Card title="VCL Samples" icon="window" href="/vcl/overview">
+    Browse Windows VCL sample applications
+  </Card>
+  <Card title="FMX Samples" icon="mobile" href="/fmx/overview">
+    Explore cross-platform FireMonkey samples
+  </Card>
+</CardGroup>
+
+## Getting Support
+
+If you encounter issues:
+
+<Card title="Support Resources" icon="headset">
+  - **Support Page**: [https://www.steema.com/support_options](https://www.steema.com/support_options)
+  - **GitHub Issues**: [Report bugs or issues](https://github.com/Steema/TeeChart-VCL-FMX-Samples/issues)
+  - **Email**: info@steema.com
+  - **Documentation**: [https://www.steema.com/](https://www.steema.com/)
+</Card>

@@ -1,0 +1,474 @@
+---
+title: 'Database Integration'
+description: 'Connect TeeChart to databases with TDBChart and data-aware series'
+icon: 'database'
+---
+
+TeeChart provides native database integration through `TDBChart` and data-aware series components. Visualize data directly from datasets with automatic updates and cross-tabulation.
+
+## Overview
+
+Database integration features:
+
+- Direct connection to TDataSet descendants
+- Automatic chart updates on data changes
+- Data aggregation and summarization
+- Cross-tabulation support
+- Master-detail relationships
+- Field mapping and formulas
+
+**Key Components**:
+- `TDBChart` - Database-aware chart component
+- Data-aware series (e.g., `TBarSeries` with DataSource)
+- `TDBCrossTabSource` - Cross-tab data source
+
+## Basic Database Connection
+
+### Using TDBChart
+
+```pascal
+uses DBChart, DB, DBTables;
+
+var
+  DBChart1: TDBChart;
+  Table1: TTable;
+  DataSource1: TDataSource;
+  Series1: TBarSeries;
+begin
+  // Setup table
+  Table1 := TTable.Create(Self);
+  Table1.DatabaseName := 'DBDEMOS';
+  Table1.TableName := 'orders.db';
+  
+  // Setup datasource
+  DataSource1 := TDataSource.Create(Self);
+  DataSource1.DataSet := Table1;
+  
+  // Connect series to data
+  Series1.DataSource := DataSource1;
+  Series1.YValues.ValueSource := 'AmountPaid';
+  Series1.XLabelsSource := 'ShipVia';
+  
+  // Open table
+  Table1.Active := True;
+end;
+```
+
+**Source**: `DBChart_Summary.pas:18`
+
+### Field Mapping
+
+```pascal
+// Map series values to dataset fields
+Series1.DataSource := DataSource1;
+
+// Y Values (primary value)
+Series1.YValues.ValueSource := 'Amount';
+
+// X Values (optional)
+Series1.XValues.ValueSource := 'OrderDate';
+
+// Labels
+Series1.XLabelsSource := 'CustomerName';
+
+// For specialized series (OHLC, Candle, etc.)
+CandleSeries1.OpenValues.ValueSource := 'OpenPrice';
+CandleSeries1.HighValues.ValueSource := 'HighPrice';
+CandleSeries1.LowValues.ValueSource := 'LowPrice';
+CandleSeries1.CloseValues.ValueSource := 'ClosePrice';
+```
+
+## Data Aggregation
+
+### Summary Functions
+
+Aggregate data using built-in formulas:
+
+```pascal
+// Count records
+Series1.YValues.ValueSource := '#Count#AmountPaid';
+
+// Sum values
+Series1.YValues.ValueSource := '#Sum#AmountPaid';
+
+// Average
+Series1.YValues.ValueSource := '#Avg#AmountPaid';
+
+// Maximum
+Series1.YValues.ValueSource := '#High#AmountPaid';
+
+// Minimum
+Series1.YValues.ValueSource := '#Low#AmountPaid';
+```
+
+**Source**: `DBChart_Summary.pas:64`
+
+### Grouping Data
+
+Group by field values:
+
+```pascal
+// Group by employee number
+Series1.XLabelsSource := 'EmpNo';
+Series1.YValues.ValueSource := '#Sum#AmountPaid';
+
+// Group by payment method
+Series1.XLabelsSource := 'PaymentMethod';
+
+// Group by year extracted from date
+Series1.XLabelsSource := '#Year#SaleDate';
+
+// Group by ship method
+Series1.XLabelsSource := 'ShipVia';
+```
+
+**Source**: `DBChart_Summary.pas:46`
+
+### Opening Summary Editor
+
+```pascal
+uses TeeDBSumEdit;
+
+procedure TForm1.EditSummaryClick(Sender: TObject);
+begin
+  TeeDBSummaryEditor(Self, Series1);
+end;
+```
+
+**Source**: `DBChart_Summary.pas:42`
+
+## Master-Detail Relationships
+
+Display detail records from linked tables:
+
+```pascal
+type
+  TLinkedTablesForm = class(TForm)
+    DBChart1: TDBChart;
+    Table1: TTable;  // Master table
+    Table2: TTable;  // Detail table
+    DataSource1: TDataSource;
+    DataSource2: TDataSource;
+    AreaSeries1: TAreaSeries;
+  end;
+
+procedure TLinkedTablesForm.FormCreate(Sender: TObject);
+begin
+  // Setup master table
+  Table1.DatabaseName := 'DBDEMOS';
+  Table1.TableName := 'customer.db';
+  DataSource1.DataSet := Table1;
+  
+  // Setup detail table
+  Table2.DatabaseName := 'DBDEMOS';
+  Table2.TableName := 'orders.db';
+  Table2.MasterSource := DataSource1;
+  Table2.MasterFields := 'CustNo';
+  Table2.IndexFieldNames := 'CustNo';
+  DataSource2.DataSet := Table2;
+  
+  // Connect series to detail table
+  AreaSeries1.DataSource := DataSource2;
+  AreaSeries1.YValues.ValueSource := 'AmountPaid';
+  AreaSeries1.XLabelsSource := 'SaleDate';
+  
+  // Open tables
+  Table1.Active := True;
+  Table2.Active := True;
+end;
+
+// Refresh chart when master record changes
+procedure TLinkedTablesForm.DataSource1DataChange(
+  Sender: TObject; 
+  Field: TField);
+begin
+  // Force chart refresh for detail records
+  DBChart1.CheckDataSource(AreaSeries1);
+end;
+```
+
+**Source**: `DBChart_MasterDetail.pas:16`
+
+## Cross-Tabulation
+
+Create pivot-style charts from database data:
+
+```pascal
+uses TeeDBCrossTab;
+
+procedure TForm1.CreateCrossTab;
+var
+  Summary: TGroupFormula;
+begin
+  // Choose aggregation function
+  if RadioButton1.Checked then
+    Summary := gfCount  // Count records
+  else
+    Summary := gfSum;   // Sum values
+  
+  // Fill chart with cross-tabulated data
+  FillDataSet(
+    Table1,           // Dataset
+    Series1,          // Target series
+    'Terms',          // Dimension 1 (X-axis groups)
+    'ShipVia',        // Dimension 2 (series/bars)
+    'AmountPaid',     // Value field
+    Summary           // Aggregation function
+  );
+end;
+
+// Swap dimensions
+procedure TForm1.SwapDimensionsClick(Sender: TObject);
+var
+  Tmp: String;
+begin
+  Tmp := Dimension1;
+  Dimension1 := Dimension2;
+  Dimension2 := Tmp;
+  CreateCrossTab;
+end;
+```
+
+**Source**: `DBChart_CrossTab.pas:87`
+
+### CrossTab Formulas
+
+```pascal
+type
+  TGroupFormula = (
+    gfSum,      // Sum of values
+    gfCount,    // Count records
+    gfAverage,  // Average value
+    gfMin,      // Minimum value
+    gfMax       // Maximum value
+  );
+```
+
+## Advanced Database Features
+
+### Single Record Display
+
+Display one record at a time:
+
+```pascal
+procedure TForm1.ShowSingleRecord;
+begin
+  // Configure series to show current record only
+  Series1.DataSource := DataSource1;
+  Series1.YValues.ValueSource := 'Q1';
+  
+  // Chart updates automatically on record navigation
+end;
+```
+
+**Source**: `DBChart_SingleRecord.pas`
+
+### Record Location
+
+Find and display specific records:
+
+```pascal
+procedure TForm1.LocateRecord(const Value: Variant);
+begin
+  if Table1.Locate('OrderNo', Value, []) then
+  begin
+    // Chart automatically updates to show located record
+    DBChart1.RefreshData;
+  end;
+end;
+```
+
+**Source**: `DBChart_LocateRecord.pas`
+
+### Custom Dataset Support
+
+Use any TDataSet descendant:
+
+```pascal
+// Works with any dataset
+Series1.DataSource := ClientDataSet1.DataSource;
+Series1.DataSource := Query1.DataSource;
+Series1.DataSource := MemTable1.DataSource;
+Series1.DataSource := FDQuery1.DataSource;
+```
+
+**Source**: `DBChart_AnyDataSet.pas`
+
+### Sorting Data
+
+Control record order:
+
+```pascal
+// Sort ascending
+Table1.IndexFieldNames := 'AmountPaid';
+
+// Sort descending (if supported by dataset)
+Query1.SQL.Text := 'SELECT * FROM Orders ORDER BY AmountPaid DESC';
+```
+
+**Source**: `DBChart_Order.pas`, `DBChart_SummaryOrder.pas`
+
+## Performance Optimization
+
+### Disable Auto-Refresh
+
+```pascal
+// For bulk data changes
+DBChart1.RefreshData := False;
+try
+  // Make multiple changes
+  Table1.First;
+  while not Table1.Eof do
+  begin
+    Table1.Edit;
+    Table1.FieldByName('Amount').AsFloat := 
+      Table1.FieldByName('Amount').AsFloat * 1.1;
+    Table1.Post;
+    Table1.Next;
+  end;
+finally
+  DBChart1.RefreshData := True;
+  DBChart1.CheckDataSource(Series1);
+end;
+```
+
+### Filter Large Datasets
+
+```pascal
+// Use dataset filters
+Table1.Filter := 'Amount > 1000';
+Table1.Filtered := True;
+
+// Or use SQL WHERE clause
+Query1.SQL.Text := 'SELECT * FROM Orders WHERE Amount > 1000';
+```
+
+**Source**: `DBChart_Speed.pas`
+
+## Common Use Cases
+
+### Sales by Region
+
+```pascal
+procedure TForm1.ShowSalesByRegion;
+begin
+  Series1.DataSource := SalesDataSource;
+  Series1.XLabelsSource := 'Region';
+  Series1.YValues.ValueSource := '#Sum#SalesAmount';
+  Chart1.Title.Text.Text := 'Sales by Region';
+end;
+```
+
+### Monthly Trends
+
+```pascal
+procedure TForm1.ShowMonthlyTrends;
+begin
+  Series1.DataSource := SalesDataSource;
+  Series1.XLabelsSource := '#Month#SaleDate';
+  Series1.YValues.ValueSource := '#Sum#Amount';
+  Chart1.BottomAxis.DateTimeFormat := 'mmm yyyy';
+end;
+```
+
+### Top 10 Customers
+
+```pascal
+procedure TForm1.ShowTop10Customers;
+begin
+  Query1.SQL.Text := 
+    'SELECT TOP 10 CustomerName, SUM(Amount) as Total ' +
+    'FROM Orders ' +
+    'GROUP BY CustomerName ' +
+    'ORDER BY Total DESC';
+  Query1.Open;
+  
+  Series1.DataSource := QueryDataSource;
+  Series1.XLabelsSource := 'CustomerName';
+  Series1.YValues.ValueSource := 'Total';
+end;
+```
+
+### Product Comparison
+
+```pascal
+procedure TForm1.CompareProducts;
+begin
+  // Use cross-tab to compare products across categories
+  FillDataSet(
+    ProductTable,
+    Series1,
+    'Category',    // X-axis
+    'Product',     // Series groups
+    'Sales',       // Values
+    gfSum
+  );
+end;
+```
+
+## Database Components
+
+### Checking Table Availability
+
+```pascal
+procedure CheckTable(ATable: TTable);
+begin
+  if not ATable.Exists then
+  begin
+    ShowMessage('Table ' + ATable.TableName + ' not found!');
+    ATable.Active := False;
+  end;
+end;
+```
+
+### Safe Table Activation
+
+```pascal
+procedure TForm1.ActivateTable(ATable: TTable);
+begin
+  CheckTable(ATable);
+  
+  if not ATable.Active then
+  try
+    ATable.Active := True;
+  except
+    on E: Exception do
+      ShowMessage('Error opening table: ' + E.Message);
+  end;
+end;
+```
+
+## Aggregates Feature
+
+Use TTable aggregates for advanced calculations:
+
+```pascal
+uses DB, DBTables;
+
+procedure TForm1.SetupAggregates;
+var
+  Agg: TAggregate;
+begin
+  // Add aggregate to table
+  Agg := Table1.Aggregates.Add;
+  Agg.Expression := 'SUM(AmountPaid)';
+  Agg.AggregateName := 'TotalSales';
+  Agg.Active := True;
+  
+  // Use in series
+  Series1.YValues.ValueSource := Agg.AggregateName;
+end;
+```
+
+**Source**: `DBChart_Agg.pas`, `DBChart_Aggregates.pas`
+
+## Related Topics
+
+<CardGroup cols={2}>
+  <Card title="Series Types" icon="chart-line" href="/charts/bar">
+    Different chart series types
+  </Card>
+  <Card title="Export" icon="file-export" href="/features/export">
+    Export database charts
+  </Card>
+</CardGroup>

@@ -1,0 +1,490 @@
+---
+title: Surface Charts
+description: Display 3D surfaces from XYZ data with advanced coloring and rendering
+---
+
+## Overview
+
+Surface charts visualize three-dimensional data as continuous surfaces in 3D space. Each point on the surface represents an XYZ coordinate, creating a mesh that can display mathematical functions, terrain data, heat maps, and other continuous 3D phenomena. TeeChart offers powerful surface rendering with customizable color palettes, wireframe modes, and performance optimizations.
+
+**Use cases:**
+- Mathematical function visualization
+- Terrain and topographic mapping
+- Scientific data visualization
+- Heat map and density displays
+- Engineering simulations
+- Financial surface analysis
+
+## Series Classes
+
+**TSurfaceSeries** - Standard 3D surface charts
+**TTriSurfaceSeries** - Triangulated irregular network (TIN) surfaces
+**TIsoSurfaceSeries** - Isometric surface visualization
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `NumXValues` | Integer | Number of points in X direction |
+| `NumZValues` | Integer | Number of points in Z direction |
+| `UseColorRange` | Boolean | Use color gradient based on Y values |
+| `UsePalette` | Boolean | Use predefined color palette |
+| `PaletteStyle` | TPalettestyle | Palette type: `psPale`, `psStrong`, `psGrayscale`, `psRainbow` |
+| `StartColor` | TColor | Starting color for range |
+| `EndColor` | TColor | Ending color for range |
+| `WireFrame` | Boolean | Display as wireframe only |
+| `DotFrame` | Boolean | Display as dots |
+| `IrregularGrid` | Boolean | Support irregular XZ spacing |
+| `Pen` | TPen | Customize grid lines |
+| `Smoothing` | Boolean | Apply smoothing algorithm |
+| `HideCells` | Boolean | Hide back-facing cells |
+| `FastBrush` | Boolean | Faster rendering with simplified fills |
+
+## Code Examples
+
+### Basic Surface Chart
+
+From VCL/TeeNew/SeriesType_Surface.pas:45:
+
+```pascal
+uses
+  TeEngine, TeeSurfa, TeeProcs, Chart, TeeTools;
+
+procedure CreateBasicSurface(SurfaceSeries: TSurfaceSeries; Chart: TChart);
+begin
+  SurfaceSeries.FillSampleValues(30);
+  
+  Chart.View3D := True;
+  
+  // Optional settings to accelerate display
+  Chart.Axes.FastCalc := True;
+  SurfaceSeries.FastBrush := True;
+  
+  // Optional setting to improve display on rotation
+  // but slowing performance
+  SurfaceSeries.HideCells := True;
+end;
+```
+
+### Surface from Mathematical Function
+
+From VCL/TeeNew/SeriesType_Surface.pas:61:
+
+```pascal
+procedure CreateMathSurface(SurfaceSeries: TSurfaceSeries);
+begin
+  // Set grid size
+  SurfaceSeries.NumXValues := 30;
+  SurfaceSeries.NumZValues := 30;
+  
+  // Use event to calculate Y values
+  SurfaceSeries.OnGetYValue := CalculateSurfacePoint;
+end;
+
+function CalculateSurfacePoint(Sender: TChartSeries; 
+  X, Z: Integer): Double;
+var
+  PiPortion, HalfPi, tmpX, tmpZ: Double;
+begin
+  with TSurfaceSeries(Sender) do
+  begin
+    PiPortion := Pi / NumXValues;
+    HalfPi := Pi * 0.5;
+    tmpX := X * PiPortion;
+    tmpZ := Z * PiPortion;
+    
+    // Sample mathematical functions:
+    
+    // Sinusoidal surface
+    Result := 0.5 * Sqr(Cos(X / (NumXValues * 0.2))) +
+              Sqr(Cos(Z / (NumXValues * 0.2))) -
+              Cos(Z / (NumXValues * 0.5));
+    
+    // Or trigonometric
+    // Result := Sqr(Cos(tmpX)) * Sqr(Sin(tmpZ));
+    
+    // Or wave function
+    // Result := Cos(tmpX * tmpX) + Sin(tmpZ * tmpZ);
+    
+    // Or radial
+    // Result := Sqrt(tmpX * tmpX + tmpZ * tmpZ);
+  end;
+end;
+```
+
+### Color Modes
+
+From VCL/TeeNew/SeriesType_Surface.pas:168:
+
+```pascal
+procedure SetSurfaceColorMode(Surface: TSurfaceSeries; Mode: Integer);
+begin
+  case Mode of
+    0: begin
+         // Single color
+         Surface.UseColorRange := False;
+         Surface.UsePalette := False;
+       end;
+    1: begin
+         // Color range (gradient from start to end color)
+         Surface.UseColorRange := True;
+         Surface.UsePalette := False;
+         Surface.StartColor := clYellow;
+         Surface.EndColor := clRed;
+       end;
+    2: begin
+         // Pale palette
+         Surface.UseColorRange := False;
+         Surface.UsePalette := True;
+         Surface.PaletteStyle := psPale;
+       end;
+    3: begin
+         // Strong palette
+         Surface.UseColorRange := False;
+         Surface.UsePalette := True;
+         Surface.PaletteStyle := psStrong;
+       end;
+    4: begin
+         // Grayscale
+         Surface.UseColorRange := False;
+         Surface.UsePalette := True;
+         Surface.PaletteStyle := psGrayscale;
+       end;
+    5: begin
+         // Inverted grayscale
+         Surface.UseColorRange := False;
+         Surface.UsePalette := True;
+         Surface.PaletteStyle := psInvGray;
+       end;
+    6: begin
+         // Rainbow
+         Surface.UseColorRange := False;
+         Surface.UsePalette := True;
+         Surface.PaletteStyle := psRainbow;
+       end;
+  end;
+end;
+```
+
+### Display Modes
+
+From VCL/TeeNew/SeriesType_Surface.pas:207:
+
+```pascal
+procedure SetSurfaceDisplayMode(Surface: TSurfaceSeries; Mode: Integer);
+begin
+  case Mode of
+    0: begin
+         // Solid with grid lines
+         Surface.WireFrame := False;
+         Surface.DotFrame := False;
+         Surface.Pen.Visible := True;
+       end;
+    1: begin
+         // Solid without grid
+         Surface.WireFrame := False;
+         Surface.DotFrame := False;
+         Surface.Pen.Visible := False;
+       end;
+    2: begin
+         // Wireframe only
+         Surface.WireFrame := True;
+         Surface.Pen.Visible := True;
+       end;
+    3: begin
+         // Dot frame
+         Surface.DotFrame := True;
+       end;
+  end;
+end;
+```
+
+### Surface with Custom Data
+
+From VCL/TeeNew/Surface_XYZFloat.pas (example pattern):
+
+```pascal
+procedure AddCustomSurfaceData(Surface: TSurfaceSeries);
+var
+  X, Z: Integer;
+  Y: Double;
+begin
+  Surface.Clear;
+  
+  // Define grid size
+  Surface.NumXValues := 20;
+  Surface.NumZValues := 20;
+  
+  // Add XYZ points
+  for X := 0 to Surface.NumXValues - 1 do
+    for Z := 0 to Surface.NumZValues - 1 do
+    begin
+      // Calculate Y value based on X and Z
+      Y := Sin(X * 0.3) * Cos(Z * 0.3) * 10;
+      
+      Surface.AddXYZ(X, Y, Z);
+    end;
+end;
+```
+
+### Irregular Surface Grid
+
+From VCL/TeeNew/Surface_Irregular.pas (example pattern):
+
+```pascal
+procedure CreateIrregularSurface(Surface: TSurfaceSeries);
+begin
+  Surface.IrregularGrid := True;
+  
+  // Add points with irregular X and Z spacing
+  Surface.AddXYZ(0, 10, 0);
+  Surface.AddXYZ(5, 20, 0);
+  Surface.AddXYZ(8, 15, 0);
+  Surface.AddXYZ(0, 12, 5);
+  Surface.AddXYZ(5, 25, 5);
+  Surface.AddXYZ(8, 18, 5);
+  // ... more irregular points
+end;
+```
+
+### Surface Smoothing
+
+From VCL/TeeNew/Surface_Smoothing.pas (example pattern):
+
+```pascal
+procedure ApplySurfaceSmoothing(Surface: TSurfaceSeries);
+begin
+  // Enable smoothing algorithm
+  Surface.Smoothing := True;
+  
+  // Adjust smoothing segments for quality
+  Surface.SmoothSegments := 10;
+end;
+```
+
+## Customization Options
+
+### Grid Lines and Pen
+
+From VCL/TeeNew/Surface_WirePalette.pas (example pattern):
+
+```pascal
+procedure CustomizeGridLines(Surface: TSurfaceSeries);
+begin
+  with Surface.Pen do
+  begin
+    Visible := True;
+    Color := clBlack;
+    Width := 1;
+    Style := psSolid;
+  end;
+  
+  // Use palette colors for grid
+  Surface.UsePalette := True;
+  Surface.PaletteStyle := psRainbow;
+end;
+```
+
+### Transparency
+
+From VCL/TeeNew/Surface_Transparency.pas (example pattern):
+
+```pascal
+procedure SetSurfaceTransparency(Surface: TSurfaceSeries);
+begin
+  Surface.Transparency := 50;  // 0-100
+end;
+```
+
+### Surface Sides
+
+From VCL/TeeNew/Surface_Sides.pas (example pattern):
+
+```pascal
+procedure ShowSurfaceSides(Surface: TSurfaceSeries);
+begin
+  // Show vertical walls around surface
+  Surface.SideWalls.Visible := True;
+  Surface.SideWalls.Color := clGray;
+  Surface.SideWalls.Pen.Visible := True;
+end;
+```
+
+### Hiding Cells
+
+From VCL/TeeNew/Surface_HideCells.pas (example pattern):
+
+```pascal
+procedure ConfigureCellHiding(Surface: TSurfaceSeries);
+begin
+  // Hide back-facing cells for better 3D effect
+  Surface.HideCells := True;
+  
+  // Manually hide specific cells
+  Surface.HideCell[5, 5] := True;
+end;
+```
+
+## Advanced Features
+
+### Interactive Rotation
+
+From VCL/TeeNew/SeriesType_Surface.pas:24:
+
+```pascal
+uses
+  TeeTools;
+
+procedure EnableRotation(Chart: TChart);
+var
+  RotateTool: TRotateTool;
+begin
+  RotateTool := TRotateTool.Create(Chart);
+  Chart.Tools.Add(RotateTool);
+  
+  // Now users can rotate the chart with mouse drag
+end;
+```
+
+### Contour Display
+
+From VCL/TeeNew/SeriesType_Contour.pas (see Contour Charts page):
+
+```pascal
+procedure AddContourToSurface(SurfaceSeries: TSurfaceSeries; Chart: TChart);
+var
+  ContourSeries: TContourSeries;
+begin
+  ContourSeries := TContourSeries.Create(Chart);
+  Chart.AddSeries(ContourSeries);
+  
+  // Use surface as data source for contour
+  ContourSeries.DataSource := SurfaceSeries;
+  ContourSeries.NumLevels := 10;
+end;
+```
+
+### Performance Optimization
+
+```pascal
+procedure OptimizeSurfacePerformance(Surface: TSurfaceSeries; Chart: TChart);
+begin
+  // Fast brush for quicker rendering
+  Surface.FastBrush := True;
+  
+  // Fast axis calculations
+  Chart.Axes.FastCalc := True;
+  
+  // Disable automatic repaint during updates
+  Chart.AutoRepaint := False;
+  
+  // Make changes...
+  
+  // Re-enable and repaint
+  Chart.AutoRepaint := True;
+  Chart.Invalidate;
+end;
+```
+
+### OpenGL Acceleration
+
+From VCL/TeeNew/OpenGL_Surface.pas (example pattern):
+
+```pascal
+uses
+  TeeOpenGL;
+
+procedure EnableOpenGL(Chart: TChart);
+begin
+  // Enable OpenGL rendering for better performance
+  Chart.Canvas := TGLCanvas.Create;
+end;
+```
+
+### Surface Nearest Point
+
+From VCL/TeeNew/Tool_SurfaceNearest.pas (example pattern):
+
+```pascal
+uses
+  TeeSurfaceTool;
+
+procedure EnableSurfaceNearest(Chart: TChart; Surface: TSurfaceSeries);
+var
+  NearestTool: TSurfaceNearestTool;
+begin
+  NearestTool := TSurfaceNearestTool.Create(Chart);
+  Chart.Tools.Add(NearestTool);
+  NearestTool.Series := Surface;
+  
+  // Shows nearest point when hovering
+end;
+```
+
+### Dynamic Surface Updates
+
+```pascal
+procedure UpdateSurfaceData(Surface: TSurfaceSeries);
+var
+  X, Z: Integer;
+begin
+  Chart1.AutoRepaint := False;
+  
+  // Update Y values
+  for X := 0 to Surface.NumXValues - 1 do
+    for Z := 0 to Surface.NumZValues - 1 do
+    begin
+      Surface.YValues[X * Surface.NumZValues + Z] := 
+        Random(100) * Sin(Now * X) * Cos(Now * Z);
+    end;
+  
+  Chart1.AutoRepaint := True;
+  Chart1.Invalidate;
+end;
+```
+
+### Export Surface to File
+
+```pascal
+procedure ExportSurfaceData(Surface: TSurfaceSeries; FileName: String);
+var
+  X, Z, Index: Integer;
+  Data: TStringList;
+begin
+  Data := TStringList.Create;
+  try
+    Data.Add('X,Y,Z');
+    
+    for X := 0 to Surface.NumXValues - 1 do
+      for Z := 0 to Surface.NumZValues - 1 do
+      begin
+        Index := X * Surface.NumZValues + Z;
+        Data.Add(Format('%f,%f,%f', [
+          Surface.XValues[Index],
+          Surface.YValues[Index],
+          Surface.ZValues[Index]
+        ]));
+      end;
+    
+    Data.SaveToFile(FileName);
+  finally
+    Data.Free;
+  end;
+end;
+```
+
+## Best Practices
+
+1. **Start with modest grid size** - Large grids (>50x50) can impact performance
+2. **Use FastBrush for real-time** - Enable for better performance during updates
+3. **Enable HideCells for rotation** - Improves visual quality when rotating
+4. **Choose appropriate color palette** - Rainbow for scientific, grayscale for technical
+5. **Consider OpenGL** - For large datasets and smooth interaction
+6. **Optimize axis calculations** - Use `FastCalc` for better performance
+
+## Related Chart Types
+
+- **Contour Charts** - 2D representation of 3D surface
+- **3D Point Charts** - Discrete points instead of continuous surface
+- **TriSurface Charts** - Triangulated irregular surfaces
+- **Heat Maps** - 2D color-coded intensity visualization

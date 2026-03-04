@@ -1,0 +1,408 @@
+---
+title: Gantt Charts
+description: Display project schedules and timelines with horizontal time bars
+---
+
+## Overview
+
+Gantt charts are specialized bar charts that display project schedules, tasks, and timelines. Each bar represents a task or activity, with its horizontal position and length indicating the start date, end date, and duration. Gantt charts are essential for project management, resource planning, and timeline visualization.
+
+**Use cases:**
+- Project scheduling and management
+- Task timeline visualization
+- Resource allocation planning
+- Production scheduling
+- Event planning and coordination
+
+## Series Class
+
+**TGanttSeries** - The primary class for creating Gantt charts
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `StartValues` | TChartValueList | Start dates/times for each bar |
+| `EndValues` | TChartValueList | End dates/times for each bar |
+| `YValues` | TChartValueList | Y position (task/row) for each bar |
+| `NextTask` | TChartValueList | Link to dependent task |
+| `Pointer` | TSeriesPointer | Configure bar appearance |
+| `Pointer.VertSize` | Integer | Bar height |
+| `Marks` | TSeriesMarks | Configure task labels |
+| `ColorEachPoint` | Boolean | Use different color for each bar |
+| `ConnectingPen` | TPen | Pen for drawing task dependencies |
+
+## Code Examples
+
+### Basic Gantt Chart
+
+From VCL/TeeNew/SeriesType_Gantt.pas:34:
+
+```pascal
+uses
+  TeEngine, Series, GanttCh, TeeProcs, Chart;
+
+procedure CreateBasicGanttChart(GanttSeries: TGanttSeries);
+begin
+  GanttSeries.FillSampleValues(20);
+  
+  // Recommended for Gantt charts
+  Chart1.View3D := False;
+end;
+```
+
+### Gantt Chart with Custom Tasks
+
+From VCL/TeeNew/Gantt_MouseDrag.pas:47:
+
+```pascal
+procedure CreateProjectSchedule(GanttSeries: TGanttSeries; Chart: TChart);
+begin
+  // Set 2D view for clarity
+  Chart.View3D := False;
+  
+  // Disable automatic sorting by date
+  GanttSeries.XValues.Order := loNone;
+  
+  // Add tasks with date-time values
+  // AddGantt parameters: (StartDate, EndDate, YPosition, Label)
+  with GanttSeries do
+  begin
+    AddGantt(EncodeDate(2003, 4, 1),  EncodeDate(2003, 4, 10), 0, 'Task A');
+    AddGantt(EncodeDate(2003, 4, 5),  EncodeDate(2003, 4, 15), 1, 'Task B');
+    AddGantt(EncodeDate(2003, 4, 2),  EncodeDate(2003, 4, 8),  2, 'Task C');
+    AddGantt(EncodeDate(2003, 4, 9),  EncodeDate(2003, 4, 21), 3, 'Task D');
+    
+    // Multiple bars on the same row (Y position)
+    AddGantt(EncodeDate(2003, 4, 12), EncodeDate(2003, 4, 18), 2, 'Task C2');
+    
+    // Make marks visible
+    Marks.Visible := True;
+    Marks.Shadow.Size := 0;
+    Marks.Gradient.Visible := True;
+  end;
+  
+  // Configure horizontal axis for dates
+  Chart.BottomAxis.SetMinMax(EncodeDate(2003, 4, 1), EncodeDate(2003, 5, 1));
+  Chart.BottomAxis.Increment := DateTimeStep[dtOneDay];
+  Chart.BottomAxis.LabelsAngle := 90;
+  Chart.BottomAxis.DateTimeFormat := 'dd-mmm';
+  
+  // Configure vertical axis for tasks
+  Chart.LeftAxis.SetMinMax(-2, 5);
+  Chart.LeftAxis.Grid.Centered := False;
+end;
+```
+
+### Interactive Gantt with Mouse Dragging
+
+From VCL/TeeNew/Gantt_MouseDrag.pas:92:
+
+```pascal
+uses
+  TeeGanttTool;
+
+var
+  GanttTool: TGanttTool;
+
+procedure SetupInteractiveGantt(GanttSeries: TGanttSeries; Chart: TChart);
+begin
+  // Disable zoom to allow dragging
+  Chart.Zoom.Allow := False;
+  
+  // Initialize Gantt Tool for drag functionality
+  GanttTool := TGanttTool.Create(Self);
+  GanttTool.Series := GanttSeries;
+  GanttTool.ParentChart := Chart;
+  GanttTool.OnDragBar := GanttToolDragBar;
+end;
+
+// Handle drag events
+procedure GanttToolDragBar(Sender: TGanttTool; GanttBar: Integer);
+var
+  StatusText: String;
+begin
+  StatusText := Format('Task %d: %s to %s', [
+    GanttBar,
+    DateTimeToStr(Sender.Gantt.StartValues[GanttBar]),
+    DateTimeToStr(Sender.Gantt.EndValues[GanttBar])
+  ]);
+  
+  StatusBar1.SimpleText := StatusText;
+end;
+```
+
+### Custom Task Labels
+
+From VCL/TeeNew/Gantt_MouseDrag.pas:148:
+
+```pascal
+procedure CustomizeGanttMarks(GanttSeries: TGanttSeries);
+begin
+  GanttSeries.OnGetMarkText := GetGanttMarkText;
+end;
+
+procedure GetGanttMarkText(Sender: TChartSeries; ValueIndex: Integer; 
+  var MarkText: String);
+begin
+  // Customize mark text for each task
+  case ValueIndex of
+    0: MarkText := 'John';
+    1: MarkText := 'Ann';
+    2: MarkText := 'David';
+    3: MarkText := 'Carol';
+    4: MarkText := 'David 2';
+  else
+    MarkText := 'Task ' + IntToStr(ValueIndex);
+  end;
+end;
+```
+
+### Adjusting Bar Height
+
+From VCL/TeeNew/Gantt_MouseDrag.pas:113:
+
+```pascal
+procedure SetGanttBarHeight(GanttSeries: TGanttSeries; Height: Integer);
+begin
+  GanttSeries.Pointer.VertSize := Height;
+end;
+```
+
+## Customization Options
+
+### Bar Appearance
+
+```pascal
+with GanttSeries.Pointer do
+begin
+  // Bar height
+  VertSize := 20;
+  
+  // Bar style
+  Style := psRectangle;
+  
+  // Bar border
+  Pen.Visible := True;
+  Pen.Color := clBlack;
+  Pen.Width := 1;
+  
+  // Bar fill
+  Brush.Style := bsSolid;
+end;
+```
+
+### Color-Coded Tasks
+
+```pascal
+procedure ColorCodeTasks(GanttSeries: TGanttSeries);
+begin
+  // Use different color for each task
+  GanttSeries.ColorEachPoint := True;
+  
+  // Or set specific colors
+  GanttSeries.Colors[0] := clRed;    // High priority
+  GanttSeries.Colors[1] := clYellow; // Medium priority
+  GanttSeries.Colors[2] := clGreen;  // Low priority
+end;
+```
+
+### Task Dependencies
+
+```pascal
+procedure SetTaskDependencies(GanttSeries: TGanttSeries);
+begin
+  // Connect tasks to show dependencies
+  // Task 1 depends on Task 0 (must finish before Task 1 starts)
+  GanttSeries.NextTask[0] := 1;
+  GanttSeries.NextTask[1] := 2;
+  
+  // Customize connecting lines
+  GanttSeries.ConnectingPen.Color := clBlue;
+  GanttSeries.ConnectingPen.Width := 2;
+  GanttSeries.ConnectingPen.Style := psDash;
+end;
+```
+
+### Axis Time Scale
+
+From VCL/TeeNew/Gantt_MouseDrag.pas:128:
+
+```pascal
+procedure SetTimeScale(Chart: TChart; ScaleType: Integer);
+begin
+  case ScaleType of
+    0: Chart.BottomAxis.Increment := DateTimeStep[dtOneDay];
+    1: Chart.BottomAxis.Increment := DateTimeStep[dtOneWeek];
+    2: Chart.BottomAxis.Increment := DateTimeStep[dtHalfMonth];
+    3: Chart.BottomAxis.Increment := DateTimeStep[dtOneMonth];
+  end;
+  
+  // Adjust label format based on scale
+  case ScaleType of
+    0: Chart.BottomAxis.DateTimeFormat := 'dd-mmm';
+    1: Chart.BottomAxis.DateTimeFormat := 'dd-mmm';
+    2: Chart.BottomAxis.DateTimeFormat := 'mmm-yy';
+    3: Chart.BottomAxis.DateTimeFormat := 'mmm-yy';
+  end;
+end;
+```
+
+### Pan Timeline
+
+From VCL/TeeNew/Gantt_MouseDrag.pas:118:
+
+```pascal
+// Scroll left (earlier dates)
+procedure ScrollLeft(Chart: TChart);
+begin
+  with Chart.BottomAxis do
+    SetMinMax(Minimum - 1, Maximum - 1);
+end;
+
+// Scroll right (later dates)
+procedure ScrollRight(Chart: TChart);
+begin
+  with Chart.BottomAxis do
+    SetMinMax(Minimum + 1, Maximum + 1);
+end;
+
+// Zoom in
+procedure ZoomIn(Chart: TChart);
+begin
+  with Chart.BottomAxis do
+    SetMinMax(Minimum + 1, Maximum - 1);
+end;
+
+// Zoom out
+procedure ZoomOut(Chart: TChart);
+begin
+  with Chart.BottomAxis do
+    SetMinMax(Minimum - 1, Maximum + 1);
+end;
+```
+
+## Advanced Features
+
+### Milestones
+
+```pascal
+procedure AddMilestone(GanttSeries: TGanttSeries; Date: TDateTime; 
+  YPos: Integer; Caption: String);
+begin
+  // Add milestone as zero-duration task
+  GanttSeries.AddGantt(Date, Date, YPos, Caption);
+  
+  // Use different pointer style for milestones
+  GanttSeries.Pointer.Style := psDiamond;
+  GanttSeries.Colors[GanttSeries.Count - 1] := clRed;
+end;
+```
+
+### Today Line
+
+```pascal
+uses
+  TeeTools;
+
+procedure AddTodayLine(Chart: TChart);
+var
+  TodayLine: TColorLineTool;
+begin
+  TodayLine := TColorLineTool.Create(Chart);
+  Chart.Tools.Add(TodayLine);
+  
+  TodayLine.Axis := Chart.BottomAxis;
+  TodayLine.Value := Now;
+  TodayLine.Pen.Color := clRed;
+  TodayLine.Pen.Width := 2;
+  TodayLine.Pen.Style := psDash;
+end;
+```
+
+### Critical Path Highlighting
+
+```pascal
+procedure HighlightCriticalPath(GanttSeries: TGanttSeries; 
+  CriticalTasks: array of Integer);
+var
+  i: Integer;
+begin
+  for i := Low(CriticalTasks) to High(CriticalTasks) do
+  begin
+    GanttSeries.Colors[CriticalTasks[i]] := clRed;
+  end;
+end;
+```
+
+### Resource Allocation
+
+```pascal
+procedure ShowResourceAllocation;
+var
+  Resource1, Resource2, Resource3: TGanttSeries;
+begin
+  // Create separate series for each resource
+  Resource1 := TGanttSeries.Create(Chart1);
+  Resource2 := TGanttSeries.Create(Chart1);
+  Resource3 := TGanttSeries.Create(Chart1);
+  
+  Chart1.AddSeries(Resource1);
+  Chart1.AddSeries(Resource2);
+  Chart1.AddSeries(Resource3);
+  
+  Resource1.Title := 'Team A';
+  Resource2.Title := 'Team B';
+  Resource3.Title := 'Team C';
+  
+  // Add tasks for each resource
+  Resource1.AddGantt(EncodeDate(2024, 1, 1), EncodeDate(2024, 1, 10), 0, 'Task 1');
+  Resource2.AddGantt(EncodeDate(2024, 1, 5), EncodeDate(2024, 1, 15), 1, 'Task 2');
+  Resource3.AddGantt(EncodeDate(2024, 1, 8), EncodeDate(2024, 1, 20), 2, 'Task 3');
+end;
+```
+
+### Export to Data
+
+```pascal
+procedure ExportGanttData(GanttSeries: TGanttSeries);
+var
+  i: Integer;
+  Data: TStringList;
+begin
+  Data := TStringList.Create;
+  try
+    Data.Add('Task,Start,End,Duration');
+    
+    for i := 0 to GanttSeries.Count - 1 do
+    begin
+      Data.Add(Format('%s,%s,%s,%.0f days', [
+        GanttSeries.Labels[i],
+        DateToStr(GanttSeries.StartValues[i]),
+        DateToStr(GanttSeries.EndValues[i]),
+        GanttSeries.EndValues[i] - GanttSeries.StartValues[i]
+      ]));
+    end;
+    
+    Data.SaveToFile('gantt_export.csv');
+  finally
+    Data.Free;
+  end;
+end;
+```
+
+## Best Practices
+
+1. **Use 2D view** - Gantt charts are clearer in 2D
+2. **Disable sorting** - Keep tasks in logical order with `XValues.Order := loNone`
+3. **Configure time scale** - Match axis increments to project duration
+4. **Label clearly** - Use meaningful task names
+5. **Color code** - Use colors to indicate task status or priority
+6. **Show dependencies** - Use connecting lines to show task relationships
+
+## Related Chart Types
+
+- **Horizontal Bar Charts** - Similar horizontal bars without time component
+- **Timeline Charts** - Alternative timeline visualization
+- **Calendar Charts** - Date-based visualizations
+- **Waterfall Charts** - Sequential process visualization

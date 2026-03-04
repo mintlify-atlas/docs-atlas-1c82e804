@@ -1,0 +1,366 @@
+---
+title: Standard Series Samples
+description: Bar, Line, Area, Pie, and Point series examples for VCL
+icon: 'chart-line'
+---
+
+## Overview
+
+The standard series samples demonstrate the most commonly used chart types in TeeChart VCL. These foundational series types support extensive customization including gradients, transparency, 3D effects, and interactive features.
+
+## Bar Series
+
+Bar charts are ideal for comparing values across categories.
+
+### Bar with Gradient
+
+Demonstrates applying gradient fills to bar series for enhanced visual appeal.
+
+**Location:** `TeeNew/Bar_Gradient.pas`
+
+```pascal
+unit Bar_Gradient;
+
+type
+  TBarGradient = class(TBaseForm)
+    Series1: TBarSeries;
+    Button1: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+  end;
+
+procedure TBarGradient.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues(6);
+end;
+
+procedure TBarGradient.Button1Click(Sender: TObject);
+begin
+  // Open gradient editor dialog
+  TTeeGradientEditor.Edit(Self, Series1.Gradient, True, True);
+end;
+```
+
+**Key Features:**
+- Gradient fill customization
+- Interactive gradient editor
+- Visual gradient effects
+
+### Bar 3D Depth
+
+Shows how to control 3D depth for bar series.
+
+**Location:** `TeeNew/Bar_3DDepth.pas`
+
+**Features:**
+- Adjustable 3D depth
+- Perspective rendering
+- Side-by-side bar comparison
+
+### Other Bar Samples
+
+<CardGroup cols={2}>
+  <Card title="Bar_Cylinder" icon="cylinder">
+    Cylindrical bar rendering
+  </Card>
+  
+  <Card title="Bar_Image" icon="image">
+    Image fills for bars
+  </Card>
+  
+  <Card title="Bar_MarksOnBar" icon="tag">
+    Value labels positioned on bars
+  </Card>
+  
+  <Card title="Bar_Rounded" icon="border-radius">
+    Rounded corner bars
+  </Card>
+  
+  <Card title="Bar_SelfStack" icon="layer-group">
+    Self-stacking bar series
+  </Card>
+  
+  <Card title="Bar_StackGroup" icon="bars-staggered">
+    Grouped and stacked bars
+  </Card>
+  
+  <Card title="Bar_TickLines" icon="grip-lines">
+    Tick marks on bars
+  </Card>
+  
+  <Card title="Bar_SideAll" icon="columns">
+    Side-by-side bar arrangement
+  </Card>
+</CardGroup>
+
+## Line Series
+
+Line charts excel at showing trends and changes over time.
+
+### Fast Line with Real-time Data
+
+Optimized line series for high-performance real-time data display.
+
+**Location:** `TeeNew/FastLine_Realtime.pas`
+
+```pascal
+procedure TFastLineRealtime.Timer1Timer(Sender: TObject);
+begin
+  // Add new point and remove old point for scrolling effect
+  Series1.AddXY(Series1.XValues.Last + 1, Random(100));
+  
+  if Series1.Count > MaxPoints then
+    Series1.Delete(0);
+end;
+```
+
+**Key Features:**
+- Real-time data streaming
+- Scrolling chart effect
+- Optimized performance
+- Configurable data point limits
+
+### Line Series Samples
+
+<AccordionGroup>
+  <Accordion title="FastLine_DrawAll">
+    Draw all points vs. sampling for performance
+  </Accordion>
+  
+  <Accordion title="FastLine_DrawAllStyle">
+    Different drawing styles for fast lines
+  </Accordion>
+  
+  <Accordion title="FastLine_Nulls">
+    Handling null values in line series
+  </Accordion>
+  
+  <Accordion title="FastLine_TreatNulls">
+    Various null value treatment options
+  </Accordion>
+  
+  <Accordion title="HorizLine_Series">
+    Horizontal line series
+  </Accordion>
+</AccordionGroup>
+
+## Area Series
+
+Area charts fill the region between the line and the axis.
+
+### Area with Transparency
+
+**Location:** `TeeNew/Area_Transparency.pas`
+
+```pascal
+procedure TAreaTransparency.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues(10);
+  Series2.FillSampleValues(10);
+  
+  // Set transparency for overlapping areas
+  Series1.Transparency := 70;
+  Series2.Transparency := 70;
+end;
+```
+
+**Features:**
+- Adjustable transparency levels
+- Overlapping area visualization
+- Gradient fills
+
+### Area Series Samples
+
+<CardGroup cols={2}>
+  <Card title="Area_Gradient">
+    Gradient-filled areas
+  </Card>
+  
+  <Card title="Area_Origin">
+    Custom origin point for area fill
+  </Card>
+  
+  <Card title="Area_Stairs">
+    Step-style area charts
+  </Card>
+  
+  <Card title="Area_TreatNulls">
+    Null value handling in areas
+  </Card>
+</CardGroup>
+
+## Pie Series
+
+Pie charts display proportional data as slices of a circle.
+
+### Pie with Explosions
+
+**Location:** `TeeNew/Pie_Exploded.pas`
+
+**Features:**
+- Slice explosion effects
+- Custom slice colors
+- Percentage labels
+- 3D pie rendering
+
+### Donut Series
+
+**Location:** `TeeNew/Donut_Series.pas`
+
+```pascal
+procedure TDonutForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues(5);
+  
+  // Configure donut appearance
+  Series1.DonutPercent := 50;  // Inner radius percentage
+end;
+```
+
+### Pie Series Samples
+
+<AccordionGroup>
+  <Accordion title="Pie_AutoMarkPosition">
+    Automatic mark positioning to avoid overlaps
+  </Accordion>
+  
+  <Accordion title="Pie_Focus">
+    Highlight selected slice on click
+  </Accordion>
+  
+  <Accordion title="Pie_OtherSlice">
+    Combine small slices into "Other" category
+  </Accordion>
+  
+  <Accordion title="Pie_Patterns">
+    Pattern fills for slices
+  </Accordion>
+</AccordionGroup>
+
+## Point Series
+
+Point series display individual data points with customizable markers.
+
+### Point with Custom Pointers
+
+**Location:** `TeeNew/Point_Pointers.pas`
+
+**Features:**
+- Custom pointer shapes (circle, rectangle, triangle, star, etc.)
+- Pointer size and color customization
+- Image-based pointers
+
+### Bubble Series
+
+Bubble charts show three dimensions of data: X, Y, and radius.
+
+**Location:** `TeeNew/Bubble_Gradient.pas`
+
+```pascal
+procedure TBubbleGradient.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.AddBubble(10, 20, 30, 'Point 1', clRed);
+  Series1.AddBubble(20, 35, 25, 'Point 2', clBlue);
+  Series1.AddBubble(30, 15, 40, 'Point 3', clGreen);
+  
+  // Enable gradient for bubbles
+  Series1.Gradient.Visible := True;
+end;
+```
+
+### Point Series Samples
+
+<CardGroup cols={2}>
+  <Card title="Bubble_Transparency">
+    Transparent bubbles for overlap visibility
+  </Card>
+  
+  <Card title="Point_ColorEach">
+    Individual point colors
+  </Card>
+  
+  <Card title="Point_InflateMargins">
+    Automatic margin adjustment for point visibility
+  </Card>
+  
+  <Card title="Point_Pointers3D">
+    3D pointer rendering
+  </Card>
+</CardGroup>
+
+## Common Features
+
+All standard series support:
+
+<AccordionGroup>
+  <Accordion title="Marks and Labels">
+    - Custom mark text
+    - Mark positioning
+    - Mark styles (value, percent, label, etc.)
+    - HTML formatted marks
+  </Accordion>
+  
+  <Accordion title="Color Customization">
+    - Individual point colors
+    - Gradient fills
+    - Transparency
+    - Color palettes
+  </Accordion>
+  
+  <Accordion title="Interactive Features">
+    - Click events
+    - Mouse hover tooltips
+    - Point selection
+    - Drag and drop
+  </Accordion>
+  
+  <Accordion title="3D Effects">
+    - 3D rendering
+    - Rotation and elevation
+    - Depth control
+    - Orthogonal vs perspective
+  </Accordion>
+</AccordionGroup>
+
+## Performance Optimization
+
+For large datasets, use these techniques:
+
+```pascal
+// Disable auto-repaint during data loading
+Chart1.AutoRepaint := False;
+try
+  for i := 0 to 10000 do
+    Series1.AddXY(i, RandomValue);
+finally
+  Chart1.AutoRepaint := True;
+end;
+
+// Use FastLine for best performance
+Series1.DrawStyle := dsAll;  // or dsSegments
+Series1.LinePen.Width := 1;  // Thin pens are faster
+```
+
+## Related Samples
+
+<CardGroup cols={2}>
+  <Card title="Statistical Charts" href="/vcl/statistical-charts">
+    Box plots, histograms, error bars
+  </Card>
+  
+  <Card title="Financial Charts" href="/vcl/financial-charts">
+    Candle, OHLC, volume series
+  </Card>
+  
+  <Card title="3D Charts" href="/vcl/3d-charts">
+    Surface, contour, 3D points
+  </Card>
+  
+  <Card title="Gauges" href="/vcl/gauges">
+    Circular and linear gauges
+  </Card>
+</CardGroup>

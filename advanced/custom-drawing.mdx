@@ -1,0 +1,324 @@
+---
+title: 'Custom Drawing'
+description: 'Master custom drawing techniques with TeeChart Canvas API for creating advanced visualizations'
+icon: 'paintbrush'
+---
+
+## Overview
+
+TeeChart provides powerful custom drawing capabilities through its Canvas API, allowing you to draw directly on charts and create custom visualizations beyond standard series types. The Canvas API supports multiple rendering engines including GDI, GDI+, OpenGL, and Skia.
+
+## Canvas Drawing Fundamentals
+
+### Drawing on Chart Events
+
+Use chart events to add custom drawing to your charts:
+
+```delphi
+procedure TForm1.Chart1AfterDraw(Sender: TObject);
+begin
+  With Chart1.Canvas do
+  begin
+    Brush.Style := bsSolid;
+    Pen.Style := psSolid;
+    Pen.Color := clBlack;
+    
+    // Draw custom shapes
+    Cube(100, 200, 100, 200, 0, 100, True);
+  end;
+end;
+```
+
+**Available Events:**
+- `OnBeforeDraw` - Before any chart element is drawn
+- `OnAfterDraw` - After all elements are drawn
+- `Series.OnAfterDrawValues` - After series values are painted
+
+## Advanced Canvas Features
+
+### Anti-Aliasing
+
+Create smooth, high-quality graphics with anti-aliasing:
+
+**Source:** `VCL/TeeNew/Canvas_AntiAlias.pas:40`
+
+```delphi
+procedure TCanvasAntiAlias.Chart1AfterDraw(Sender: TObject);
+var 
+  b: TBitmap;
+begin
+  if CheckBox1.Checked and (not InsideAntiAliasing) then
+  begin
+    InsideAntiAliasing := True;
+    try
+      b := TeeAntiAlias(Chart1);  // Create anti-aliased bitmap
+      try
+        Chart1.Canvas.Draw(0, 0, b);  // Draw bitmap onto Chart1
+      finally
+        b.Free;
+      end;
+    finally
+      InsideAntiAliasing := False;
+    end;
+  end;
+end;
+```
+
+### 180-Degree Rotation
+
+Rotate chart elements for special effects:
+
+**Source:** `VCL/TeeNew/Canvas_180Rotation.pas`
+
+```delphi
+Chart1.View3DOptions.Rotation := 180;
+Chart1.View3DOptions.Orthogonal := True;
+```
+
+### Grayscale Conversion
+
+Convert charts to grayscale for printing or special effects:
+
+**Source:** `VCL/TeeNew/Canvas_GrayScale.pas`
+
+```delphi
+Chart1.Canvas.MonoChrome := True;
+```
+
+### Custom Pen Styles
+
+**Dotted Pen Patterns:** `VCL/TeeNew/Canvas_DotPen.pas`
+
+```delphi
+Series1.Pen.Style := psDot;
+Series1.Pen.Width := 2;
+Series1.LinePen.Visible := True;
+```
+
+### Transparency Effects
+
+**Source:** `VCL/TeeNew/Canvas_Transparency.pas`
+
+```delphi
+Series1.Transparency := 50;  // 0-100, where 100 is fully transparent
+Chart1.Gradient.Transparency := 30;
+```
+
+## 3D Canvas Drawing
+
+### Draw3D Component
+
+The `TDraw3D` component provides a dedicated 3D drawing surface:
+
+**Source:** `VCL/TeeNew/Draw3D_Canvas.pas:64`
+
+```delphi
+procedure TDraw3DCanvas.Draw3D1Paint(Sender: TObject; const ARect: TRect);
+var 
+  CenterX, CenterY, CenterZ: Integer;
+begin
+  // Get 3D space center
+  CenterX := Draw3D1.ChartXCenter;
+  CenterY := Draw3D1.ChartYCenter;
+  CenterZ := 0;
+  
+  With Draw3D1.Canvas do
+  begin
+    Brush.Style := bsSolid;
+    Pen.Style := psClear;
+    
+    // Draw 3D cube
+    Brush.Color := RGB(200, 200, 250);
+    Cube(CenterX-100, CenterX+100, 100, 200, -100, 100, True);
+    
+    // Draw pyramid
+    Brush.Color := clYellow;
+    Pyramid(True, CenterX-50, CenterX+50, 50, 150, -50, 50, 200);
+  end;
+end;
+```
+
+### Available 3D Shapes
+
+- `Cube(X0, X1, Y0, Y1, Z0, Z1, Dark3D)` - Draw 3D box
+- `Pyramid(Vertical, X0, X1, Y0, Y1, Z0, Z1, ZTop)` - Draw pyramid
+- `Cone(Vertical, X0, X1, Y0, Y1, Z0, Z1, Dark3D)` - Draw cone
+- `Cylinder(Vertical, Left, Top, Right, Bottom, Z0, Z1, Dark3D)` - Draw cylinder
+
+**Example:** `VCL/TeeNew/Canvas_Cone.pas`
+
+## Canvas Rendering Engines
+
+### GDI+ Canvas
+
+Enhanced rendering with gradients and alpha blending:
+
+**Source:** `VCL/TeeNew/Canvas_GDIPlus_New.pas:39`
+
+```delphi
+procedure TCanvasGDIPlusNew.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues();
+  
+  // Configure gradient
+  ButtonGradient1.LinkGradient(Chart1.Border.Fill.Gradient);
+  Series1.Pointer.Gradient.Visible := True;
+end;
+```
+
+**Benefits:**
+- High-quality anti-aliasing
+- Alpha transparency
+- Advanced gradient fills
+- Better text rendering
+
+### Smooth Stretching
+
+**Source:** `VCL/TeeNew/Canvas_SmoothStretch.pas`
+
+Enable smooth image stretching for high-quality scaling:
+
+```delphi
+Chart1.Canvas.StretchQuality := sqHighQuality;
+```
+
+## Advanced Techniques
+
+### Rotated Ellipses
+
+**Source:** `VCL/TeeNew/Canvas_RotatedEllipse.pas`
+
+```delphi
+Canvas.RotateLabel(CenterX, CenterY, Text, Angle);
+Canvas.Ellipse(Rect);
+```
+
+### Rotation Center Control
+
+**Source:** `VCL/TeeNew/Canvas_RotCenter.pas`
+
+Control the center point for chart rotation:
+
+```delphi
+Chart1.View3DOptions.RotationCenter := rcCustom;
+Chart1.View3DOptions.CustomRotationPoint.X := 100;
+Chart1.View3DOptions.CustomRotationPoint.Y := 100;
+```
+
+### Orthogonal Angle
+
+**Source:** `VCL/TeeNew/Canvas_OrthoAngle.pas`
+
+```delphi
+Chart1.View3DOptions.Orthogonal := True;
+Chart1.View3DOptions.OrthoAngle := 45;
+```
+
+### Custom Shape Pictures
+
+**Source:** `VCL/TeeNew/Canvas_CustomShapePicture.pas`
+
+```delphi
+Series1.Pointer.Style := psImage;
+Series1.Pointer.Picture.LoadFromFile('image.png');
+```
+
+### Font Pictures
+
+**Source:** `VCL/TeeNew/Canvas_FontPicture.pas`
+
+Use font symbols as custom point markers.
+
+## Performance Considerations
+
+### When to Use Custom Drawing
+
+**Best for:**
+- Annotations and labels
+- Custom indicators
+- Geometric overlays
+- Special effects
+- Mixed 2D/3D visualizations
+
+**Avoid for:**
+- Large datasets (use optimized series instead)
+- Real-time high-frequency updates
+- Simple standard visualizations
+
+### Optimization Tips
+
+1. **Minimize OnAfterDraw Operations**
+   ```delphi
+   // Cache calculations outside drawing events
+   procedure TForm1.CalculateCustomShapes;
+   begin
+     // Pre-calculate shape coordinates
+   end;
+   ```
+
+2. **Use Appropriate Pen Styles**
+   ```delphi
+   // psClear is faster when outline not needed
+   Canvas.Pen.Style := psClear;
+   ```
+
+3. **Batch Drawing Operations**
+   ```delphi
+   // Draw multiple shapes in single event handler
+   procedure Chart1AfterDraw(Sender: TObject);
+   begin
+     // Draw all custom elements here
+   end;
+   ```
+
+4. **Choose the Right Canvas**
+   - GDI: Fast, but no anti-aliasing
+   - GDI+: Good quality, moderate speed
+   - OpenGL: Best for 3D and high-performance
+   - Skia: High quality, good performance
+
+## Expert Tips
+
+### Coordinate Systems
+
+```delphi
+// Convert chart values to screen coordinates
+var 
+  X, Y: Integer;
+begin
+  X := Chart1.Axes.Bottom.CalcPosValue(Value);
+  Y := Chart1.Axes.Left.CalcPosValue(YValue);
+  
+  // Now draw at screen position (X, Y)
+  Chart1.Canvas.MoveTo(X, Y);
+end;
+```
+
+### Clipping Regions
+
+```delphi
+// Restrict drawing to chart area
+Chart1.Canvas.ClipRectangle(Chart1.ChartRect);
+// ... draw operations ...
+Chart1.Canvas.UnClipRectangle;
+```
+
+### Z-Order Control
+
+Use different events to control drawing order:
+- `OnBeforeDrawSeries` - Behind series
+- `OnAfterDrawSeries` - In front of series
+- `OnAfterDraw` - On top of everything
+
+## Related Examples
+
+- `VCL/TeeNew/Canvas_CompactChart.pas` - Compact chart layouts
+- `VCL/TeeNew/Canvas_PyramidTrunc.pas` - Truncated pyramids
+- `VCL/TeeMaker/TeeBlockCanvas.pas` - Advanced 3D block drawing
+
+## See Also
+
+- [OpenGL Rendering](/advanced/opengl-rendering) - Hardware-accelerated graphics
+- [Performance](/advanced/performance) - Optimization techniques
+- [Draw3D Component](https://www.steema.com/docs/teechart/vcl) - 3D drawing reference

@@ -1,0 +1,258 @@
+---
+title: Bar Charts
+description: Display categorical data with rectangular bars in various styles
+---
+
+## Overview
+
+Bar charts represent categorical data with rectangular bars where the length of each bar is proportional to the value it represents. They're one of the most common chart types for comparing values across categories. TeeChart supports vertical bars (columns) and horizontal bars with extensive styling options.
+
+**Use cases:**
+- Comparing values across categories
+- Showing rankings or top items
+- Displaying frequency distributions
+- Side-by-side or stacked comparisons
+
+## Series Class
+
+**TBarSeries** - The primary class for creating bar charts
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `MultiBar` | TMultiBar | Bar arrangement: `mbNone`, `mbSide`, `mbStacked`, `mbStacked100`, `mbSideAll`, `mbSelfStack` |
+| `BarStyle` | TBarStyle | Visual style: `bsRectangle`, `bsPyramid`, `bsCilinder`, `bsEllipse`, `bsArrow`, `bsCone`, etc. |
+| `BarWidthPercent` | Integer | Width of bars as percentage (0-100) |
+| `OffsetPercent` | Integer | Offset between bar groups |
+| `Gradient` | TChartGradient | Configure gradient fills |
+| `BarPen` | TChartPen | Customize bar outlines |
+| `Marks` | TSeriesMarks | Configure value labels |
+| `UseOrigin` | Boolean | Start bars from a custom origin |
+| `Origin` | Double | Custom origin value |
+
+## Code Examples
+
+### Basic Bar Chart
+
+```pascal
+uses
+  TeEngine, Series, TeeProcs, Chart;
+
+procedure CreateBasicBarChart;
+var
+  BarSeries: TBarSeries;
+begin
+  BarSeries := TBarSeries.Create(Chart1);
+  Chart1.AddSeries(BarSeries);
+  
+  // Add sample data
+  Chart1.SeriesList.FillSampleValues(6);
+  
+  // Enable 3D view
+  Chart1.View3D := True;
+end;
+```
+
+### Multi-Bar Configurations
+
+From VCL/TeeNew/SeriesType_Bar.pas:42:
+
+```pascal
+procedure ConfigureMultiBar(Series1, Series2, Series3: TBarSeries; Mode: Integer);
+var
+  tmp: Boolean;
+begin
+  case Mode of
+    0: Series1.MultiBar := mbNone;        // Overlapping bars
+    1: Series1.MultiBar := mbSide;        // Side by side
+    2: Series1.MultiBar := mbStacked;     // Stacked
+    3: Series1.MultiBar := mbStacked100;  // 100% stacked
+    4: Series1.MultiBar := mbSideAll;     // All series side by side
+    5: begin
+         Series1.MultiBar := mbSelfStack;
+         
+         // Set bar width percentage
+         Series1.BarWidthPercent := 70;
+         Series2.BarWidthPercent := 70;
+         Series3.BarWidthPercent := 70;
+       end;
+  end;
+  
+  // Hide marks when stacking
+  tmp := (Series1.MultiBar <> mbStacked) and
+         (Series1.MultiBar <> mbStacked100) and
+         (Series1.MultiBar <> mbSelfStack);
+  
+  Series1.Marks.Visible := tmp;
+  Series2.Marks.Visible := tmp;
+  Series3.Marks.Visible := tmp;
+end;
+```
+
+### Bar Styles
+
+From VCL/TeeNew/SeriesType_Bar.pas:72:
+
+```pascal
+procedure SetBarStyle(Series: TBarSeries; StyleIndex: Integer);
+begin
+  case StyleIndex of
+    0: Series.BarStyle := bsRectangle;     // Standard rectangular bars
+    1: Series.BarStyle := bsPyramid;       // Pyramid shape
+    2: Series.BarStyle := bsInvPyramid;    // Inverted pyramid
+    3: Series.BarStyle := bsCilinder;      // Cylindrical bars
+    4: Series.BarStyle := bsEllipse;       // Elliptical bars
+    5: Series.BarStyle := bsArrow;         // Arrow shape
+    6: Series.BarStyle := bsRectGradient;  // Rectangle with gradient
+    7: Series.BarStyle := bsCone;          // Cone shape
+  end;
+end;
+```
+
+### Bar Chart with Gradient
+
+From VCL/TeeNew/Bar_Gradient.pas:33:
+
+```pascal
+procedure ApplyGradientToBars(Series: TBarSeries);
+begin
+  Series.FillSampleValues(6);
+  
+  // Gradient is configured through the series Gradient property
+  // Can be edited at design-time or programmatically
+  with Series.Gradient do
+  begin
+    Visible := True;
+    StartColor := clWhite;
+    EndColor := Series.Color;
+  end;
+end;
+```
+
+### 3D Bars with Custom Depth
+
+From VCL/TeeNew/Bar_3DDepth.pas (example pattern):
+
+```pascal
+procedure Configure3DBars(Series: TBarSeries);
+begin
+  Chart1.View3D := True;
+  Chart1.Chart3DPercent := 30;
+  
+  // Customize 3D appearance
+  Series.Pen.Visible := True;
+  Series.Pen.Width := 2;
+  Series.Pen.Color := clBlack;
+end;
+```
+
+### Rounded Bars
+
+From VCL/TeeNew/Bar_Rounded.pas (example pattern):
+
+```pascal
+procedure CreateRoundedBars(Series: TBarSeries);
+begin
+  Series.BarStyle := bsRectangle;
+  Series.RoundedBarCorners := True;
+  Series.RoundSize := 15;  // Radius of rounded corners
+end;
+```
+
+## Customization Options
+
+### Bar Width and Spacing
+
+```pascal
+// Set bar width as percentage of available space
+Series.BarWidthPercent := 50;  // 50% width
+
+// Offset between bar groups
+Series.OffsetPercent := 10;
+```
+
+### Custom Colors per Bar
+
+```pascal
+// Add bars with individual colors
+Series.Add(100, 'Category A', clRed);
+Series.Add(150, 'Category B', clBlue);
+Series.Add(120, 'Category C', clGreen);
+```
+
+### Horizontal Bars
+
+```pascal
+uses
+  TeEngine, Series;
+
+var
+  HorizBar: THorizBarSeries;
+begin
+  HorizBar := THorizBarSeries.Create(Chart1);
+  Chart1.AddSeries(HorizBar);
+  HorizBar.FillSampleValues();
+end;
+```
+
+### Bar Marks on Top
+
+```pascal
+// Position marks on top of bars
+Series.Marks.Visible := True;
+Series.Marks.Style := smsValue;
+Series.Marks.Arrow.Visible := False;
+```
+
+### Image Fill for Bars
+
+From VCL/TeeNew/Bar_Image.pas (example pattern):
+
+```pascal
+procedure AddImageToBars(Series: TBarSeries);
+begin
+  // Load image into bar brush
+  Series.BarBrush.Image.LoadFromFile('pattern.bmp');
+  Series.BarBrush.Style := bsImage;
+end;
+```
+
+## Advanced Features
+
+### Negative Value Stacking
+
+```pascal
+// Enable proper stacking of negative values
+Series.MultiBar := mbStacked;
+Series.StackGroup := 0;  // Group for stacking
+```
+
+### Bar Shadows
+
+```pascal
+// Add shadow effect
+Series.Shadow.Visible := True;
+Series.Shadow.HorizSize := 3;
+Series.Shadow.VertSize := 3;
+Series.Shadow.Color := clGray;
+```
+
+### Click Detection
+
+```pascal
+procedure TForm1.Chart1ClickSeries(Sender: TCustomChart; 
+  Series: TChartSeries; ValueIndex: Integer; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  ShowMessage('Clicked bar: ' + IntToStr(ValueIndex) + 
+              ', Value: ' + FloatToStr(Series.YValue[ValueIndex]));
+end;
+```
+
+## Related Chart Types
+
+- **Horizontal Bar Charts** - Bars oriented horizontally
+- **Area Charts** - Filled areas instead of bars
+- **Point Charts** - Individual data points
+- **Gantt Charts** - Time-based horizontal bars

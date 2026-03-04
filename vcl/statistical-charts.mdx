@@ -1,0 +1,561 @@
+---
+title: Statistical Charts
+description: Box plots, histograms, error bars and statistical analysis samples
+icon: 'chart-scatter'
+---
+
+## Overview
+
+TeeChart VCL provides specialized series types for statistical data visualization and analysis. These charts help visualize distributions, variability, correlations, and statistical relationships in your data.
+
+## Box Plot Series
+
+Box plots (also called box-and-whisker plots) display the distribution of data showing quartiles, median, and outliers.
+
+### Basic Box Plot
+
+**Location:** `TeeNew/BoxPlot_Series.pas`
+
+```pascal
+unit BoxPlot_Series;
+
+type
+  TBoxPlotForm = class(TBaseForm)
+    Series1: TBoxSeries;
+    Series2: TBoxSeries;
+    Series3: TBoxSeries;
+    CheckBox1: TCheckBox;
+  end;
+
+procedure TBoxPlotForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Add data arrays for each box
+  Series1.AddArray([3, 6, 8, 15, 19, 21]);
+  Series2.AddArray([3, 6, 8, 15, 19, 21]);
+  Series3.AddArray([3, 6, 8, 15, 19, 21]);
+end;
+
+procedure TBoxPlotForm.CheckBox1Click(Sender: TObject);
+var
+  tmp: TChartSeriesClass;
+begin
+  // Switch between vertical and horizontal
+  if CheckBox1.Checked then
+    tmp := TBoxSeries
+  else
+    tmp := THorizBoxSeries;
+    
+  ChangeAllSeriesType(Chart1, tmp);
+end;
+```
+
+**Box Plot Components:**
+
+<Tabs>
+  <Tab title="Statistical Values">
+    - **Minimum:** Lowest value (excluding outliers)
+    - **Q1:** First quartile (25th percentile)
+    - **Median:** Second quartile (50th percentile)
+    - **Q3:** Third quartile (75th percentile)
+    - **Maximum:** Highest value (excluding outliers)
+    - **Outliers:** Points beyond whiskers
+  </Tab>
+  
+  <Tab title="Visual Elements">
+    - **Box:** Represents interquartile range (Q1 to Q3)
+    - **Median Line:** Line inside box
+    - **Whiskers:** Lines extending to min/max
+    - **Outlier Points:** Individual markers
+  </Tab>
+</Tabs>
+
+### Box Plot with Custom Values
+
+**Location:** `TeeNew/BoxSeries_CustomValues.pas`
+
+```pascal
+procedure TBoxCustomValues.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Manually set quartile values
+  with Series1 do
+  begin
+    // Add custom box with specific quartile values
+    Add(100);  // Position
+    
+    // Set custom values
+    Minimum := 50;
+    Quartile1 := 75;
+    Median := 100;
+    Quartile3 := 125;
+    Maximum := 150;
+    
+    // Add outliers
+    AddOutlier(100, 30);   // Outlier at position 100, value 30
+    AddOutlier(100, 180);  // Outlier at position 100, value 180
+  end;
+end;
+```
+
+### Box Plot Features
+
+<CardGroup cols={2}>
+  <Card title="Whisker Styles" icon="ruler">
+    Configure whisker length using IQR multiples or percentiles
+  </Card>
+  
+  <Card title="Outlier Detection" icon="crosshairs">
+    Automatic outlier identification and display
+  </Card>
+  
+  <Card title="Color Customization" icon="palette">
+    Different colors for boxes, whiskers, and outliers
+  </Card>
+  
+  <Card title="Orientation" icon="arrows-rotate">
+    Vertical or horizontal box plot layouts
+  </Card>
+</CardGroup>
+
+## Histogram Series
+
+Histograms show the distribution of continuous data by grouping values into bins.
+
+### Basic Histogram
+
+**Location:** `TeeNew/Histogram_Series.pas`
+
+```pascal
+unit Histogram_Series;
+
+type
+  THistogramForm = class(TBaseForm)
+    Series1: THistogramSeries;
+  end;
+
+procedure THistogramForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues(100);
+end;
+```
+
+### Histogram with Custom Function
+
+**Location:** `TeeNew/Function_Histogram.pas`
+
+```pascal
+procedure THistogramFunction.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Source data
+  Series1.FillSampleValues(1000);
+  
+  // Configure histogram function
+  with HistogramFunc do
+  begin
+    Source := Series1;           // Source series
+    NumBins := 20;               // Number of bins
+    Cumulative := False;         // Non-cumulative
+    
+    // Bin configuration
+    BinRange := brAuto;          // Auto-calculate range
+    // or manual:
+    // BinRange := brManual;
+    // BinMin := 0;
+    // BinMax := 100;
+  end;
+end;
+```
+
+### Histogram Features
+
+<AccordionGroup>
+  <Accordion title="Bin Configuration">
+    - **Automatic bins:** Based on data range
+    - **Manual bins:** Specify number and range
+    - **Variable width:** Custom bin widths
+    - **Cumulative:** Running total option
+  </Accordion>
+  
+  <Accordion title="Display Options">
+    - Bar or line display
+    - Bin labels showing ranges
+    - Frequency or density
+    - Overlay normal distribution curve
+  </Accordion>
+</AccordionGroup>
+
+### Histogram with Y Origin
+
+**Location:** `TeeNew/HistogramYOrigin.pas`
+
+```pascal
+procedure THistogramYOrigin.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  Series1.FillSampleValues(50);
+  
+  // Set custom Y origin
+  Series1.UseYOrigin := True;
+  Series1.YOrigin := 0;
+  
+  // Show distribution from baseline
+  Series1.MultiBar := mbNone;
+end;
+```
+
+### Histogram Transparency
+
+**Location:** `TeeNew/Histogram_Transparency.pas`
+
+Useful for overlaying multiple distributions:
+
+```pascal
+procedure THistogramTransp.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  Series1.FillSampleValues(100);
+  Series2.FillSampleValues(100);
+  
+  // Make histograms transparent for overlay
+  Series1.Transparency := 60;
+  Series2.Transparency := 60;
+  
+  Series1.Color := clRed;
+  Series2.Color := clBlue;
+end;
+```
+
+## Error Bar Series
+
+Error bars visualize uncertainty or variability in measurements.
+
+### Error Bar with Negative Values
+
+**Location:** `TeeNew/ErrorBar_Negative.pas`
+
+```pascal
+unit ErrorBar_Negative;
+
+type
+  TErrorBarForm = class(TBaseForm)
+    Series1: TErrorBarSeries;
+  end;
+
+procedure TErrorBarForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  with Series1 do
+  begin
+    // Add points with error values
+    AddErrorBar(1, 10, 2.5, 1.5);  // X, Y, TopError, BottomError
+    AddErrorBar(2, 15, 3.0, 2.0);
+    AddErrorBar(3, 12, 2.0, 2.5);
+    
+    // Configure error bar appearance
+    ErrorPen.Width := 2;
+    ErrorPen.Color := clRed;
+    ErrorWidth := 5;  // Width of error bar caps
+  end;
+end;
+```
+
+**Error Bar Types:**
+
+<Tabs>
+  <Tab title="Symmetric">
+    Same error amount above and below each point
+    ```pascal
+    Series1.AddErrorBar(X, Y, Error, Error);
+    ```
+  </Tab>
+  
+  <Tab title="Asymmetric">
+    Different error amounts for top and bottom
+    ```pascal
+    Series1.AddErrorBar(X, Y, TopError, BottomError);
+    ```
+  </Tab>
+  
+  <Tab title="Standard Deviation">
+    Calculate from data automatically
+    ```pascal
+    Series1.ErrorValues := evStdDeviation;
+    ```
+  </Tab>
+</Tabs>
+
+## Statistical Functions
+
+TeeChart provides functions to calculate statistical measures from your data.
+
+### Standard Deviation
+
+**Location:** `TeeNew/Function_StdDeviation.pas`
+
+```pascal
+procedure TStdDevForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Source data
+  Series1.FillSampleValues(100);
+  
+  // Standard deviation function
+  StdDevFunc.Period := 20;       // Rolling 20-point window
+  StdDevFunc.Series := Series1;  // Source series
+  
+  // Display as band
+  UpperBand.DataSource := StdDevFunc;
+  LowerBand.DataSource := StdDevFunc;
+end;
+```
+
+### Curve Fitting
+
+**Location:** `TeeNew/Function_CurveFitting.pas`
+
+```pascal
+procedure TCurveFittingForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Scatter data
+  Series1.FillSampleValues(50);
+  
+  // Fit curve to data
+  CurveFit.Series := Series1;
+  CurveFit.FitType := ftPolynomial;  // or ftExponential, ftLogarithmic
+  CurveFit.PolynomialDegree := 3;    // Cubic fit
+  
+  // Display fitted curve
+  FittedSeries.DataSource := CurveFit;
+end;
+```
+
+### Correlation
+
+**Location:** `TeeNew/Function_Correlation.pas`
+
+```pascal
+procedure TCorrelationForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  Series1.FillSampleValues(100);
+  Series2.FillSampleValues(100);
+  
+  // Calculate correlation
+  CorrelFunc.Period := 20;          // Rolling window
+  CorrelFunc.Series := Series1;     // First series
+  CorrelFunc.Series2 := Series2;    // Second series
+  
+  // Display correlation coefficient
+  CorrelSeries.DataSource := CorrelFunc;
+end;
+```
+
+## Statistical Analysis Functions
+
+<CardGroup cols={2}>
+  <Card title="Average" icon="equals">
+    Mean value calculation with configurable period
+  </Card>
+  
+  <Card title="Median" icon="sort">
+    Middle value in sorted dataset
+  </Card>
+  
+  <Card title="Mode" icon="hashtag">
+    Most frequently occurring value
+  </Card>
+  
+  <Card title="Variance" icon="chart-area">
+    Measure of data spread
+  </Card>
+  
+  <Card title="Skewness" icon="wave-square">
+    Distribution asymmetry measure
+  </Card>
+  
+  <Card title="Kurtosis" icon="mountain">
+    Distribution tail heaviness
+  </Card>
+  
+  <Card title="RMS" icon="waveform">
+    Root mean square calculation
+  </Card>
+  
+  <Card title="Count" icon="calculator">
+    Data point counting with conditions
+  </Card>
+</CardGroup>
+
+## Advanced Statistical Features
+
+### Kernel Density Estimation
+
+**Location:** `TeeNew/Function_KDE.pas`
+
+```pascal
+procedure TKDEForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Sample data
+  Series1.FillSampleValues(200);
+  
+  // KDE function for smooth distribution
+  KDEFunc.Series := Series1;
+  KDEFunc.Bandwidth := 0.5;  // Smoothing parameter
+  KDEFunc.NumPoints := 100;  // Points in output curve
+  
+  // Display smooth density curve
+  DensitySeries.DataSource := KDEFunc;
+end;
+```
+
+### Statistical Process Control (SPC)
+
+**Location:** `TeeNew/Function_SPC.pas`
+
+```pascal
+procedure TSPCForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Process data
+  Series1.FillSampleValues(100);
+  
+  // SPC function
+  SPCFunc.Series := Series1;
+  SPCFunc.NumSigmas := 3;           // 3-sigma control limits
+  SPCFunc.ChartType := spcXBar;     // X-bar chart
+  
+  // Display control limits
+  UpperControlLimit.DataSource := SPCFunc;
+  LowerControlLimit.DataSource := SPCFunc;
+  CenterLine.DataSource := SPCFunc;
+end;
+```
+
+## Multi-Series Analysis
+
+### Comparing Distributions
+
+```pascal
+procedure CompareDistributions;
+begin
+  // Multiple box plots side by side
+  BoxSeries1.AddArray(Dataset1);
+  BoxSeries2.AddArray(Dataset2);
+  BoxSeries3.AddArray(Dataset3);
+  
+  // Configure side-by-side display
+  BoxSeries1.MultiBar := mbSide;
+  BoxSeries2.MultiBar := mbSide;
+  BoxSeries3.MultiBar := mbSide;
+  
+  // Add statistical comparison
+  Label1.Caption := Format('Mean: %.2f vs %.2f vs %.2f', [
+    CalculateMean(Dataset1),
+    CalculateMean(Dataset2),
+    CalculateMean(Dataset3)
+  ]);
+end;
+```
+
+### Overlaying Histograms
+
+```pascal
+procedure OverlayHistograms;
+begin
+  // Create transparent histograms
+  Histogram1.Transparency := 50;
+  Histogram2.Transparency := 50;
+  
+  // Different colors
+  Histogram1.Color := clRed;
+  Histogram2.Color := clBlue;
+  
+  // Same bin configuration for comparison
+  Histogram1.NumBins := 20;
+  Histogram2.NumBins := 20;
+end;
+```
+
+## Performance Tips
+
+For large statistical datasets:
+
+<Steps>
+  <Step title="Pre-calculate Statistics">
+    ```pascal
+    Chart1.AutoRepaint := False;
+    // Calculate all statistics
+    Chart1.AutoRepaint := True;
+    ```
+  </Step>
+  
+  <Step title="Use Sampling">
+    ```pascal
+    Histogram.DownSampling := True;
+    Histogram.MaxPoints := 1000;
+    ```
+  </Step>
+  
+  <Step title="Optimize Functions">
+    ```pascal
+    StdDev.CalculateEvery := 10;
+    ```
+  </Step>
+</Steps>
+
+## Related Samples
+
+<CardGroup cols={2}>
+  <Card title="Financial Charts" href="/vcl/financial-charts">
+    Technical analysis and indicators
+  </Card>
+  
+  <Card title="Standard Series" href="/vcl/standard-series">
+    Basic scatter and line plots
+  </Card>
+  
+  <Card title="3D Charts" href="/vcl/3d-charts">
+    3D scatter plots and surface charts
+  </Card>
+  
+  <Card title="Export">
+    Export statistical charts to reports
+  </Card>
+</CardGroup>
+
+## Statistical Sample List
+
+Complete list of statistical samples in TeeNew:
+
+- `BoxPlot_Series.pas` - Basic box plots
+- `BoxSeries_CustomValues.pas` - Custom quartile values
+- `Histogram_Series.pas` - Basic histograms
+- `HistogramYOrigin.pas` - Histogram baseline
+- `Histogram_Transparency.pas` - Overlaid distributions
+- `ErrorBar_Negative.pas` - Error bars
+- `Function_Histogram.pas` - Histogram calculation
+- `Function_StdDeviation.pas` - Standard deviation
+- `Function_Variance.pas` - Variance calculation
+- `Function_Correlation.pas` - Correlation analysis
+- `Function_CurveFitting.pas` - Curve fitting
+- `Function_KDE.pas` - Kernel density estimation
+- `Function_Skewness.pas` - Skewness calculation
+- `Function_Kurtosis.pas` - Kurtosis calculation
+- `Function_SPC.pas` - Statistical process control
+- And more...

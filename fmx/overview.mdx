@@ -1,0 +1,149 @@
+---
+title: 'FMX Samples Overview'
+description: 'Overview of TeeChart FireMonkey (FMX) cross-platform samples for Windows, macOS, iOS, and Android'
+icon: 'layer-group'
+---
+
+## Introduction
+
+TeeChart for FireMonkey offers a comprehensive suite of cross-platform charting samples that leverage the FireMonkey (FMX) UI framework. These samples demonstrate how to create stunning, responsive charts that work seamlessly across Windows, macOS, iOS, and Android platforms.
+
+<Info>
+FireMonkey's cross-platform capabilities mean you can write your charting code once and deploy it to multiple platforms with minimal platform-specific adjustments.
+</Info>
+
+## Sample Categories
+
+The FMX samples are organized into several key categories:
+
+<CardGroup cols={2}>
+  <Card title="Standard Series" icon="chart-line" href="/fmx/standard-series">
+    Explore fundamental chart types including Lines, Bars, Areas, Pies, Points, and more
+  </Card>
+  
+  <Card title="Animations" icon="play" href="/fmx/animations">
+    Dynamic chart animations and transitions for engaging data visualization
+  </Card>
+  
+  <Card title="Dashboard" icon="table-cells" href="/fmx/dashboard">
+    Complex dashboard examples with multiple interactive charts and data integration
+  </Card>
+  
+  <Card title="Cross-Platform" icon="mobile" href="/fmx/cross-platform">
+    Platform-specific implementations and responsive design patterns
+  </Card>
+</CardGroup>
+
+## Key Features
+
+### Cross-Platform Compatibility
+
+All FMX samples are designed to run on:
+- **Windows** - Desktop applications with full feature support
+- **macOS** - Native macOS applications
+- **iOS** - iPhone and iPad applications
+- **Android** - Mobile and tablet applications
+
+### Responsive Scaling
+
+One of TeeChart FMX's major advantages is automatic scaling to fit any screen size. Whether you're building dashboards with multiple charts or single-chart views, FireMonkey handles platform variations automatically.
+
+### Sample Structure
+
+The FMX samples repository (`~/workspace/source/FMX/`) contains:
+
+```
+FMX/
+├── Demo/                    # Main demo application
+│   ├── Standard/           # Standard series examples
+│   ├── Animations/         # Animation examples
+│   ├── Database/           # Database integration
+│   ├── Functions/          # Mathematical functions
+│   ├── LiveBindings/       # Data binding examples
+│   └── Pro/                # Pro edition features
+├── StandardSeriesDemo/     # Comprehensive series showcase
+├── Dashboard/              # Advanced dashboard sample
+├── ActivityGaugeSeries/    # Activity gauge examples
+└── FishFacts/             # Database example
+```
+
+## Getting Started
+
+### Requirements
+
+To run these samples, you'll need:
+- TeeChart VCL/FMX evaluation or registered version
+- Delphi with FireMonkey support
+- Download from: https://www.steema.com/downloads/vcl
+
+### Opening a Sample
+
+1. Navigate to the desired sample directory
+2. Open the `.dpr` project file in Delphi
+3. Select your target platform (Windows, macOS, iOS, Android)
+4. Compile and run
+
+<Tip>
+Many samples include platform-specific form files (`.fmx`) optimized for different screen sizes and devices.
+</Tip>
+
+## Common FMX Patterns
+
+### Basic Chart Setup
+
+```pascal
+uses
+  FMXTee.Engine, FMXTee.Series, FMXTee.Procs, FMXTee.Chart;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  // Create and add a series
+  Series1.FillSampleValues();
+  
+  // Configure chart appearance
+  Chart1.View3D := False;
+  Chart1.Hover.Visible := False;
+end;
+```
+
+### Platform-Specific Code
+
+Use conditional compilation for platform-specific features:
+
+```pascal
+{$IFDEF IOS}
+  Chart1.Legend.Font.Size := 10;
+{$ENDIF}
+
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+  DonutSeries.Marks.Visible := False;
+{$ENDIF}
+
+{$IFDEF MACOS}
+  Layout4.Height := 192;
+{$ELSE}
+  Layout4.Height := 256;
+{$ENDIF}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Standard Series" icon="chart-bar" href="/fmx/standard-series">
+    Start with fundamental chart types
+  </Card>
+  
+  <Card title="Animations" icon="wand-magic-sparkles" href="/fmx/animations">
+    Add life to your charts with animations
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [TeeChart for VCL/FMX Product Page](https://www.steema.com/product/vcl)
+- [Steema Support](https://www.steema.com/support_options)
+- [FMX Framework Documentation](https://www.embarcadero.com/products/rad-studio/fm-application-platform)
+
+<Note>
+All samples in the FMX repository demonstrate real-world usage patterns and best practices for cross-platform charting applications.
+</Note>

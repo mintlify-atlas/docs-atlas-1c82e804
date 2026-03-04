@@ -1,0 +1,531 @@
+---
+title: Gauge Series
+description: Circular, Linear, Knob, and Activity gauge samples for dashboard displays
+icon: 'gauge'
+---
+
+## Overview
+
+TeeChart VCL provides a comprehensive set of gauge series for creating dashboard displays, control panels, and monitoring applications. Gauges offer an intuitive way to display single values or ranges with customizable frames, needles, and visual styles.
+
+## Circular Gauge Series
+
+Circular gauges display values on a radial scale, similar to traditional analog meters and speedometers.
+
+### Basic Circular Gauge
+
+**Location:** `TeeNew/CircularGauge_Series.pas`
+
+```pascal
+unit CircularGauge_Series;
+
+type
+  TCircularGauge_SeriesForm = class(TBaseForm)
+    Series1: TCircularGauge;
+    Timer1: TTimer;
+  private
+    Up: Boolean;
+    Value: Double;
+  end;
+
+procedure TCircularGauge_SeriesForm.FormCreate(Sender: TObject);
+begin
+  Up := True;
+  Value := 0.0;
+  
+  // Configure gauge appearance
+  Series1.Value := Value;
+  Series1.MinValue := 0;
+  Series1.MaxValue := 100;
+  
+  // Frame customization
+  Series1.Frame.Width := 10;
+  
+  // Start animation
+  Timer1.Interval := 10;
+  Timer1.Enabled := True;
+end;
+
+procedure TCircularGauge_SeriesForm.Timer1Timer(Sender: TObject);
+begin
+  // Animate gauge value
+  if Up then
+    Value := Value + 1
+  else
+    Value := Value - 1;
+    
+  if Value > 99 then
+    Up := False
+  else if Value < 1 then
+    Up := True;
+    
+  Series1.Value := Value;
+end;
+```
+
+**Key Features:**
+- Animated value updates
+- Customizable frame widths
+- Configurable min/max ranges
+- Multiple frame elements
+
+### Circular Gauge Frame Elements
+
+**Location:** `TeeNew/CircularGauge_Series.pas`
+
+```pascal
+procedure ConfigureFrameElements;
+var
+  FrameElementPercents: Array[0..2] of Double;
+begin
+  // Define three frame elements (inner, middle, outer)
+  FrameElementPercents[0] := 25;  // Inner band percentage
+  FrameElementPercents[1] := 60;  // Middle band percentage
+  FrameElementPercents[2] := 15;  // Outer band percentage
+  
+  // Apply to circular gauge
+  TCircularFrame(Series1.Frame).FrameElementWidths[0] := FrameElementPercents[0];
+  TCircularFrame(Series1.Frame).FrameElementWidths[1] := FrameElementPercents[1];
+  TCircularFrame(Series1.Frame).FrameElementWidths[2] := FrameElementPercents[2];
+  
+  // Customize colors for each band
+  TCircularFrame(Series1.Frame).FrameElements[0].Color := clSilver;
+  TCircularFrame(Series1.Frame).FrameElements[1].Color := clGray;
+  TCircularFrame(Series1.Frame).FrameElements[2].Color := clBlack;
+end;
+```
+
+### Circular Gauge Display Angle
+
+**Location:** `TeeNew/CircularGauge_DisplayAngle.pas`
+
+```pascal
+procedure TCircularGaugeAngle.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  Series1.Value := 75;
+  
+  // Configure display angle (arc)
+  Series1.DisplayAngle.StartAngle := 135;   // Start angle in degrees
+  Series1.DisplayAngle.EndAngle := 405;     // End angle (270° arc)
+  
+  // Needle configuration
+  Series1.Needle.Style := nsArrow;          // Arrow, Line, Triangle
+  Series1.Needle.Color := clRed;
+  Series1.Needle.Width := 3;
+end;
+```
+
+### Circular Gauge Variations
+
+<CardGroup cols={2}>
+  <Card title="Linear Gauge (L-Gauge)" icon="bars">
+    **Location:** `CircularGauge_LGauge.pas`
+    
+    Vertical or horizontal linear scale display
+  </Card>
+  
+  <Card title="Numeric Gauge (N-Gauge)" icon="hashtag">
+    **Location:** `CircularGauge_NGauge.pas`
+    
+    Digital numeric value display
+  </Card>
+  
+  <Card title="Embedded Gauge" icon="window-restore">
+    **Location:** `CircularGauge_Embedded.pas`
+    
+    Multiple gauges in single chart
+  </Card>
+</CardGroup>
+
+## Knob Gauge Series
+
+Knob gauges provide an interactive rotary control similar to volume knobs or dials.
+
+**Location:** `TeeNew/KnobGauge_Series.pas`
+
+```pascal
+unit KnobGauge_Series;
+
+type
+  TKnobGaugeForm = class(TBaseForm)
+    Series1: TKnobGauge;
+  end;
+
+procedure TKnobGaugeForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  with Series1 do
+  begin
+    MinValue := 0;
+    MaxValue := 100;
+    Value := 50;
+    
+    // Knob appearance
+    KnobStyle := ksCircular;      // Circular or rectangular
+    KnobColor := clSilver;
+    IndicatorColor := clRed;
+    
+    // Enable interaction
+    AllowEdit := True;            // User can rotate knob
+    
+    // Display options
+    ShowValue := True;            // Show numeric value
+    ShowTicks := True;            // Show tick marks
+    TickEvery := 10;              // Tick spacing
+  end;
+end;
+
+procedure TKnobGaugeForm.Series1Change(Sender: TObject);
+begin
+  // Handle value change
+  Label1.Caption := Format('Value: %.1f', [Series1.Value]);
+end;
+```
+
+**Knob Features:**
+
+<Tabs>
+  <Tab title="Interactive">
+    - Click and drag to rotate
+    - Mouse wheel support
+    - Keyboard control
+    - Value change events
+  </Tab>
+  
+  <Tab title="Visual Styles">
+    - Circular or rectangular knob
+    - Custom colors and gradients
+    - 3D effects
+    - Tick marks and labels
+  </Tab>
+  
+  <Tab title="Configuration">
+    - Min/max range
+    - Step increments
+    - Rotation angles
+    - Value display format
+  </Tab>
+</Tabs>
+
+## Activity Gauge
+
+Activity gauges show progress or activity levels, similar to iOS-style ring indicators.
+
+**Location:** `ActivityGauge/Unit1.pas`
+
+```pascal
+unit ActivityGaugeUnit;
+
+type
+  TActivityGaugeForm = class(TForm)
+    Chart1: TChart;
+    ActivityGauge1: TActivityGauge;
+    Timer1: TTimer;
+  end;
+
+procedure TActivityGaugeForm.FormCreate(Sender: TObject);
+begin
+  with ActivityGauge1 do
+  begin
+    MinValue := 0;
+    MaxValue := 100;
+    Value := 0;
+    
+    // Ring appearance
+    RingWidth := 20;              // Width of ring
+    RingGap := 5;                 // Gap between rings
+    
+    // Colors
+    RingColor := clLime;
+    BackgroundColor := clSilver;
+    
+    // Effects
+    Gradient.Visible := True;
+    Transparency := 0;
+  end;
+  
+  Timer1.Enabled := True;
+end;
+
+procedure TActivityGaugeForm.Timer1Timer(Sender: TObject);
+begin
+  // Animate activity level
+  ActivityGauge1.Value := ActivityGauge1.Value + 1;
+  
+  if ActivityGauge1.Value >= 100 then
+    ActivityGauge1.Value := 0;
+end;
+```
+
+### Activity Gauge Series
+
+**Location:** `ActivityGaugeSeries/Unit1.pas`
+
+Activity gauge as a chart series (can be combined with other series):
+
+```pascal
+procedure ConfigureActivitySeries;
+begin
+  with ActivityGaugeSeries1 do
+  begin
+    // Multiple rings for different metrics
+    AddRing(75, clRed);      // First ring: 75%
+    AddRing(50, clGreen);    // Second ring: 50%
+    AddRing(90, clBlue);     // Third ring: 90%
+    
+    // Ring styling
+    RingWidth := 15;
+    RingGap := 3;
+    
+    // Animation
+    AnimationDuration := 1000;  // Smooth transitions
+  end;
+end;
+```
+
+## LCD Gauge
+
+LCD-style digital displays for numeric values.
+
+**Location:** `TeeNew/Series_LCDGauges.pas`
+
+```pascal
+procedure TLCDGaugeForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  with LCDGauge1 do
+  begin
+    Value := 123.45;
+    
+    // LCD appearance
+    DigitCount := 6;              // Number of digits
+    DecimalPlaces := 2;           // Decimal precision
+    
+    // Segment colors
+    OnColor := clLime;            // Active segments
+    OffColor := clDkGray;         // Inactive segments
+    BackColor := clBlack;         // Background
+    
+    // Effects
+    Glow := True;                 // Glow effect
+    GlowSize := 2;
+  end;
+end;
+```
+
+## Standard Gauge Series
+
+Basic gauge series for simple value displays.
+
+**Location:** `TeeNew/Series_Gauge.pas`
+
+```pascal
+procedure TGaugeSeriesForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  with GaugeSeries1 do
+  begin
+    MinValue := 0;
+    MaxValue := 200;
+    Value := 120;
+    
+    // Value zones (color bands)
+    AddValueZone(0, 100, clGreen);      // Safe zone
+    AddValueZone(100, 150, clYellow);   // Warning zone
+    AddValueZone(150, 200, clRed);      // Danger zone
+    
+    // Needle appearance
+    NeedleStyle := nsArrow;
+    NeedleColor := clBlack;
+    
+    // Ticks and labels
+    ShowTicks := True;
+    TickCount := 10;
+    ShowLabels := True;
+  end;
+end;
+```
+
+## Gauge Customization Options
+
+<AccordionGroup>
+  <Accordion title="Frame Customization">
+    ```pascal
+    // Frame appearance
+    Series1.Frame.Visible := True;
+    Series1.Frame.Width := 15;
+    Series1.Frame.Color := clSilver;
+    Series1.Frame.Gradient.Visible := True;
+    
+    // Multiple frame elements
+    Series1.Frame.FrameElements[0].Color := clGray;
+    Series1.Frame.FrameElements[1].Color := clSilver;
+    ```
+  </Accordion>
+  
+  <Accordion title="Needle Styles">
+    ```pascal
+    // Needle types
+    Series1.Needle.Style := nsArrow;     // Arrow
+    // or nsLine, nsTriangle, nsRectangle
+    
+    Series1.Needle.Color := clRed;
+    Series1.Needle.Width := 3;
+    Series1.Needle.Length := 80;         // Percentage
+    
+    // Center cap
+    Series1.CenterCap.Visible := True;
+    Series1.CenterCap.Size := 10;
+    Series1.CenterCap.Color := clBlack;
+    ```
+  </Accordion>
+  
+  <Accordion title="Ticks and Labels">
+    ```pascal
+    // Major ticks
+    Series1.MajorTicks.Visible := True;
+    Series1.MajorTicks.Length := 10;
+    Series1.MajorTicks.Count := 10;
+    Series1.MajorTicks.Color := clBlack;
+    
+    // Minor ticks
+    Series1.MinorTicks.Visible := True;
+    Series1.MinorTicks.Length := 5;
+    Series1.MinorTicks.Count := 50;
+    
+    // Labels
+    Series1.Labels.Font.Size := 10;
+    Series1.Labels.Format := '%.0f';
+    ```
+  </Accordion>
+  
+  <Accordion title="Value Zones">
+    ```pascal
+    // Color-coded zones
+    Series1.ClearZones;
+    Series1.AddZone(0, 30, clGreen);     // Low
+    Series1.AddZone(30, 70, clYellow);   // Medium
+    Series1.AddZone(70, 100, clRed);     // High
+    
+    // Zone appearance
+    Series1.Zones[0].Transparency := 50;
+    Series1.Zones[0].Gradient.Visible := True;
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Dashboard Layout Example
+
+Combining multiple gauges in a dashboard:
+
+```pascal
+procedure CreateDashboard;
+begin
+  // Chart layout for 2x2 gauge grid
+  Chart1.MarginTop := 5;
+  Chart1.MarginBottom := 5;
+  Chart1.MarginLeft := 5;
+  Chart1.MarginRight := 5;
+  
+  // Top-left: Circular gauge (Speed)
+  SpeedGauge := TCircularGauge.Create(Self);
+  SpeedGauge.ParentChart := Chart1;
+  SpeedGauge.CustomPosition := True;
+  SpeedGauge.Left := 0;
+  SpeedGauge.Top := 0;
+  SpeedGauge.Width := 50;   // Percentage
+  SpeedGauge.Height := 50;
+  SpeedGauge.Title := 'Speed (MPH)';
+  
+  // Top-right: Circular gauge (RPM)
+  RPMGauge := TCircularGauge.Create(Self);
+  RPMGauge.ParentChart := Chart1;
+  RPMGauge.CustomPosition := True;
+  RPMGauge.Left := 50;
+  RPMGauge.Top := 0;
+  RPMGauge.Width := 50;
+  RPMGauge.Height := 50;
+  RPMGauge.Title := 'RPM';
+  
+  // Bottom-left: Activity gauge (Fuel)
+  FuelGauge := TActivityGauge.Create(Self);
+  FuelGauge.ParentChart := Chart1;
+  FuelGauge.CustomPosition := True;
+  FuelGauge.Left := 0;
+  FuelGauge.Top := 50;
+  FuelGauge.Width := 50;
+  FuelGauge.Height := 50;
+  FuelGauge.Title := 'Fuel Level';
+  
+  // Bottom-right: LCD gauge (Temperature)
+  TempGauge := TLCDGauge.Create(Self);
+  TempGauge.ParentChart := Chart1;
+  TempGauge.CustomPosition := True;
+  TempGauge.Left := 50;
+  TempGauge.Top := 50;
+  TempGauge.Width := 50;
+  TempGauge.Height := 50;
+  TempGauge.Title := 'Temperature (°F)';
+end;
+```
+
+## Real-time Gauge Updates
+
+Efficient updating for live data:
+
+```pascal
+procedure UpdateGaugesRealtime;
+begin
+  // Batch updates for multiple gauges
+  Chart1.AutoRepaint := False;
+  try
+    SpeedGauge.Value := GetCurrentSpeed();
+    RPMGauge.Value := GetCurrentRPM();
+    FuelGauge.Value := GetFuelLevel();
+    TempGauge.Value := GetTemperature();
+  finally
+    Chart1.AutoRepaint := True;
+  end;
+end;
+```
+
+## Related Samples
+
+<CardGroup cols={2}>
+  <Card title="Standard Series" href="/vcl/standard-series">
+    Basic chart types for data visualization
+  </Card>
+  
+  <Card title="Real-time Data">
+    Live data streaming techniques
+  </Card>
+  
+  <Card title="Animations">
+    Smooth transitions and effects
+  </Card>
+  
+  <Card title="Custom Drawing">
+    Advanced customization techniques
+  </Card>
+</CardGroup>
+
+## Gauge Sample List
+
+Complete list of gauge samples:
+
+- `ActivityGauge/` - Activity ring gauges
+- `ActivityGaugeSeries/` - Activity gauge as series
+- `CircularGauge_Series.pas` - Basic circular gauges
+- `CircularGauge_DisplayAngle.pas` - Custom arc angles
+- `CircularGauge_Embedded.pas` - Multiple embedded gauges
+- `CircularGauge_LGauge.pas` - Linear gauge variant
+- `CircularGauge_NGauge.pas` - Numeric gauge display
+- `KnobGauge_Series.pas` - Interactive knob controls
+- `Series_Gauge.pas` - Standard gauge series
+- `Series_LCDGauges.pas` - LCD digital displays
+- `SeriesType_CircularGauge.pas` - Circular gauge types

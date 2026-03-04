@@ -1,0 +1,197 @@
+---
+title: Area Charts
+description: Display data as filled areas with gradients and stacking support
+---
+
+## Overview
+
+Area charts display quantitative data visually as filled areas between the line and axis. They're ideal for showing trends over time, cumulative totals, and part-to-whole relationships when stacked. The filled area emphasizes the magnitude of change and makes it easy to compare multiple data series.
+
+**Use cases:**
+- Showing trends and changes over time
+- Displaying cumulative values
+- Comparing multiple data series with stacking
+- Emphasizing volume or magnitude of data
+
+## Series Class
+
+**TAreaSeries** - The primary class for creating area charts
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `MultiArea` | TMultiArea | Stacking mode: `maNone`, `maStacked`, `maStacked100` |
+| `Stairs` | Boolean | Display as stepped areas instead of smooth lines |
+| `AreaChartBrush` | TChartBrush | Configure fill pattern and gradient |
+| `AreaLinesPen` | TPen | Customize the outline pen |
+| `Transparency` | Integer | Set transparency level (0-100) |
+| `UseOrigin` | Boolean | Fill from a specific origin value |
+| `Origin` | Double | Origin value for area fill |
+
+## Code Examples
+
+### Basic Area Chart
+
+```pascal
+uses
+  TeEngine, Series, TeeProcs, Chart;
+
+procedure CreateBasicAreaChart;
+var
+  AreaSeries: TAreaSeries;
+  i: Integer;
+begin
+  AreaSeries := TAreaSeries.Create(Chart1);
+  Chart1.AddSeries(AreaSeries);
+  
+  // Add sample data
+  for i := 0 to 6 do
+    AreaSeries.Add(Random(50));
+end;
+```
+
+### Area Chart with Gradient Fill
+
+From VCL/TeeNew/Area_Gradient.pas:41:
+
+```pascal
+procedure ConfigureAreaGradient(Series: TAreaSeries);
+begin
+  Series.FillSampleValues(10);
+  
+  // Configure gradient fill
+  with Series.AreaChartBrush.Gradient do
+  begin
+    Visible := True;
+    StartColor := RGB(128, 255, 255);
+    MidColor := RGB(0, 64, 128);
+    EndColor := RGB(3, 101, 112);
+  end;
+  
+  // Set transparency
+  Series.Transparency := 50;
+end;
+```
+
+### Stacked Area Charts
+
+From VCL/TeeNew/SeriesType_Area.pas:46:
+
+```pascal
+procedure SetupStackedAreas(Series1, Series2, Series3: TAreaSeries);
+var
+  i: Integer;
+  
+  function ApplyDark(Color: TColor; HowMuch: Byte): TColor;
+  var
+    r, g, b: Byte;
+  begin
+    Color := ColorToRGB(Color);
+    r := Byte(Color);
+    g := Byte(Color shr 8);
+    b := Byte(Color shr 16);
+    
+    if r > HowMuch then Dec(r, HowMuch) else r := 0;
+    if g > HowMuch then Dec(g, HowMuch) else g := 0;
+    if b > HowMuch then Dec(b, HowMuch) else b := 0;
+    
+    Result := (r or (g shl 8) or (b shl 16));
+  end;
+  
+begin
+  // Set stacking mode
+  Series1.MultiArea := maStacked;
+  
+  // Configure each series with gradient
+  for i := 0 to 2 do
+  begin
+    TAreaSeries(Chart1.SeriesList[i]).AreaChartBrush.Gradient.Direction := gdBottomTop;
+    TAreaSeries(Chart1.SeriesList[i]).AreaChartBrush.Gradient.EndColor := Chart1.SeriesList[i].Color;
+    TAreaSeries(Chart1.SeriesList[i]).Pen.Color := ApplyDark(Chart1.SeriesList[i].Color, 40);
+    TAreaSeries(Chart1.SeriesList[i]).AreaLinesPen.Color := TAreaSeries(Chart1.SeriesList[i]).Pen.Color;
+  end;
+  
+  // Add sample data
+  for i := 0 to 6 do
+  begin
+    Series1.Add(Random(50));
+    Series2.Add(40 + Random(50));
+    Series3.Add(70 + Random(50));
+  end;
+  
+  // Hide marks when stacking
+  Series1.Marks.Visible := Series1.MultiArea = maNone;
+  Series2.Marks.Visible := Series2.MultiArea = maNone;
+  Series3.Marks.Visible := Series3.MultiArea = maNone;
+end;
+```
+
+### Stairs Area Chart
+
+From VCL/TeeNew/SeriesType_Area.pas:111:
+
+```pascal
+procedure EnableStairsMode(Series: TAreaSeries);
+begin
+  // Display as stepped areas
+  Series.Stairs := True;
+end;
+```
+
+## Customization Options
+
+### Multi-Area Modes
+
+```pascal
+// No stacking - series overlap
+Series1.MultiArea := maNone;
+
+// Stacked - series stack on top of each other
+Series1.MultiArea := maStacked;
+
+// 100% stacked - normalized to 100%
+Series1.MultiArea := maStacked100;
+```
+
+### Gradient Direction
+
+```pascal
+with Series.AreaChartBrush.Gradient do
+begin
+  Visible := True;
+  Direction := gdBottomTop;  // Other options: gdTopBottom, gdLeftRight, gdRightLeft
+  StartColor := clWhite;
+  EndColor := clBlue;
+end;
+```
+
+### Transparency
+
+```pascal
+// Set transparency (0 = opaque, 100 = fully transparent)
+Series.Transparency := 70;
+```
+
+### Custom Origin
+
+```pascal
+// Fill area from a custom origin value instead of zero
+Series.UseOrigin := True;
+Series.Origin := 50;  // Fill from value 50
+```
+
+## 3D Display
+
+```pascal
+// Enable 3D view for depth effect
+Chart1.View3D := True;
+Chart1.Chart3DPercent := 15;  // Adjust 3D depth percentage
+```
+
+## Related Chart Types
+
+- **Line Charts** - Show trends without filled areas
+- **Bar Charts** - Compare discrete categories
+- **Point Charts** - Display individual data points
+- **Horizontal Area** - Area charts with horizontal orientation

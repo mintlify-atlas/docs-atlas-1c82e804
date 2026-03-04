@@ -1,0 +1,359 @@
+---
+title: Line Charts
+description: Connect data points with lines to show trends and patterns
+---
+
+## Overview
+
+Line charts connect data points with straight or curved lines, making them ideal for displaying trends over time or continuous data. They're one of the most versatile chart types and can be combined with point markers, area fills, and various styling options. TeeChart offers both regular line series and fast line series optimized for large datasets.
+
+**Use cases:**
+- Showing trends over time
+- Displaying continuous data
+- Comparing multiple data series
+- Real-time data monitoring
+- Scientific and technical data visualization
+
+## Series Classes
+
+**TLineSeries** - Standard line charts with full features
+**TFastLineSeries** - Optimized for large datasets and real-time data
+**THorizLineSeries** - Horizontal line charts
+
+### Key Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Pointer` | TSeriesPointer | Configure point markers |
+| `LinePen` | TChartPen | Customize line appearance |
+| `Stairs` | Boolean | Display as stepped lines |
+| `Smoothed` | Boolean | Apply curve smoothing (Bezier) |
+| `Stacked` | TCustomStack | Stack multiple series |
+| `OutLine` | TChartPen | Add outline effect |
+| `TreatNulls` | TTreatNullsStyle | How to handle null values |
+| `DrawAllPoints` | Boolean | Draw all points (FastLine only) |
+| `DrawAllPointsStyle` | TDrawAllPointsStyle | Point drawing style (FastLine) |
+
+## Code Examples
+
+### Basic Line Chart
+
+From VCL/TeeNew/SeriesType_Line.pas:49:
+
+```pascal
+uses
+  TeEngine, Series, TeeProcs, Chart;
+
+procedure CreateBasicLineChart(Series1, Series2: TLineSeries);
+var
+  t: Integer;
+begin
+  Series1.Clear;
+  for t := 1 to 20 do
+    Series1.Add(Random(100), '', clTeeColor);
+  Series1.SetNull(3);   // Null point example
+  
+  Series2.Clear;
+  for t := 1 to 20 do
+    Series2.Add(Random(100), '', clTeeColor);
+  Series2.SetNull(10);  // Null point example
+end;
+```
+
+### Line Chart with Point Markers
+
+From FMX/Demo/Standard/DemoLine.pas:84:
+
+```pascal
+procedure EnablePointMarkers(Series: TLineSeries);
+begin
+  // Enable point markers
+  Series.Pointer.Visible := True;
+  
+  // Customize pointer appearance
+  Series.Pointer.Style := psCircle;
+  Series.Pointer.HorizSize := 4;
+  Series.Pointer.VertSize := 4;
+  Series.Pointer.Pen.Visible := True;
+  Series.Pointer.Brush.Color := clWhite;
+end;
+```
+
+### Stairs Line Chart
+
+From VCL/TeeNew/SeriesType_Line.pas:43:
+
+```pascal
+procedure EnableStairsMode(Series1, Series2: TLineSeries);
+begin
+  // Display as stepped lines
+  Series1.Stairs := True;
+  Series2.Stairs := True;
+end;
+```
+
+### Smoothed (Bezier) Lines
+
+From FMX/Demo/Standard/DemoLine.pas:49:
+
+```pascal
+procedure EnableSmoothing(Series: TLineSeries);
+begin
+  {$IFNDEF TEELITEEMB}
+  // Apply Bezier curve smoothing
+  Series.Smoothed := True;
+  {$ENDIF}
+end;
+```
+
+### Stacked Line Charts
+
+From VCL/TeeNew/SeriesType_Line.pas:80:
+
+```pascal
+procedure StackLines(Series1, Series2: TLineSeries);
+begin
+  // Enable stacking
+  Series1.Stacked := cssStack;
+  Series2.Stacked := cssStack;
+  
+  // Or disable stacking
+  // Series1.Stacked := cssNone;
+end;
+```
+
+### Line Chart with Outline Effect
+
+From FMX/Demo/Standard/DemoLine.pas:64:
+
+```pascal
+procedure AddOutlineEffect(Series: TLineSeries);
+begin
+  Series.OutLine.Visible := True;
+  Series.OutLine.Color := clBlack;
+  Series.OutLine.Width := 3;
+  
+  // Main line width
+  Series.LinePen.Width := 2;
+end;
+```
+
+### Fast Line for Real-Time Data
+
+From VCL/TeeNew/FastLine_Realtime.pas (example pattern):
+
+```pascal
+uses
+  TeEngine, Series;
+
+var
+  FastLine: TFastLineSeries;
+  
+procedure SetupRealtimeLine;
+begin
+  FastLine := TFastLineSeries.Create(Chart1);
+  Chart1.AddSeries(FastLine);
+  
+  // Optimize for real-time performance
+  FastLine.DrawAllPoints := True;
+  Chart1.AutoRepaint := False;  // Manual repaint for better performance
+end;
+
+procedure AddRealtimePoint(YValue: Double);
+begin
+  FastLine.Add(YValue);
+  
+  // Limit points to last 1000
+  if FastLine.Count > 1000 then
+    FastLine.Delete(0);
+  
+  Chart1.Invalidate;  // Manual repaint
+end;
+```
+
+### Line with Gradient
+
+From VCL/TeeNew/Series_LineGradient.pas (example pattern):
+
+```pascal
+procedure ApplyLineGradient(Series: TLineSeries);
+begin
+  Series.LinePen.Width := 10;
+  
+  with Series.LinePen.Gradient do
+  begin
+    Visible := True;
+    StartColor := clYellow;
+    EndColor := clRed;
+    Direction := gdTopBottom;
+  end;
+end;
+```
+
+## Customization Options
+
+### Line Appearance
+
+```pascal
+// Line width and color
+Series.LinePen.Width := 2;
+Series.LinePen.Color := clBlue;
+
+// Line style
+Series.LinePen.Style := psDot;  // psSolid, psDash, psDot, psDashDot, etc.
+
+// Transparency
+Series.Transparency := 50;  // 0-100
+```
+
+### Point Markers
+
+```pascal
+with Series.Pointer do
+begin
+  Visible := True;
+  Style := psCircle;  // psRectangle, psTriangle, psCross, etc.
+  HorizSize := 5;
+  VertSize := 5;
+  Brush.Color := clRed;
+  Pen.Color := clBlack;
+  Pen.Width := 1;
+end;
+```
+
+### Handling Null Values
+
+```pascal
+// Set null values
+Series.SetNull(5);  // Set point at index 5 as null
+
+// Configure how to treat nulls
+Series.TreatNulls := tnDontPaint;  // Don't draw line through nulls
+// Other options: tnSkip (skip nulls), tnIgnore (treat as zero)
+```
+
+### Color Each Line Segment
+
+From VCL/TeeNew/Line_ColorEachLine.pas (example pattern):
+
+```pascal
+procedure ColorEachSegment(Series: TLineSeries);
+begin
+  Series.ColorEachLine := True;
+  
+  // Set color for each point (affects line segment to that point)
+  Series.Add(10, 'A', clRed);
+  Series.Add(20, 'B', clBlue);
+  Series.Add(15, 'C', clGreen);
+end;
+```
+
+### Line Patterns
+
+From VCL/TeeNew/Line_Pattern.pas (example pattern):
+
+```pascal
+procedure ApplyLinePattern(Series: TLineSeries);
+begin
+  // Use custom dash pattern
+  Series.LinePen.Style := psDash;
+  
+  // Or use brush pattern (requires wider line)
+  Series.LinePen.Width := 10;
+  Series.LinePen.Brush.Style := bsHorizontal;  // bsCross, bsDiagCross, etc.
+end;
+```
+
+## Advanced Features
+
+### 3D Lines
+
+```pascal
+// Enable 3D view
+Chart1.View3D := True;
+Chart1.Chart3DPercent := 20;
+
+// 3D line depth
+Series.Depth := 10;
+```
+
+### Click Detection on Lines
+
+From VCL/TeeNew/Line_Clickable.pas (example pattern):
+
+```pascal
+procedure TForm1.Chart1ClickSeries(Sender: TCustomChart; 
+  Series: TChartSeries; ValueIndex: Integer; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  // Handle click on line point
+  Series.Pointer.Visible := True;
+  ShowMessage('Clicked point: ' + IntToStr(ValueIndex));
+end;
+```
+
+### Line Interpolation
+
+From VCL/TeeNew/Line_Interpolate.pas (example pattern):
+
+```pascal
+procedure InterpolateMissingValues(Series: TLineSeries);
+begin
+  // TeeChart automatically interpolates between points
+  // For custom interpolation:
+  Series.Smoothed := True;  // Bezier interpolation
+end;
+```
+
+### Horizontal Lines
+
+```pascal
+uses
+  TeEngine, Series;
+
+var
+  HorizLine: THorizLineSeries;
+begin
+  HorizLine := THorizLineSeries.Create(Chart1);
+  Chart1.AddSeries(HorizLine);
+  HorizLine.FillSampleValues();
+end;
+```
+
+## Performance Optimization
+
+### Use FastLine for Large Datasets
+
+```pascal
+var
+  FastLine: TFastLineSeries;
+begin
+  FastLine := TFastLineSeries.Create(Chart1);
+  
+  // Performance settings
+  FastLine.DrawAllPoints := False;  // Skip points when zoomed out
+  Chart1.AutoRepaint := False;
+  Chart1.Axes.FastCalc := True;
+end;
+```
+
+### Optimize Real-Time Updates
+
+```pascal
+procedure OptimizeForRealtime;
+begin
+  Chart1.AutoRepaint := False;
+  Chart1.BufferedDisplay := True;
+  
+  // Disable automatic axis scaling
+  Chart1.LeftAxis.Automatic := False;
+  Chart1.LeftAxis.SetMinMax(0, 100);
+end;
+```
+
+## Related Chart Types
+
+- **Area Charts** - Lines with filled areas
+- **Point Charts** - Individual markers without lines
+- **Bar Charts** - Categorical data with bars
+- **High-Low Charts** - Lines with high-low ranges

@@ -1,0 +1,585 @@
+---
+title: 3D Charts
+description: Surface, Contour, Point3D, Tower and other 3D chart samples
+icon: 'cube'
+---
+
+## Overview
+
+TeeChart VCL provides powerful 3D visualization capabilities for displaying multi-dimensional data. The 3D chart types include Surface, Contour, Tower, Point3D, and various other specialized series with full 3D rendering, rotation, and interactive exploration.
+
+## Surface Series
+
+Surface charts display three-dimensional data as a continuous surface, ideal for visualizing mathematical functions, terrain, or any Z=f(X,Y) relationship.
+
+### Fast Surface Rendering
+
+**Location:** `TeeNew/Surface_FastBrush.pas`
+
+```pascal
+unit Surface_FastBrush;
+
+type
+  TSurfaceFastBrush = class(TBaseForm)
+    Series1: TSurfaceSeries;
+    ChartTool1: TRotateTool;
+    CheckBox1: TCheckBox;  // FastBrush toggle
+  end;
+
+procedure TSurfaceFastBrush.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Chart1.View3D := True;
+  
+  // Generate surface data
+  Series1.FillSampleValues(30);
+  
+  // Performance optimizations
+  Series1.Pen.Hide;                    // Hide grid lines
+  Series1.FastBrush := True;           // Fast rendering mode
+  
+  // Speed tricks for static data
+  Series1.FillGridIndex;               // Pre-calculate grid
+  Series1.ReuseGridIndex := True;      // Reuse calculations
+  
+  // Chart optimizations
+  Chart1.Title.Hide;
+  Chart1.Legend.Hide;
+  Chart1.ClipPoints := False;
+  Chart1.Axes.FastCalc := True;        // Bypass overflow checks
+  Chart1.BevelOuter := bvNone;
+  Chart1.BufferedDisplay := True;
+end;
+
+procedure TSurfaceFastBrush.Button1Click(Sender: TObject);
+var
+  StartTime, EndTime: Cardinal;
+  t: Integer;
+begin
+  // Performance test - rotate 360 degrees
+  StartTime := GetTickCount;
+  
+  for t := 0 to 360 do
+  begin
+    Chart1.View3DOptions.Rotation := t;
+    Chart1.Repaint;
+  end;
+  
+  EndTime := GetTickCount;
+  LabelTime.Caption := Format('Time: %.3f sec', [(EndTime - StartTime) * 0.001]);
+end;
+```
+
+**Performance Features:**
+- FastBrush mode for rapid rendering
+- Grid index caching
+- Optimized rotation
+- Buffered display
+
+### Surface Customization
+
+<AccordionGroup>
+  <Accordion title="Surface Appearance">
+    ```pascal
+    // Smoothing and interpolation
+    Series1.IrregularGrid := True;      // For non-uniform data
+    Series1.Smoothing := True;
+    Series1.SmoothingFactor := 0.5;
+    
+    // Color mapping
+    Series1.UseColorRange := True;
+    Series1.UsePalette := True;
+    Series1.PaletteStyle := psPale;     // Color palette
+    
+    // Transparency
+    Series1.Transparency := 30;
+    ```
+  </Accordion>
+  
+  <Accordion title="Grid Lines">
+    ```pascal
+    // Grid configuration
+    Series1.Pen.Visible := True;
+    Series1.Pen.Color := clBlack;
+    Series1.Pen.Width := 1;
+    
+    // Hide specific cells
+    Series1.HideCells := True;
+    Series1.HideCell(5, 10);           // Hide cell at X=5, Z=10
+    ```
+  </Accordion>
+  
+  <Accordion title="Lighting Effects">
+    ```pascal
+    // 3D lighting
+    Chart1.View3DOptions.Lighting := True;
+    Chart1.View3DOptions.LightStyle := lsRealistic;
+    Chart1.View3DOptions.LightIntensity := 75;
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Surface Samples
+
+<CardGroup cols={2}>
+  <Card title="Surface_FastBrush" icon="bolt">
+    High-performance surface rendering
+  </Card>
+  
+  <Card title="Surface_HideCells" icon="eye-slash">
+    Selective cell visibility
+  </Card>
+  
+  <Card title="Surface_IrregularGrid" icon="border-none">
+    Non-uniform grid surfaces
+  </Card>
+  
+  <Card title="Surface_Palette" icon="palette">
+    Color palette customization
+  </Card>
+  
+  <Card title="Surface_SideLines" icon="grip-lines">
+    Side wall line rendering
+  </Card>
+  
+  <Card title="Surface_Smoothing" icon="water">
+    Surface smoothing techniques
+  </Card>
+</CardGroup>
+
+## Contour Series
+
+Contour charts display 3D data as 2D contour lines, similar to topographic maps.
+
+### Basic Contour Chart
+
+**Location:** `TeeNew/Contour_Levels.pas`
+
+```pascal
+unit Contour_Levels;
+
+type
+  TContourLevels = class(TBaseForm)
+    Series1: TContourSeries;
+  end;
+
+procedure TContourLevels.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Generate contour data
+  Series1.FillSampleValues(30);
+  
+  // Contour level configuration
+  Series1.NumLevels := 10;              // Number of contour lines
+  Series1.AutoLevels := True;           // Auto-calculate levels
+  
+  // Or manual levels:
+  // Series1.AutoLevels := False;
+  // Series1.Levels.Clear;
+  // Series1.Levels.Add(10);
+  // Series1.Levels.Add(20);
+  // Series1.Levels.Add(30);
+  
+  // Appearance
+  Series1.Pen.Width := 2;
+  Series1.UsePalette := True;
+end;
+```
+
+### Contour with Smooth Segments
+
+**Location:** `TeeNew/Contour_SmoothSegments.pas`
+
+```pascal
+procedure TContourSmooth.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  Series1.FillSampleValues(50);
+  
+  // Smooth contour lines
+  Series1.Smoothing := True;
+  Series1.SmoothingFactor := 0.7;       // 0.0 to 1.0
+  
+  // Segment count for smoothness
+  Series1.SegmentCount := 100;          // More segments = smoother
+  
+  // Fill between contours
+  Series1.FillLevels := True;
+  Series1.Transparency := 50;
+end;
+```
+
+### Polar Contour
+
+**Location:** `PolarContour/UPolarContour.pas`
+
+Polar coordinate contour charts:
+
+```pascal
+procedure TPolarContourForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Set polar mode
+  Chart1.View3D := False;
+  Series1.Polar := True;
+  
+  // Add polar data (angle, radius, value)
+  for angle := 0 to 359 do
+    for radius := 1 to 10 do
+      Series1.AddXYZ(angle, radius, 
+        Sin(angle * Pi / 180) * Cos(radius));
+end;
+```
+
+### Contour Features
+
+<CardGroup cols={2}>
+  <Card title="Contour_Palette" icon="swatchbook">
+    Custom color palettes for levels
+  </Card>
+  
+  <Card title="Contour_OnBeforeDraw" icon="code">
+    Custom drawing events
+  </Card>
+  
+  <Card title="Contour_View2D" icon="expand">
+    2D vs 3D contour display
+  </Card>
+  
+  <Card title="Contour_Foot" icon="boot">
+    Foot-shaped contour demonstration
+  </Card>
+</CardGroup>
+
+## Point3D Series
+
+3D scatter plots for displaying individual points in 3D space.
+
+**Location:** `TeeNew/Point3D_BaseLine.pas`
+
+```pascal
+unit Point3D_BaseLine;
+
+type
+  TPoint3DForm = class(TBaseForm)
+    Series1: TPoint3DSeries;
+  end;
+
+procedure TPoint3DForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  Chart1.View3D := True;
+  
+  // Add 3D points
+  Series1.AddXYZ(10, 20, 30, 'Point 1', clRed);
+  Series1.AddXYZ(15, 25, 35, 'Point 2', clBlue);
+  Series1.AddXYZ(20, 15, 40, 'Point 3', clGreen);
+  
+  // Pointer style
+  Series1.Pointer.Style := psCircle;
+  Series1.Pointer.HorizSize := 5;
+  Series1.Pointer.VertSize := 5;
+  
+  // Connect points with lines
+  Series1.LinePen.Visible := True;
+  Series1.LinePen.Color := clBlack;
+  
+  // Base lines to axes
+  Series1.LinesPen.Visible := True;     // Lines to base
+end;
+```
+
+### Point3D Event Handling
+
+**Location:** `TeeNew/Point3D_Event.pas`
+
+```pascal
+procedure TPoint3DEvent.Series1ClickPointer(Sender: TCustomSeries;
+  ValueIndex, X, Y: Integer);
+begin
+  // Handle point click
+  ShowMessage(Format('Clicked point %d: (%.1f, %.1f, %.1f)', [
+    ValueIndex,
+    Series1.XValues[ValueIndex],
+    Series1.YValues[ValueIndex],
+    Series1.ZValues[ValueIndex]
+  ]));
+  
+  // Highlight selected point
+  Series1.Pointer.HorizSize := 8;
+  Series1.Pointer.VertSize := 8;
+end;
+```
+
+## Tower Series
+
+Tower charts display 3D vertical bars or towers.
+
+**Location:** `TeeNew/Tower_Series.pas`
+
+```pascal
+procedure TTowerForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  Chart1.View3D := True;
+  
+  // Add tower data (X, Z, Y-height)
+  Series1.AddXYZ(1, 1, 10, '', clRed);
+  Series1.AddXYZ(1, 2, 15, '', clBlue);
+  Series1.AddXYZ(2, 1, 20, '', clGreen);
+  Series1.AddXYZ(2, 2, 25, '', clYellow);
+  
+  // Tower appearance
+  Series1.Width := 5;                   // Tower width
+  Series1.Depth := 5;                   // Tower depth
+  Series1.Gradient.Visible := True;
+end;
+```
+
+## 3D View Configuration
+
+Control 3D perspective and rotation:
+
+```pascal
+procedure Configure3DView;
+begin
+  with Chart1.View3DOptions do
+  begin
+    // Enable 3D
+    Chart1.View3D := True;
+    
+    // Rotation and elevation
+    Rotation := 345;                    // Horizontal rotation (degrees)
+    Elevation := 345;                   // Vertical elevation (degrees)
+    Tilt := 0;                          // Tilt angle
+    
+    // Perspective
+    Perspective := 15;                  // 0=orthogonal, 100=max perspective
+    Orthogonal := False;                // True for orthogonal projection
+    
+    // Zoom
+    Zoom := 100;                        // Percentage
+    ZoomFloat := 1.0;                   // Fine control
+    
+    // 3D walls
+    Walls.Back.Visible := True;
+    Walls.Left.Visible := True;
+    Walls.Bottom.Visible := True;
+  end;
+end;
+```
+
+## Interactive 3D Rotation
+
+Add interactive rotation capability:
+
+```pascal
+uses TeeTools;
+
+procedure AddRotationTool;
+var
+  RotateTool: TRotateTool;
+begin
+  // Add rotate tool
+  RotateTool := TRotateTool.Create(Self);
+  RotateTool.ParentChart := Chart1;
+  
+  // Configure rotation
+  RotateTool.InvertX := False;
+  RotateTool.InvertY := False;
+  RotateTool.Active := True;
+  
+  // Mouse drag to rotate
+  // Right-click drag for elevation
+  // Ctrl+drag for tilt
+end;
+```
+
+## Color Grids
+
+Color grid series for heatmap-style visualization.
+
+**Location:** `TeeNew/ColorGrid_Series.pas`
+
+```pascal
+procedure TColorGridForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Create color grid
+  Series1.IrregularGrid := False;
+  
+  // Add grid data
+  for X := 0 to 10 do
+    for Z := 0 to 10 do
+      Series1.AddXYZ(X, Z, Random(100));
+  
+  // Color mapping
+  Series1.UseColorRange := True;
+  Series1.UsePalette := True;
+  Series1.PaletteStyle := psRainbow;
+  
+  // View as 2D heatmap
+  Chart1.View3D := False;
+end;
+```
+
+### Color Grid Features
+
+<AccordionGroup>
+  <Accordion title="ColorGrid_Bitmap">
+    Display bitmap images as color grids
+  </Accordion>
+  
+  <Accordion title="ColorGrid_Clicked">
+    Handle cell click events
+  </Accordion>
+  
+  <Accordion title="ColorGrid_Marks">
+    Show values in grid cells
+  </Accordion>
+  
+  <Accordion title="ColorGrid_Realtime">
+    Real-time updating color grids
+  </Accordion>
+  
+  <Accordion title="ColorGrid_Transparent">
+    Transparent cells and overlays
+  </Accordion>
+</AccordionGroup>
+
+## OpenGL Acceleration
+
+For maximum 3D performance, use OpenGL rendering:
+
+**Location:** TeeOpenGL component
+
+```pascal
+uses TeeOpenGL;
+
+procedure EnableOpenGL;
+var
+  OpenGL: TTeeOpenGL;
+begin
+  // Add OpenGL component
+  OpenGL := TTeeOpenGL.Create(Self);
+  OpenGL.Active := True;
+  OpenGL.ParentChart := Chart1;
+  
+  // OpenGL settings
+  OpenGL.Ambient := 0.3;
+  OpenGL.AntiAliasLines := True;
+  OpenGL.Shininess := 50;
+end;
+```
+
+## 3D Effects and Enhancements
+
+<Tabs>
+  <Tab title="Lighting">
+    ```pascal
+    Chart1.View3DOptions.Lighting := True;
+    Chart1.View3DOptions.LightStyle := lsRealistic;
+    Chart1.View3DOptions.LightIntensity := 75;
+    ```
+  </Tab>
+  
+  <Tab title="Shadows">
+    ```pascal
+    Series1.Shadow.Visible := True;
+    Series1.Shadow.HorizSize := 5;
+    Series1.Shadow.VertSize := 5;
+    Series1.Shadow.Color := clGray;
+    Series1.Shadow.Transparency := 50;
+    ```
+  </Tab>
+  
+  <Tab title="Walls">
+    ```pascal
+    Chart1.Walls.Back.Gradient.Visible := True;
+    Chart1.Walls.Left.Color := clWhite;
+    Chart1.Walls.Bottom.Transparent := True;
+    ```
+  </Tab>
+</Tabs>
+
+## Performance Optimization
+
+For large 3D datasets:
+
+<Steps>
+  <Step title="Disable Auto-Repaint">
+    ```pascal
+    Chart1.AutoRepaint := False;
+    try
+      // Add all data points
+    finally
+      Chart1.AutoRepaint := True;
+    end;
+    ```
+  </Step>
+  
+  <Step title="Use FastBrush">
+    ```pascal
+    SurfaceSeries.FastBrush := True;
+    SurfaceSeries.Pen.Hide;
+    ```
+  </Step>
+  
+  <Step title="Enable Grid Caching">
+    ```pascal
+    SurfaceSeries.FillGridIndex;
+    SurfaceSeries.ReuseGridIndex := True;
+    ```
+  </Step>
+  
+  <Step title="Consider OpenGL">
+    Use TeeOpenGL for hardware acceleration with large datasets
+  </Step>
+</Steps>
+
+## Related Samples
+
+<CardGroup cols={2}>
+  <Card title="Standard Series" href="/vcl/standard-series">
+    2D chart types and basics
+  </Card>
+  
+  <Card title="Statistical Charts" href="/vcl/statistical-charts">
+    Statistical analysis visualization
+  </Card>
+  
+  <Card title="Maps" href="/vcl/maps">
+    Geographic 3D visualization
+  </Card>
+  
+  <Card title="Export">
+    Export 3D charts to various formats
+  </Card>
+</CardGroup>
+
+## 3D Sample List
+
+Complete list of 3D samples in TeeNew:
+
+- `Surface_FastBrush.pas` - High-performance surfaces
+- `Surface_HideCells.pas` - Selective cell visibility
+- `Surface_IrregularGrid.pas` - Non-uniform grids
+- `Surface_Palette.pas` - Color palettes
+- `Surface_SideLines.pas` - Side wall rendering
+- `Surface_Smoothing.pas` - Surface smoothing
+- `Contour_Levels.pas` - Contour line levels
+- `Contour_SmoothSegments.pas` - Smooth contours
+- `Contour_Palette.pas` - Contour colors
+- `Contour_View2D.pas` - 2D contour view
+- `Point3D_BaseLine.pas` - 3D scatter plots
+- `Point3D_Event.pas` - 3D point interaction
+- `Tower_Series.pas` - 3D tower charts
+- `ColorGrid_Series.pas` - Color grid heatmaps
+- `PolarContour/` - Polar contour charts
+- And more...

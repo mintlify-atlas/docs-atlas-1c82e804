@@ -1,97 +1,284 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: TeeChart VCL/FMX Samples
+description: Comprehensive collection of 700+ code samples demonstrating TeeChart charting library features for Delphi and C++ Builder applications
+mode: custom
 ---
 
-## Setting up
+<div className="relative overflow-hidden dark:bg-[#0f1117] bg-white">
+  {/* Hero Section */}
+  <div className="relative py-20 px-6" style={{background: 'linear-gradient(135deg, #4b6d9e 0%, #e77c38 100%)'}}>
+    <div className="absolute inset-0 bg-black/40"></div>
+    <div className="relative max-w-6xl mx-auto">
+      <div className="grid lg:grid-cols-12 gap-12 items-center">
+        <div className="lg:col-span-7">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+            TeeChart VCL/FMX Samples
+          </h1>
+          <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl">
+            Explore 700+ professional code samples demonstrating the full power of TeeChart for Delphi and C++ Builder. From basic charts to advanced 3D visualizations, find the examples you need to build stunning data visualizations.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <a 
+              href="/quickstart" 
+              className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-colors bg-[#e77c38] text-white hover:bg-[#d06a2f]"
+            >
+              Get Started
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </a>
+            <a 
+              href="/vcl/overview" 
+              className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-white/30 bg-white/10 text-white hover:bg-white/20"
+            >
+              Browse VCL Samples
+            </a>
+            <a 
+              href="/fmx/overview" 
+              className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-white/30 bg-white/10 text-white hover:bg-white/20"
+            >
+              Browse FMX Samples
+            </a>
+          </div>
+        </div>
+        <div className="lg:col-span-5 hidden lg:block">
+          <div className="relative">
+            <img 
+              src="https://www.steema.com/uploads/products/3D_Surface_Chart14.png" 
+              alt="TeeChart 3D Surface Chart Example"
+              className="w-full h-auto rounded-lg shadow-2xl"
+              noZoom
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-Get your documentation site up and running in minutes.
+  {/* Quick Start Section */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      Quick start
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      Get up and running with TeeChart samples in just a few steps
+    </p>
+    
+    <Steps>
+      <Step title="Download TeeChart Pro">
+        Get the fully functional evaluation version from [Steema Downloads](https://www.steema.com/downloads/vcl). The evaluation includes all features and works with RAD Studio, Delphi, and C++ Builder.
+        
+        <Note>
+          TeeChart Pro VCL/FMX evaluation is required to run the samples in this repository.
+        </Note>
+      </Step>
+      
+      <Step title="Clone the samples repository">
+        Clone this repository to access 700+ working examples:
+        
+        ```bash
+        git clone https://github.com/Steema/TeeChart-VCL-FMX-Samples.git
+        cd TeeChart-VCL-FMX-Samples
+        ```
+      </Step>
+      
+      <Step title="Open your first sample">
+        Navigate to the framework of your choice and open a demo project:
+        
+        **For VCL (Windows):**
+        - Open `VCL/TeeNew/TeeNew.dproj` for the comprehensive demo with 687 examples
+        - Or browse `VCL/` directory for specific feature samples
+        
+        **For FireMonkey (Cross-platform):**
+        - Open `FMX/Demo/TeeChart_Pro_Firemonkey_Demo.dproj` for the main demo
+        - Or explore `FMX/StandardSeriesDemo/` for chart type examples
+      </Step>
+      
+      <Step title="Build and run">
+        Open the project in your IDE (RAD Studio, Delphi, or C++ Builder), compile, and run. Each sample is self-contained and demonstrates specific TeeChart features with working code you can modify and learn from.
+        
+        <Tip>
+          Start with the TeeNew demo (VCL) or the main FMX demo to see an overview of all chart types and features in one application.
+        </Tip>
+      </Step>
+    </Steps>
+  </div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+  {/* Framework Sections */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      Choose your framework
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      TeeChart supports both VCL and FireMonkey frameworks for maximum flexibility
+    </p>
+    
+    <div className="grid md:grid-cols-2 gap-6">
+      <a href="/vcl/overview" className="group block rounded-2xl border dark:border-[#27272a] border-gray-200 dark:hover:border-[#e77c38] hover:border-[#e77c38] overflow-hidden no-underline transition-colors dark:bg-[#1a1d27] bg-gray-50">
+        <div className="h-48 overflow-hidden flex items-center justify-center dark:bg-[#242838] bg-gray-100">
+          <div className="text-center p-6">
+            <svg className="w-20 h-20 mx-auto dark:text-gray-300 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+            </svg>
+            <h3 className="text-xl font-semibold dark:text-white text-gray-900">VCL Framework</h3>
+          </div>
+        </div>
+        <div className="p-6">
+          <h3 className="text-base font-semibold dark:text-white text-gray-900 mb-2">
+            Visual Component Library
+          </h3>
+          <p className="text-sm dark:text-gray-400 text-gray-600 mb-3">
+            Native Windows UI framework with 687 comprehensive examples in the TeeNew demo. Includes financial charts, gauges, maps, and advanced 3D visualizations.
+          </p>
+          <div className="flex items-center text-sm font-medium group-hover:text-[#e77c38] dark:text-gray-300 text-gray-700 transition-colors">
+            Explore VCL samples
+            <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </a>
 
-## Make it yours
+      <a href="/fmx/overview" className="group block rounded-2xl border dark:border-[#27272a] border-gray-200 dark:hover:border-[#e77c38] hover:border-[#e77c38] overflow-hidden no-underline transition-colors dark:bg-[#1a1d27] bg-gray-50">
+        <div className="h-48 overflow-hidden flex items-center justify-center dark:bg-[#242838] bg-gray-100">
+          <div className="text-center p-6">
+            <svg className="w-20 h-20 mx-auto dark:text-gray-300 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <h3 className="text-xl font-semibold dark:text-white text-gray-900">FireMonkey</h3>
+          </div>
+        </div>
+        <div className="p-6">
+          <h3 className="text-base font-semibold dark:text-white text-gray-900 mb-2">
+            Cross-Platform Framework
+          </h3>
+          <p className="text-sm dark:text-gray-400 text-gray-600 mb-3">
+            Build once, deploy to Windows, macOS, iOS, and Android. Features animations, dashboards, and responsive charts that adapt to any screen size.
+          </p>
+          <div className="flex items-center text-sm font-medium group-hover:text-[#e77c38] dark:text-gray-300 text-gray-700 transition-colors">
+            Explore FMX samples
+            <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
 
-Design a docs site that looks great and empowers your users.
+  {/* Chart Types Section */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      70+ chart types
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      From standard charts to specialized visualizations for every use case
+    </p>
+    
+    <CardGroup cols={3}>
+      <Card title="Area charts" icon="chart-area" href="/charts/area">
+        Filled area series with gradient support, transparency, and null value handling
+      </Card>
+      <Card title="Bar charts" icon="chart-bar" href="/charts/bar">
+        Horizontal and vertical bars with stacking, gradients, and custom shapes
+      </Card>
+      <Card title="Line charts" icon="chart-line" href="/charts/line">
+        Standard and high-performance line series with multiple styling options
+      </Card>
+      <Card title="Pie charts" icon="chart-pie" href="/charts/pie">
+        Pie and donut charts with exploded slices and custom labels
+      </Card>
+      <Card title="Bubble charts" icon="circle" href="/charts/bubble">
+        Three-dimensional data visualization with variable bubble sizes
+      </Card>
+      <Card title="Gantt charts" icon="bars-progress" href="/charts/gantt">
+        Project timeline and scheduling visualizations
+      </Card>
+      <Card title="Surface charts" icon="cube" href="/charts/surface">
+        3D surface plots for scientific and mathematical data
+      </Card>
+      <Card title="Contour charts" icon="layer-group" href="/charts/contour">
+        Topographic and heat map visualizations
+      </Card>
+    </CardGroup>
+  </div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+  {/* Key Features Section */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      Powerful features
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      Everything you need to create professional data visualizations
+    </p>
+    
+    <CardGroup cols={2}>
+      <Card title="Axes & Scaling" icon="ruler" href="/features/axes">
+        Multiple axes, logarithmic scales, date-time support, and custom formatting
+      </Card>
+      <Card title="Legends & Annotations" icon="tag" href="/features/legends">
+        Customizable legends, annotations, and text tools for rich chart documentation
+      </Card>
+      <Card title="Real-time Data" icon="bolt" href="/features/real-time-data">
+        High-performance real-time updates with ring buffers and data streaming
+      </Card>
+      <Card title="Database Integration" icon="database" href="/features/database-integration">
+        Direct database binding, live data, and cross-tab analysis
+      </Card>
+      <Card title="Export Formats" icon="file-export" href="/features/export">
+        Export to PDF, HTML, images, and custom formats
+      </Card>
+      <Card title="Interactive Tools" icon="hand-pointer" href="/features/annotations">
+        Zooming, panning, cursors, tooltips, and custom interactions
+      </Card>
+    </CardGroup>
+  </div>
 
-## Create beautiful pages
+  {/* Demo Applications Section */}
+  <div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+    <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+      Featured demos
+    </h2>
+    <p className="text-base dark:text-gray-400 text-gray-600 mb-8">
+      Complete applications showcasing TeeChart capabilities
+    </p>
+    
+    <CardGroup cols={3}>
+      <Card title="TeeNew Demo" icon="star" href="/examples/teenew-demo">
+        687 VCL examples covering every TeeChart feature
+      </Card>
+      <Card title="FMX Demo" icon="mobile" href="/examples/fmx-demo">
+        Cross-platform FireMonkey examples and dashboards
+      </Card>
+      <Card title="TeeMaker" icon="cube" href="/advanced/teeMaker">
+        3D object creation and manipulation tool
+      </Card>
+    </CardGroup>
+  </div>
 
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+  {/* CTA Banner */}
+  <div className="mt-20 mb-16 max-w-5xl mx-auto px-6">
+    <div className="rounded-2xl p-8 sm:p-12 text-center dark:bg-[#1a1d27] bg-gray-50 border dark:border-[#27272a] border-gray-200">
+      <h2 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">
+        Ready to start building?
+      </h2>
+      <p className="text-lg dark:text-gray-400 text-gray-600 mb-8 max-w-2xl mx-auto">
+        Download TeeChart Pro and explore all samples. Get support and connect with the Steema community.
+      </p>
+      <div className="flex flex-wrap gap-4 justify-center">
+        <a 
+          href="https://www.steema.com/downloads/vcl"
+          className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-colors bg-[#e77c38] text-white hover:bg-[#d06a2f]"
+        >
+          Download TeeChart
+        </a>
+        <a 
+          href="https://www.steema.com/support_options"
+          className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-colors dark:border-[#27272a] border-gray-300 dark:bg-[#242838] bg-white dark:text-white text-gray-900 hover:bg-gray-100 dark:hover:bg-[#2d3142] border-2"
+        >
+          Get Support
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

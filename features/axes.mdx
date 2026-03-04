@@ -1,0 +1,280 @@
+---
+title: 'Axes'
+description: 'Configure and customize chart axes in TeeChart VCL/FMX'
+icon: 'ruler'
+---
+
+TeeChart provides comprehensive axis customization capabilities for controlling the appearance, behavior, and positioning of chart axes.
+
+## Overview
+
+Axes are fundamental components that define the coordinate system and scale of your charts. TeeChart supports:
+
+- Standard axes (Left, Right, Top, Bottom)
+- Custom axes for multi-axis charts
+- Depth axes for 3D charts
+- Automatic and manual scaling
+- Custom labels and formatting
+
+## Key Classes
+
+### TChartAxis
+
+The main axis class that controls all axis properties and behavior.
+
+**Location**: `TeEngine.pas`
+
+**Key Properties**:
+- `Minimum`, `Maximum` - Axis scale range
+- `Increment` - Distance between labels
+- `Visible` - Show/hide axis
+- `Grid` - Grid line properties
+- `MinorGrid` - Minor grid lines
+- `LabelsFont` - Label font properties
+- `Title` - Axis title text and format
+- `Automatic` - Auto-calculate scale
+- `AutomaticMinimum`, `AutomaticMaximum` - Auto-calculate min/max individually
+
+## Basic Axis Configuration
+
+### Setting Axis Scale
+
+```pascal
+// Manual scale
+Chart1.LeftAxis.Automatic := False;
+Chart1.LeftAxis.Minimum := 0;
+Chart1.LeftAxis.Maximum := 100;
+
+// Auto scale with manual minimum
+Chart1.LeftAxis.AutomaticMaximum := True;
+Chart1.LeftAxis.Minimum := 0;
+```
+
+### Custom Axis Labels
+
+Use the `OnGetAxisLabel` event to customize axis label text and formatting:
+
+```pascal
+procedure TForm1.Chart1GetAxisLabel(
+  Sender: TChartAxis; 
+  Series: TChartSeries; 
+  ValueIndex: Integer; 
+  var LabelText: String);
+var 
+  Num: Double;
+begin
+  Num := StrToFloat(LabelText);
+  
+  if Sender = Chart1.Axes.Left then
+  begin
+    if Num > 300 then 
+      Sender.LabelsFont.Color := clRed
+    else 
+      Sender.LabelsFont.Color := clBlue;
+  end;
+end;
+```
+
+**Source**: `Axis_LabelsFormat.pas:29`
+
+### Minor Grid Lines
+
+Display additional grid lines between major ticks:
+
+```pascal
+Chart1.BottomAxis.MinorGrid.Visible := True;
+Chart1.BottomAxis.MinorTickCount := 3;
+```
+
+**Source**: `Axis_MinorGrid.pas:35`
+
+## Custom Axes
+
+Create additional axes for multi-scale charts:
+
+```pascal
+// Access existing custom axes
+Chart1.CustomAxes[0].Visible := True;
+
+// Use partner axes for synchronized scaling
+Chart1.LeftAxis.UsePartnerAxis := True;
+Chart1.LeftAxis.PartnerAxis := Chart1.CustomAxes[1];
+
+Chart1.BottomAxis.UsePartnerAxis := True;
+Chart1.BottomAxis.PartnerAxis := Chart1.CustomAxes[0];
+
+// Custom axes can also partner with each other
+Chart1.CustomAxes[2].PartnerAxis := Chart1.CustomAxes[3];
+Chart1.CustomAxes[3].PartnerAxis := Chart1.CustomAxes[2];
+```
+
+**Source**: `Axis_Custom.pas:48`
+
+### Clipping to Axis Area
+
+Restrict series drawing to axis boundaries:
+
+```pascal
+procedure TForm1.Series1BeforeDrawValues(Sender: TObject);
+var 
+  Series: TChartSeries;
+  Left, Top, Right, Bottom: Double;
+  R: TRect;
+begin
+  Series := TChartSeries(Sender);
+  
+  Left := Series.GetHorizAxis.Minimum;
+  Top := Series.GetVertAxis.Maximum;
+  Right := Series.GetHorizAxis.Maximum;
+  Bottom := Series.GetVertAxis.Minimum;
+  
+  R := Rect(
+    Series.CalcXPosValue(Left), 
+    Series.CalcYPosValue(Top),
+    Series.CalcXPosValue(Right),
+    Series.CalcYPosValue(Bottom)
+  );
+  
+  Chart1.Canvas.ClipRectangle(R);
+end;
+
+procedure TForm1.Series1AfterDrawValues(Sender: TObject);
+begin
+  Chart1.Canvas.UnClip;
+end;
+```
+
+**Source**: `Axis_Custom.pas:74`
+
+## Advanced Features
+
+### Grid Band Centering
+
+Center grid lines between data points:
+
+```pascal
+Chart1.Axes.Left.GridCentered := True;
+```
+
+**Source**: `Axis_GridBandCentered.pas:37`
+
+### Logarithmic Axes
+
+```pascal
+Chart1.LeftAxis.Logarithmic := True;
+Chart1.LeftAxis.LogarithmicBase := 10;
+```
+
+### DateTime Axes
+
+```pascal
+Chart1.BottomAxis.DateTimeFormat := 'dd/mm/yyyy hh:nn';
+Chart1.BottomAxis.LabelStyle := talValue;
+```
+
+### Axis Items
+
+Manually define axis labels:
+
+```pascal
+Chart1.BottomAxis.Items.Clear;
+Chart1.BottomAxis.Items.Add(0, 'January');
+Chart1.BottomAxis.Items.Add(1, 'February');
+Chart1.BottomAxis.Items.Add(2, 'March');
+```
+
+## Configuration Options
+
+### Label Position
+
+```pascal
+// Position labels
+Chart1.LeftAxis.LabelsOnAxis := True;  // Labels on axis line
+Chart1.LeftAxis.LabelsSeparation := 10; // Pixels between labels and axis
+
+// Alternate label positions
+Chart1.BottomAxis.AlternateLabels := True;
+
+// First and last labels
+Chart1.BottomAxis.RoundFirstLabel := False;
+```
+
+### Axis Line Style
+
+```pascal
+// Axis line appearance
+Chart1.LeftAxis.Axis.Visible := True;
+Chart1.LeftAxis.Axis.Width := 2;
+Chart1.LeftAxis.Axis.Color := clBlack;
+
+// Ticks
+Chart1.LeftAxis.Ticks.Visible := True;
+Chart1.LeftAxis.Ticks.Length := 5;
+Chart1.LeftAxis.TicksInner.Visible := True;
+```
+
+### Multi-Line Axis Titles
+
+```pascal
+Chart1.LeftAxis.Title.Caption := 'Temperature' + #13 + '(Celsius)';
+Chart1.LeftAxis.Title.Angle := 90; // Vertical text
+```
+
+## Common Use Cases
+
+### Financial Charts (Dual Axes)
+
+Price on left axis, volume on right axis:
+
+```pascal
+PriceSeries.VertAxis := aLeftAxis;
+VolumeSeries.VertAxis := aRightAxis;
+
+Chart1.LeftAxis.Title.Caption := 'Price ($)';
+Chart1.RightAxis.Title.Caption := 'Volume';
+Chart1.RightAxis.Visible := True;
+```
+
+### Scientific Data (Isometric View)
+
+Maintain equal scaling on both axes:
+
+```pascal
+Chart1.Axes.IsometricView := True;
+```
+
+### Time Series
+
+Optimize for time-based data:
+
+```pascal
+Chart1.BottomAxis.DateTimeFormat := 'hh:nn:ss';
+Chart1.BottomAxis.Increment := DateTimeStep[dtOneMinute];
+Chart1.BottomAxis.ExactDateTime := True;
+```
+
+### Real-Time Charts
+
+Optimize axis calculations for performance:
+
+```pascal
+// Fast axis calculation mode
+Chart1.Axes.FastCalc := True;
+
+// Manual axis range for scrolling
+Chart1.BottomAxis.Automatic := False;
+Chart1.BottomAxis.SetMinMax(StartTime, EndTime);
+```
+
+**Source**: `FastLine_Realtime.pas:99`
+
+## Related Topics
+
+<CardGroup cols={2}>
+  <Card title="Series Types" icon="chart-line" href="/charts/bar">
+    Different chart series types
+  </Card>
+  <Card title="Real-Time Data" icon="gauge-high" href="/features/real-time-data">
+    High-performance real-time charting
+  </Card>
+</CardGroup>

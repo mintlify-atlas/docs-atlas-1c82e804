@@ -1,0 +1,354 @@
+---
+title: TeeNew Demo Application
+description: Comprehensive demonstration with 687 examples covering every TeeChart VCL feature
+---
+
+The **TeeNew Demo** is the most comprehensive collection of TeeChart VCL examples, containing 687 individual examples that demonstrate every feature and capability of the TeeChart library.
+
+## Overview
+
+TeeNew is an essential resource for:
+
+- **Learning** - Browse examples organized by feature category
+- **Reference** - Find code samples for specific functionality
+- **Exploration** - Discover features you didn't know existed
+- **Testing** - Verify behavior and compatibility
+
+## Location
+
+```
+~/workspace/source/VCL/TeeNew/
+```
+
+All examples are provided as compilable Delphi units (.pas) with corresponding form files (.dfm).
+
+## What's Included
+
+The TeeNew demo contains 687 Pascal (.pas) files, each demonstrating a specific feature or technique. Examples cover:
+
+### Chart Series Types (100+ examples)
+
+- Line, FastLine, Area, Bar, Horizontal Bar
+- Pie, Donut, Shape, Arrow, Bubble
+- Point, Point3D, Polar, Radar, Smith
+- Candle, Volume, Gantt, BarJoin
+- Surface, ColorGrid, Contour, Tower, TriSurface
+- Vector3D, Bezier, Calendar, Darvas
+- Error Bar, Error Point, Histogram, Box
+- Knob, Funnel, Pyramid, and more
+
+### Axes and Scales (80+ examples)
+
+- Multiple axes configuration
+- DateTime, logarithmic, and custom scales
+- Grid customization and bands
+- Label formatting and positioning
+- Scrolling and zooming
+- Isometric and depth axes
+
+### Chart Tools (50+ examples)
+
+- Annotation and callout tools
+- ColorLine and ColorBand
+- Cursor and crosshair tools
+- Drag point and nearest point
+- Legend and extra legend
+- Zoom, pan, and scroll tools
+- Draw line and chart image tools
+
+### Functions (40+ examples)
+
+- Statistical: Average, Median, Mode, Standard Deviation
+- Smoothing: Moving Average, Exponential Smoothing
+- Trend: Linear, Logarithmic, Exponential, Polynomial
+- Mathematical: Add, Subtract, Multiply, Divide, High, Low
+- Curve Fitting and Custom Functions
+
+### 3D Features (60+ examples)
+
+- 3D percentage and perspective
+- Rotation and elevation
+- Lighting and shadows
+- Orthogonal and perspective views
+- 3D depth for all series types
+- OpenGL acceleration
+
+### Visual Customization (70+ examples)
+
+- Gradients and transparency
+- Patterns and images
+- Custom colors and brushes
+- Background walls and panels
+- Titles and legends
+- Marks and labels
+
+### Export and Output (25+ examples)
+
+- Native .tee format
+- Image formats: BMP, JPEG, PNG, GIF
+- Vector formats: SVG, PDF, EMF, WMF
+- HTML and JavaScript
+- XAML export
+- Print and print preview
+
+### Database Integration (15+ examples)
+
+- DBChart components
+- CrossTab sources
+- Query visualization
+- Live data binding
+
+### Real-time and Performance (20+ examples)
+
+- Real-time data updates
+- FastLine for high-speed rendering
+- Buffered display
+- OpenGL acceleration
+- Virtual series for large datasets
+
+### Interactivity (30+ examples)
+
+- Mouse and click events
+- Series dragging
+- Point editing
+- Dynamic series addition
+- Custom cursors
+
+## How to Use TeeNew
+
+### Running the Demo
+
+1. Navigate to the TeeNew directory:
+   ```
+   ~/workspace/source/VCL/TeeNew/
+   ```
+
+2. Open the project in Delphi/RAD Studio
+
+3. Compile and run the application
+
+4. Browse examples by category or search by name
+
+### Exploring Examples
+
+Each example is self-contained and includes:
+
+- **Source Code** (.pas file) - Complete implementation
+- **Form Definition** (.dfm file) - Visual layout
+- **Inline Comments** - Explanation of key concepts
+
+### Learning from Examples
+
+Recommended approach:
+
+1. **Browse by Category** - Start with familiar chart types
+2. **Read the Code** - Understand the implementation
+3. **Modify and Experiment** - Change properties and see results
+4. **Copy and Adapt** - Use code in your own projects
+
+## Example Categories
+
+### Basic Series Examples
+
+File naming convention: `[SeriesType]_[Feature].pas`
+
+Examples:
+- `Bar_Gradient.pas` - Gradient-filled bars
+- `Line_Pointer.pas` - Line series with point markers
+- `Area_Stairs.pas` - Stepped area charts
+- `Pie_Exploded.pas` - Exploded pie slices
+
+### Axis Examples
+
+File naming convention: `Axis_[Feature].pas` or `Axes_[Feature].pas`
+
+Examples:
+- `Axis_Custom.pas` - Custom axis configuration  
+- `Axis_MultiRuntime.pas` - Multiple axes at runtime  
+- `Axes_GridBands.pas` - Grid band patterns  
+- `Axis_Millisec.pas` - Millisecond time formatting  
+
+### Tool Examples
+
+File naming convention: `[ToolName]_[Feature].pas`
+
+Examples:
+- `Annotation_Tool.pas` - Text annotations
+- `ColorLine_DragRepaint.pas` - Draggable color lines
+- `CursorTool_Series.pas` - Cursor tool configuration
+- `ZoomScroll_Button.pas` - Zoom and scroll controls
+
+### Function Examples
+
+File naming convention: `[FunctionName]_[Feature].pas`
+
+Examples:
+- `AverageFunction_Period.pas` - Moving average calculation
+- `TrendFunction_Series.pas` - Trend line analysis
+- `SmoothingFunction_Interpolate.pas` - Data smoothing
+- `HistogramFunction_Series.pas` - Histogram generation
+
+### Chart Features
+
+File naming convention: `Chart_[Feature].pas`
+
+Examples:
+- `Chart_ScrollBar.pas` - Scrollbar integration
+- `Chart_PrintPreview.pas` - Print preview
+- `Chart_3DPercent.pas` - 3D depth percentage
+- `Chart_CustomChartRect.pas` - Custom chart area
+
+### Export Examples
+
+File naming convention: `Export_[Format].pas`
+
+Examples:
+- `Export_Native.pas` - Native .tee format
+- `Export_Picture.pas` - Image export
+- `Export_HTML.pas` - HTML generation
+- `Export_SVG.pas` - SVG vector export
+
+### OpenGL Examples
+
+File naming convention: `OpenGL_[Feature].pas`
+
+Examples:
+- `OpenGL_Canvas.pas` - Enable OpenGL rendering  
+- `OpenGL_AntiAlias.pas` - Hardware anti-aliasing  
+- `OpenGL_Surface.pas` - 3D surface with OpenGL  
+- `OpenGL_LightDirection.pas` - 3D lighting control  
+
+## Special Examples
+
+### All Series Viewer
+
+**File:** `All_Series.pas`
+
+Interactive browser showing all available series types with:
+- Visual preview of each series
+- 2D/3D toggle
+- Sample data for each type
+- Direct access to series properties
+
+### All Functions Viewer
+
+**File:** `All_Functions.pas`
+
+Comprehensive overview of all mathematical and statistical functions.
+
+## Code Examples
+
+Typical example structure:
+
+```pascal
+unit Bar_Gradient;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, 
+  Forms, Dialogs, ExtCtrls, StdCtrls, ComCtrls,
+  Base, TeeProcs, TeEngine, Chart, Series;
+
+type
+  TBarGradient = class(TBaseForm)
+    Series1: TBarSeries;
+    Button1: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+  end;
+
+implementation
+
+uses TeeEdiGrad;
+
+procedure TBarGradient.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues(6);
+end;
+
+procedure TBarGradient.Button1Click(Sender: TObject);
+begin
+  TTeeGradientEditor.Edit(Self, Series1.Gradient, True, True);
+end;
+
+initialization
+  RegisterClass(TBarGradient);
+end.
+```
+
+## Finding Examples
+
+### By Feature Category
+
+Common prefixes:
+- `Bar_*` - Bar chart examples (20+ files)
+- `Line_*` or `FastLine_*` - Line chart examples (15+ files)
+- `Area_*` - Area chart examples (10+ files)
+- `Pie_*` - Pie chart examples (10+ files)
+- `Axis_*` or `Axes_*` - Axis examples (40+ files)
+- `Point_*` or `Point3D_*` - Point series examples (20+ files)
+- `Surface_*` - 3D surface examples (10+ files)
+- `Candle_*` or `Volume_*` - Financial charts (10+ files)
+- `Annotation_*` - Annotation examples (5+ files)
+- `OpenGL_*` - OpenGL rendering (10+ files)
+
+### By Functionality
+
+Search for specific features:
+- Gradient: Files containing `Gradient`
+- 3D: Files containing `3D` or `Z`
+- Custom: Files containing `Custom`
+- Runtime: Files containing `Runtime` or `Dynamic`
+- Real-time: Files containing `Realtime`
+- Export: Files starting with `Export_`
+
+## Integration with Your Projects
+
+### Copy and Adapt
+
+1. Locate the example demonstrating your desired feature
+2. Open the .pas file to view implementation
+3. Copy relevant code sections to your project
+4. Adapt property names and values as needed
+
+### Reference Implementation
+
+Use TeeNew examples as:
+- **Syntax Reference** - Correct property and method usage
+- **Best Practices** - Recommended patterns and techniques
+- **Feature Discovery** - Learn about capabilities you need
+
+## Tips for Browsing
+
+1. **Start with All_Series.pas** - Overview of available chart types
+2. **Use filename patterns** - Quick way to find related examples
+3. **Check FormCreate** - Main initialization code is usually here
+4. **Look for Button handlers** - Interactive features demonstrated
+5. **Read inline comments** - Important notes and explanations
+
+## Related Resources
+
+- [Basic Examples](/examples/basic) - Curated beginner examples
+- [Intermediate Examples](/examples/intermediate) - Mid-level features
+- [Advanced Examples](/examples/advanced) - Complex scenarios
+- [FMX Demo](/examples/fmx-demo) - FireMonkey equivalent examples
+
+## Statistics
+
+- **Total Examples:** 687 Pascal files
+- **Total Form Files:** 687 DFM files  
+- **Categories:** 15+ major categories
+- **Series Types:** 60+ different series types demonstrated
+- **Tools:** 20+ chart tools examples
+- **Functions:** 25+ mathematical/statistical functions
+
+## Next Steps
+
+After exploring TeeNew:
+
+1. Try the [FMX Demo](/examples/fmx-demo) for cross-platform examples
+2. Explore [TeeMaker](/examples/teemaker-demo) for 3D visualization
+3. Check the [API Reference](/api) for detailed documentation
+4. Review [Tutorials](/tutorials) for guided learning paths

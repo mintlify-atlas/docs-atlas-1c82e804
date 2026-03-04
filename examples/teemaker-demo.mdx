@@ -1,0 +1,425 @@
+---
+title: TeeMaker Demo Application
+description: Advanced 3D visualization, animation, and interactive 3D object manipulation using TeeChart3D Pro
+---
+
+The **TeeMaker** demo is an advanced 3D visualization toolkit that extends TeeChart with powerful 3D object creation, manipulation, animation, and rendering capabilities. It's designed for building interactive 3D applications, games, simulations, and visualization tools.
+
+## Overview
+
+TeeMaker provides:
+
+- **3D Object Creation** - Build complex 3D shapes and models
+- **Animation System** - Sophisticated animation engine
+- **Physics Engine** - Collision detection and movement
+- **OpenGL Rendering** - Hardware-accelerated 3D graphics
+- **Interactive Tools** - Visual editors and designers
+- **Import/Export** - Support for 3DS, OBJ, and other formats
+
+## Location
+
+```
+~/workspace/source/VCL/TeeMaker/
+```
+
+Main application: `TeeMaker.dpr`
+
+## Core Components
+
+### 3D Building Blocks
+
+TeeMaker uses a block-based architecture for creating 3D scenes:
+
+- **TeeBlocks.pas** - Core block framework
+- **TeeBlockClasses.pas** - Standard block types
+- **TeeChart3D.pas** - 3D chart integration
+- **TeeDraw3DEditor.pas** - Visual 3D editor
+
+### Animation System
+
+**Location:** TeeMaker root directory
+
+Comprehensive animation capabilities:
+
+- **TeeActionAnimation.pas** - Action-based animations
+- **TeeAnimateEditor.pas** - Animation editor interface
+- **TeeAnimationGallery.pas** - Pre-built animation templates
+- **TeeBlockAnimations.pas** - Block animation system
+- **TeeMoveAnimation.pas** - Movement and transformation
+- **TeeNumberAnimation.pas** - Numeric value animation
+
+Animation types:
+- Position and rotation
+- Scale and transformation
+- Property interpolation
+- Keyframe animation
+- Path-based movement
+
+### 3D Shapes and Objects
+
+Built-in 3D primitives and complex shapes:
+
+- **TeeExtruded.pas** - Extrusion operations
+- **TeeHelix.pas** - Helix and spiral shapes
+- **TeeMesh.pas** - Custom mesh creation
+- **TeePipe.pas** - Pipe and tube shapes
+- **TeeRain.pas** - Particle effects (rain, snow)
+- **TeeRevolution.pas** - Revolution surfaces
+- **TeeRoundRect.pas** - Rounded rectangles
+- **TeeStairs.pas** - Staircase generation
+- **TeeTerrain.pas** - Terrain generation
+- **TeeWater.pas** - Water surface effects
+
+### Physics and Collision
+
+**Location:** `~/workspace/source/VCL/TeeMaker/Collision_Movements/`
+
+Physics simulation capabilities:
+
+- **TeePhysics.pas** - Physics engine
+- **Unit_Test_Collision.pas** - Collision detection tests
+- **Unit_Test_Collision_Blocks.pas** - Block collision system
+- **TeeKinematics.pas** - Kinematic calculations
+
+Features:
+- Collision detection
+- Physics-based movement
+- Gravity simulation
+- Object interactions
+
+### 3D File Format Support
+
+**Importers/Exporters:**
+
+- **Tee3DSFormat.pas** - 3D Studio (.3ds) format
+  - Import 3DS models
+  - Mesh and texture support
+  - Material properties
+
+- **TeeObjFormat.pas** - Wavefront OBJ format
+  - OBJ file import/export
+  - Vertex and face data
+  - Texture coordinates
+
+**Test Files:**
+- `~/workspace/source/VCL/TeeMaker/OBJ/Unit_Test_Ant.pas` - OBJ import example
+
+### Visual Editors
+
+Interactive design tools:
+
+- **TeeMakerEditor.pas** - Main editor interface
+- **TeeBlockEditor.pas** - Block property editor
+- **TeeBlockFormat.pas** - Block formatting tools
+- **TeeBlockGallery.pas** - Block template gallery
+- **TeeExtrudedEditor.pas** - Extrusion editor
+- **TeeRevolutionEditor.pas** - Revolution editor
+- **TeeTorusEditor.pas** - Torus shape editor
+- **TeePointEditor.pas** - Point manipulation
+- **TeeVisualsEditor.pas** - Visual properties editor
+
+### Materials and Textures
+
+**Texture Support:**
+
+- **TeePngImage.pas** - PNG image handling
+- **TeeTarga.pas** - Targa (.tga) format support
+- **TeeTextureSelector.pas** - Texture selection dialog
+
+**Texture Directory:**
+- `~/workspace/source/VCL/TeeMaker/Textures/` - Sample textures
+
+**Shaders:**
+- **TeeGLSLShaders.pas** - GLSL shader support for advanced rendering
+
+### Camera and View
+
+3D camera control:
+
+- **TeeCamera.pas** - Camera implementation
+- **TeeViewBlock.pas** - View configuration
+- **UChart3D.pas** - Chart-based 3D views
+
+### Special Effects
+
+Visual effects and enhancements:
+
+- **TeeEdgeStyle.pas** - Edge rendering styles
+- **TeeColorPalette.pas** - Color management
+- **TeeClipBlock.pas** - Clipping operations
+- **TeeSubdivideMesh.pas** - Mesh subdivision for smoothing
+
+### Video and Multimedia
+
+**Media Integration:**
+
+- **TeeVideoBlock.pas** - Video playback in 3D
+- **TeePlayMP3.pas** - MP3 audio playback
+- **TeeQuickTime.pas** - QuickTime integration
+- **TeeSoundSelector.pas** - Sound selection and management
+
+**Audio Library:**
+- **bass.pas** - BASS audio library integration
+- Sample audio: `rain.wav`
+
+### Utility Libraries
+
+**Library Directory:** `~/workspace/source/VCL/TeeMaker/Library/`
+
+Supporting code and utilities
+
+**Makers Directory:** `~/workspace/source/VCL/TeeMaker/Makers/`
+
+Block creation utilities
+
+## 3D Chart Integration
+
+### Chart3D Examples
+
+**Location:** `~/workspace/source/VCL/TeeMaker/Chart3D/`
+
+- **UChart3D.pas** - 3D chart implementation
+- Integration with TeeChart series
+- 3D data visualization
+
+**Test Directory:** `~/workspace/source/VCL/TeeMaker/TestChart3D/`
+
+Test cases and examples for Chart3D integration
+
+### Block Contracts
+
+**Location:** `~/workspace/source/VCL/TeeMaker/BlockContracts/`
+
+- **Interfaces.pas** - Block interface definitions
+- Extensibility framework
+- Custom block creation
+
+## Advanced Features
+
+### OpenGL Integration
+
+- **TeeGLUT.pas** - GLUT bindings for OpenGL
+- Hardware acceleration
+- Advanced rendering techniques
+- Shader support (GLSL)
+
+OpenGL features:
+- Hardware anti-aliasing
+- Advanced lighting
+- Texture mapping
+- Real-time shadows
+
+### Face Manipulation
+
+- **TeeFacesBlock.pas** - Direct face-level editing
+- Vertex manipulation
+- Custom mesh creation
+- Advanced geometry
+
+### Action and Animation Gallery
+
+- **TeeActionGallery.pas** - Pre-built actions
+- **TeeAnimationGallery.pas** - Animation templates
+- **TeeBlockGallery.pas** - Block templates
+
+Quick-start templates for:
+- Common animations
+- Standard objects
+- Effect combinations
+
+### Property System
+
+- **TeeProperties.pas** - Dynamic property system
+- **TeeSelectProperty.pas** - Property selection
+- Runtime property editing
+- Extensible architecture
+
+## Project Structure
+
+### Main Application
+
+- **TeeMaker.dpr** - Main application project
+- **TeeMakerMain.pas** - Application main form
+- **TeeMakerControl.pas** - Control components
+- **TeeMakerConst.pas** - Constants and resources
+- **TeeMakerLibrary.pas** - Shared library code
+
+### Package Files
+
+TeeMaker is available as both runtime and design-time packages for multiple Delphi/C++Builder versions:
+
+**Delphi Packages:** `TeeMaker*.dpk` (versions 14 through 128)
+**Design-Time:** `DclTeeMaker*.dpk`  
+**C++Builder:** `TeeMaker*C*.bpk`
+
+### Registration
+
+- **TeeMakerRegister.pas** - Component registration
+- IDE integration
+- Property editors
+
+## Use Cases
+
+### 3D Visualization Applications
+
+- Scientific data visualization
+- Engineering simulations
+- Architectural walkthroughs
+- Medical imaging
+
+### Interactive 3D Games
+
+- 3D puzzle games
+- Educational games
+- Simulation games
+- Physics-based games
+
+### Training Simulators
+
+- Equipment operation training
+- Process visualization
+- Safety training
+- Interactive demonstrations
+
+### Data Exploration
+
+- 3D scatter plots
+- Surface visualization
+- Volume rendering
+- Multi-dimensional data
+
+## Example: Creating a 3D Scene
+
+```pascal
+procedure TForm1.Create3DScene;
+var
+  Chart: TChart3D;
+  Block: TBlock3D;
+begin
+  // Create 3D chart
+  Chart := TChart3D.Create(Self);
+  Chart.Parent := Self;
+  
+  // Add a cube block
+  Block := TCubeBlock.Create(Chart);
+  Block.Size := 10;
+  Block.Position.X := 0;
+  Block.Position.Y := 0;
+  Block.Position.Z := 0;
+  
+  // Apply texture
+  Block.Texture.LoadFromFile('texture.png');
+  
+  // Add animation
+  Block.Animation.Rotation.Y := 360;
+  Block.Animation.Duration := 5000; // 5 seconds
+  Block.Animation.Loop := True;
+  Block.Animation.Start;
+  
+  // Configure camera
+  Chart.Camera.Distance := 50;
+  Chart.Camera.Elevation := 30;
+  Chart.Camera.Rotation := 45;
+end;
+```
+
+## Running TeeMaker
+
+### Compilation
+
+1. Open `TeeMaker.dpr` in Delphi/RAD Studio
+2. Ensure TeeChart Pro is installed
+3. Build the project
+4. Run the application
+
+### Using the Editor
+
+1. **Create New Block** - Select from block gallery
+2. **Edit Properties** - Use the property editor
+3. **Add Animation** - Choose from animation gallery
+4. **Configure Camera** - Set view position and angle
+5. **Add Interactions** - Handle mouse and keyboard events
+6. **Export Scene** - Save in supported formats
+
+## Performance Tips
+
+1. **Use OpenGL** - Enable hardware acceleration
+2. **Optimize Meshes** - Reduce polygon count for complex scenes
+3. **Texture Management** - Use appropriate texture sizes
+4. **Culling** - Enable backface culling
+5. **LOD** - Implement level-of-detail for distant objects
+6. **Batch Operations** - Group similar objects
+
+## Advanced Techniques
+
+### Custom Block Creation
+
+Extend TeeMaker with custom blocks:
+- Inherit from base block classes
+- Override drawing methods
+- Implement custom properties
+- Add specialized behaviors
+
+### Shader Programming
+
+Use GLSL shaders for advanced effects:
+- Custom vertex transformations
+- Fragment shading
+- Post-processing effects
+- Real-time rendering techniques
+
+### Physics Simulation
+
+Implement realistic physics:
+- Collision response
+- Gravity and forces
+- Constraint systems
+- Particle dynamics
+
+## Related Resources
+
+- [TeeNew Demo](/examples/teenew-demo) - 2D and 3D chart examples
+- [Advanced Examples](/examples/advanced) - OpenGL and 3D features
+- [FMX Demo](/examples/fmx-demo) - Cross-platform 3D
+
+## Expo3D Directory
+
+**Location:** `~/workspace/source/VCL/TeeMaker/Expo3D/`
+
+3D exhibition and demonstration examples
+
+## Dependencies
+
+- TeeChart Pro VCL (required)
+- OpenGL libraries (for acceleration)
+- BASS audio library (for sound features)
+- GLUT library (included: `glut32.dll`)
+
+## Key Differences from Standard TeeChart
+
+| Feature | TeeChart | TeeMaker |
+|---------|----------|----------|
+| **Focus** | 2D/3D Charts | 3D Objects & Scenes |
+| **Animation** | Basic | Advanced |
+| **Physics** | None | Full engine |
+| **3D Import** | Limited | 3DS, OBJ |
+| **Interaction** | Chart tools | Full 3D manipulation |
+| **Audio/Video** | None | Multimedia support |
+
+## Next Steps
+
+After exploring TeeMaker:
+
+1. Build a simple 3D scene
+2. Experiment with animations
+3. Import 3D models
+4. Create physics simulations
+5. Develop interactive applications
+
+## Community and Support
+
+TeeMaker is part of the TeeChart Pro suite. For support:
+- Check TeeChart documentation
+- Visit Steema forums
+- Review example code in the TeeMaker directory
+- Experiment with the visual editors

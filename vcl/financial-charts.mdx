@@ -1,0 +1,402 @@
+---
+title: Financial Charts
+description: Candle, OHLC, and Volume chart samples for financial data visualization
+icon: 'chart-candlestick'
+---
+
+## Overview
+
+TeeChart VCL provides specialized series types for financial data visualization, including Candlestick charts, OHLC (Open-High-Low-Close) charts, and Volume series. These charts are essential for stock market analysis and trading applications.
+
+## Candle Series
+
+Candlestick charts are the most popular way to display stock price movements, showing open, high, low, and close values in a compact visual format.
+
+### Candle with Custom Colors
+
+**Location:** `TeeNew/Candle_CustomColors.pas`
+
+```pascal
+unit Candle_CustomColors;
+
+type
+  TCandleCustomColors = class(TBaseForm)
+    Series1: TCandleSeries;
+    CheckBox1: TCheckBox;
+    ComboBox1: TComboBox;
+  end;
+
+procedure TCandleCustomColors.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues(30);
+  
+  // Set custom colors for specific candles
+  Series1.ValueColor[11] := clYellow;
+  Series1.ValueColor[15] := clLime;
+  Series1.ValueColor[16] := clBlue;
+end;
+
+procedure TCandleCustomColors.ComboBox1Change(Sender: TObject);
+begin
+  case ComboBox1.ItemIndex of
+    0: Series1.CandleStyle := csCandleStick;  // Traditional candles
+    1: Series1.CandleStyle := csCandleBar;     // Bar style
+    2: Series1.CandleStyle := csOpenClose;     // Open-Close only
+  end;
+end;
+```
+
+**Key Features:**
+- Multiple candle styles (CandleStick, CandleBar, OpenClose)
+- Custom colors for individual candles
+- Automatic up/down coloring
+- Configurable open/close indicators
+
+### Candle Styles
+
+<Tabs>
+  <Tab title="CandleStick">
+    Traditional filled candles with wicks showing high and low values.
+    
+    - **Up Candle:** Open < Close (typically white/green)
+    - **Down Candle:** Open > Close (typically black/red)
+  </Tab>
+  
+  <Tab title="CandleBar">
+    Vertical bars with tick marks for open and close.
+    
+    - Similar to OHLC but with filled body
+    - Clearer visualization for dense data
+  </Tab>
+  
+  <Tab title="OpenClose">
+    Shows only open and close values without high/low.
+    
+    - Simplified view focusing on price change
+    - Better for identifying trends
+  </Tab>
+</Tabs>
+
+### Candle with Axis Labels
+
+**Location:** `TeeNew/Candle_AxisLabels.pas`
+
+```pascal
+procedure TCandleAxisLabels.FormCreate(Sender: TObject);
+var
+  i: Integer;
+  Date: TDateTime;
+begin
+  inherited;
+  
+  // Add candle data with dates
+  Date := Now - 30;
+  for i := 0 to 29 do
+  begin
+    Series1.AddCandle(Date + i,           // Date
+                      Random(50) + 100,    // Open
+                      Random(50) + 120,    // High
+                      Random(50) + 80,     // Low
+                      Random(50) + 100);   // Close
+  end;
+  
+  // Format bottom axis for dates
+  Chart1.Axes.Bottom.DateTimeFormat := 'mm/dd/yy';
+end;
+```
+
+**Features:**
+- Date/time axis formatting
+- Custom label formats
+- Automatic date scaling
+
+### Candle Customization Samples
+
+<CardGroup cols={2}>
+  <Card title="Candle_HighLowPen" icon="pen">
+    Customize the pen style for high-low lines (wicks)
+  </Card>
+  
+  <Card title="Candle_OnGetPointer" icon="mouse-pointer">
+    Dynamic pointer customization based on candle values
+  </Card>
+  
+  <Card title="Candle_OpenClose" icon="arrows-left-right">
+    Control open/close tick appearance
+  </Card>
+  
+  <Card title="Candle_OpenClosePen" icon="paintbrush">
+    Customize pen styles for open/close indicators
+  </Card>
+</CardGroup>
+
+## OHLC Series
+
+OHLC (Open-High-Low-Close) charts display the same data as candles but in a different visual style.
+
+**Location:** `TeeNew/HighLow_Series.pas`
+
+```pascal
+unit HighLow_Series;
+
+type
+  THighLowForm = class(TBaseForm)
+    Series1: THorizLineSeries;
+  end;
+
+procedure THighLowForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Add OHLC data points
+  with Series1 do
+  begin
+    AddOHLC(EncodeDate(2024, 1, 2), 100, 110, 95, 105);
+    AddOHLC(EncodeDate(2024, 1, 3), 105, 115, 100, 112);
+    AddOHLC(EncodeDate(2024, 1, 4), 112, 118, 108, 115);
+  end;
+end;
+```
+
+**Key Differences from Candles:**
+- No filled body
+- Tick marks for open (left) and close (right)
+- Cleaner look for dense data
+- Better for black & white printing
+
+## Volume Series
+
+Volume charts complement price charts by showing trading volume.
+
+**Location:** `TeeNew/Volume_Origin.pas`
+
+```pascal
+procedure TVolumeOrigin.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Create volume bars
+  Series1.FillSampleValues(20);
+  
+  // Set origin for volume baseline
+  Series1.UseYOrigin := True;
+  Series1.YOrigin := 0;
+  
+  // Color bars based on price movement
+  // Green for up days, red for down days
+  for i := 0 to Series1.Count - 1 do
+  begin
+    if PriceUp(i) then
+      Series1.ValueColor[i] := clGreen
+    else
+      Series1.ValueColor[i] := clRed;
+  end;
+end;
+```
+
+**Volume Chart Features:**
+- Bar chart showing trading volume
+- Color coding (up/down days)
+- Integration with price charts
+- Custom origin positioning
+
+## Financial Functions
+
+TeeChart includes built-in financial analysis functions that can be applied to price data.
+
+### Bollinger Bands
+
+**Location:** `TeeNew/Function_Bollinger.pas`
+
+```pascal
+procedure TBollingerForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Create price series
+  Series1.FillSampleValues(100);
+  
+  // Add Bollinger Bands function
+  with TBollingerFunction.Create(Self) do
+  begin
+    Period := 20;              // 20-day moving average
+    NumStandardDev := 2.0;     // 2 standard deviations
+    Series := Series1;         // Source series
+    
+    // Create series for upper and lower bands
+    UpperBandSeries.DataSource := Self;
+    LowerBandSeries.DataSource := Self;
+  end;
+end;
+```
+
+### Moving Averages
+
+**Location:** `TeeNew/Function_MovAve.pas`
+
+```pascal
+procedure TMovAvgForm.FormCreate(Sender: TObject);
+begin
+  inherited;
+  
+  // Price series
+  Series1.FillSampleValues(100);
+  
+  // 20-day simple moving average
+  MovAvg20.Period := 20;
+  MovAvg20.Series := Series1;
+  
+  // 50-day simple moving average
+  MovAvg50.Period := 50;
+  MovAvg50.Series := Series1;
+end;
+```
+
+### Available Financial Functions
+
+<AccordionGroup>
+  <Accordion title="Trend Indicators">
+    - **Moving Average** - Simple, Exponential, Weighted
+    - **Bollinger Bands** - Price volatility bands
+    - **Alligator** - Bill Williams indicator
+    - **SAR** - Parabolic Stop and Reverse
+  </Accordion>
+  
+  <Accordion title="Momentum Indicators">
+    - **RSI** - Relative Strength Index
+    - **MACD** - Moving Average Convergence Divergence
+    - **Momentum** - Rate of change
+    - **Stochastic** - Oscillator indicator
+  </Accordion>
+  
+  <Accordion title="Volatility Indicators">
+    - **ATR** - Average True Range
+    - **Standard Deviation** - Price volatility
+    - **Bollinger Width** - Band width analysis
+  </Accordion>
+  
+  <Accordion title="Volume Indicators">
+    - **OBV** - On Balance Volume
+    - **Money Flow** - Chaikin Money Flow
+    - **PVO** - Percentage Volume Oscillator
+    - **Volume ROC** - Rate of change
+  </Accordion>
+  
+  <Accordion title="Other Indicators">
+    - **ADX** - Average Directional Index
+    - **CCI** - Commodity Channel Index
+    - **RVI** - Relative Volatility Index
+    - **Vortex** - Vortex Indicator
+  </Accordion>
+</AccordionGroup>
+
+## Complete Financial Chart Example
+
+Combining price, volume, and indicators:
+
+```pascal
+procedure TFinancialChart.CreateChart;
+begin
+  // Main price chart (candlestick)
+  CandleSeries := TCandleSeries.Create(Self);
+  CandleSeries.ParentChart := ChartPrice;
+  CandleSeries.UpCloseColor := clLime;
+  CandleSeries.DownCloseColor := clRed;
+  
+  // Volume chart (separate panel)
+  VolumeSeries := TBarSeries.Create(Self);
+  VolumeSeries.ParentChart := ChartVolume;
+  VolumeSeries.MultiBar := mbNone;
+  
+  // 20-day moving average
+  MA20 := TMovingAverageFunction.Create(Self);
+  MA20.Period := 20;
+  MA20.Series := CandleSeries;
+  
+  MASeries20 := TLineSeries.Create(Self);
+  MASeries20.ParentChart := ChartPrice;
+  MASeries20.DataSource := MA20;
+  MASeries20.LinePen.Color := clBlue;
+  
+  // Bollinger Bands
+  Bollinger := TBollingerFunction.Create(Self);
+  Bollinger.Period := 20;
+  Bollinger.NumStandardDev := 2;
+  Bollinger.Series := CandleSeries;
+  
+  // RSI indicator (separate panel)
+  RSI := TRSIFunction.Create(Self);
+  RSI.Period := 14;
+  RSI.Series := CandleSeries;
+  
+  RSISeries := TLineSeries.Create(Self);
+  RSISeries.ParentChart := ChartRSI;
+  RSISeries.DataSource := RSI;
+end;
+```
+
+## Performance Tips
+
+For real-time financial applications:
+
+<Steps>
+  <Step title="Use Fast Drawing">
+    ```pascal
+    Chart1.AutoRepaint := False;
+    // Add multiple points
+    Chart1.AutoRepaint := True;
+    ```
+  </Step>
+  
+  <Step title="Limit Visible Points">
+    ```pascal
+    Chart1.Axes.Bottom.SetMinMax(StartDate, EndDate);
+    Chart1.Axes.Bottom.Automatic := False;
+    ```
+  </Step>
+  
+  <Step title="Optimize Functions">
+    ```pascal
+    MovAvg.CalculateEvery := 10;  // Update every 10 points
+    ```
+  </Step>
+</Steps>
+
+## Related Samples
+
+<CardGroup cols={2}>
+  <Card title="Statistical Charts" href="/vcl/statistical-charts">
+    Box plots and histograms for distribution analysis
+  </Card>
+  
+  <Card title="Standard Series" href="/vcl/standard-series">
+    Basic line and bar charts
+  </Card>
+  
+  <Card title="Export Features">
+    Export financial charts to PDF, Excel, images
+  </Card>
+  
+  <Card title="Real-time Data">
+    Live data streaming samples
+  </Card>
+</CardGroup>
+
+## Financial Sample List
+
+Complete list of financial-related samples in TeeNew:
+
+- `Candle_AxisLabels.pas` - Date/time formatting
+- `Candle_CustomColors.pas` - Color customization
+- `Candle_HighLowPen.pas` - Wick styling
+- `Candle_OnGetPointer.pas` - Dynamic pointers
+- `Candle_OpenClose.pas` - Open/close indicators
+- `Candle_OpenClosePen.pas` - Pen customization
+- `Volume_Origin.pas` - Volume chart baseline
+- `Function_Bollinger.pas` - Bollinger Bands
+- `Function_MovAve.pas` - Moving averages
+- `Function_RSI.pas` - RSI indicator
+- `Function_MACD.pas` - MACD indicator
+- `Function_ADX.pas` - ADX indicator
+- And many more...

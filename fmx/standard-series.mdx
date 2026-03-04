@@ -1,0 +1,373 @@
+---
+title: 'Standard Series Samples'
+description: 'Comprehensive guide to TeeChart FMX standard series types with code examples'
+icon: 'chart-line'
+---
+
+## Overview
+
+The Standard Series samples demonstrate TeeChart's fundamental chart types optimized for FireMonkey applications. These examples are located in `FMX/Demo/Standard/` and `FMX/StandardSeriesDemo/` directories.
+
+<Info>
+The StandardSeriesDemo is a comprehensive showcase combining multiple series types in dashboard layouts, perfect for learning cross-platform design patterns.
+</Info>
+
+## Available Series Types
+
+### Line Series
+
+Line series are ideal for displaying trends over time or continuous data.
+
+**Sample Location:** `FMX/Demo/Standard/DemoLine.pas`
+
+```pascal
+unit DemoLine;
+
+interface
+
+uses
+  FMX.Types, FMX.Controls, FMX.Forms, FMXTee.Engine,
+  FMXTee.Series, FMXTee.Procs, FMXTee.Chart;
+
+type
+  TDemoLine = class(TForm)
+    Chart1: TChart;
+    Series1: TLineSeries;
+    Series2: TLineSeries;
+    procedure FormCreate(Sender: TObject);
+  end;
+
+implementation
+
+procedure TDemoLine.FormCreate(Sender: TObject);
+begin
+  Series1.FillSampleValues();
+  Series2.FillSampleValues();
+  
+  // Add null values for gaps
+  Series1.SetNull(12);
+  Series1.SetNull(16);
+  Series2.SetNull(3);
+  Series2.SetNull(9);
+end;
+```
+
+**Features:**
+- Smoothed lines (Pro version)
+- Stair-step mode
+- Point markers
+- Outline support
+- Null value handling
+
+#### Line Series Options
+
+```pascal
+// Enable stairs mode
+Series1.Stairs := True;
+
+// Smooth the line
+Series1.Smoothed := True;  // Pro version
+
+// Show point markers
+Series1.Pointer.Visible := True;
+
+// Enable stacking
+if CheckBox6.IsChecked then
+   Series1.Stacked := cssStack
+else
+   Series1.Stacked := cssNone;
+```
+
+### Bar Series
+
+Bar charts are perfect for comparing values across categories.
+
+**Sample Location:** `FMX/Demo/Standard/DemoBar.pas`
+
+```pascal
+procedure TDemoBarSeries.FormCreate(Sender: TObject);
+begin
+  Series1.FillSampleValues();
+  Series2.FillSampleValues();
+end;
+
+// Change bar style
+procedure TDemoBarSeries.ComboBox2Change(Sender: TObject);
+begin
+  case ComboBox2.ItemIndex of
+    0: begin
+         Series1.BarStyle := bsRectangle;
+         Series2.BarStyle := bsRectangle;
+       end;
+    1: begin
+         Series1.BarStyle := bsCylinder;
+         Series2.BarStyle := bsCylinder;
+       end;
+    2: begin
+         Series1.BarStyle := bsPyramid;
+         Series2.BarStyle := bsPyramid;
+       end;
+    3: begin
+         Series1.BarStyle := bsCone;
+         Series2.BarStyle := bsCone;
+       end;
+  end;
+end;
+
+// Change multi-bar mode
+procedure TDemoBarSeries.ComboBox1Change(Sender: TObject);
+begin
+  Series1.MultiBar := TMultiBar(ComboBox1.ItemIndex);
+  // Options: mbNone, mbSide, mbStacked, mbSelfStack
+end;
+```
+
+**Bar Styles:**
+- `bsRectangle` - Standard rectangular bars
+- `bsCylinder` - 3D cylindrical bars
+- `bsPyramid` - Pyramid-shaped bars
+- `bsCone` - Cone-shaped bars
+- `bsBevel` - Beveled bars
+
+**MultiBar Modes:**
+- `mbNone` - Single series display
+- `mbSide` - Bars side-by-side
+- `mbStacked` - Stacked bars
+- `mbSelfStack` - Self-stacking mode
+
+### Area Series
+
+Area charts show cumulative totals and part-to-whole relationships.
+
+**Sample Location:** `FMX/Demo/Standard/DemoArea.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+begin
+  Series1.FillSampleValues();
+  Series2.FillSampleValues();
+  
+  // Configure area appearance
+  Series1.Transparency := 50;
+  Series2.Transparency := 50;
+end;
+```
+
+### Pie Series
+
+Pie charts display proportional data as slices of a circle.
+
+**Sample Location:** `FMX/Demo/Standard/DemoPie.pas`
+
+```pascal
+procedure TDemoPieSeries.FormCreate(Sender: TObject);
+begin
+  inherited;
+  Series1.FillSampleValues;
+end;
+
+// Explode the largest slice
+procedure TDemoPieSeries.TrackBar1Change(Sender: TObject);
+begin
+  Series1.ExplodeBiggest := Round(TrackBar1.Value);
+end;
+```
+
+**Pie Features:**
+- Exploded slices
+- Custom slice colors
+- Percentage labels
+- 3D perspective
+
+### Point Series
+
+Point series display individual data points, ideal for scatter plots.
+
+**Sample Location:** `FMX/Demo/Standard/DemoPoint.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+begin
+  Series1.FillSampleValues(25);
+  
+  // Customize point appearance
+  Series1.Pointer.Style := psCircle;
+  Series1.Pointer.HorizSize := 4;
+  Series1.Pointer.VertSize := 4;
+end;
+```
+
+### Bubble Series
+
+Bubble charts add a third dimension to scatter plots using bubble size.
+
+**Sample Location:** `FMX/Demo/Standard/DemoBubble.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+begin
+  // Bubble size represents the Z value
+  Series1.AddBubble(10, 20, 15, 'Point A', clRed);
+  Series1.AddBubble(20, 30, 25, 'Point B', clBlue);
+end;
+```
+
+### Gantt Series
+
+Gantt charts visualize project schedules and timelines.
+
+**Sample Location:** `FMX/Demo/Standard/DemoGantt.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+begin
+  with Series1 do
+  begin
+    AddGantt(EncodeDate(2024,1,1), EncodeDate(2024,2,1), 0, 'Task 1');
+    AddGantt(EncodeDate(2024,1,15), EncodeDate(2024,3,1), 1, 'Task 2');
+    AddGantt(EncodeDate(2024,2,1), EncodeDate(2024,3,15), 2, 'Task 3');
+  end;
+end;
+```
+
+### Fast Line Series
+
+Optimized for high-performance rendering of large datasets.
+
+**Sample Location:** `FMX/Demo/Standard/DemoFastLine.pas`
+
+```pascal
+procedure FormCreate(Sender: TObject);
+var
+  i: Integer;
+begin
+  // Efficiently handle thousands of points
+  for i := 0 to 10000 do
+    Series1.Add(Sin(i * 0.1), '', clTeeColor);
+end;
+```
+
+## StandardSeriesDemo Application
+
+The `FMX/StandardSeriesDemo/` contains a comprehensive multi-view application showcasing all series types.
+
+**Key Features:**
+- Dashboard layout with multiple charts
+- Platform-specific UI adaptations
+- Responsive design patterns
+- iPad and phone-optimized layouts
+
+### Project Structure
+
+```
+StandardSeriesDemo/
+├── MainFrm.fmx              # Main layout
+├── MainFrm.iPad.fmx         # iPad-optimized layout
+├── MainFrm.XLgXhdpiTb.fmx   # Tablet layout
+├── Lines/                   # Line series examples
+├── Bars/                    # Bar series examples
+├── Pies/                    # Pie series examples
+├── Donuts/                  # Donut series examples
+├── Areas/                   # Area series examples
+├── Points/                  # Point series examples
+├── Bubbles/                 # Bubble series examples
+├── Gantts/                  # Gantt series examples
+└── Miscellaneous/          # Other series types
+```
+
+## Cross-Platform Considerations
+
+### Font Sizing
+
+```pascal
+{$IFDEF IOS}
+  BarChart.Legend.Font.Size := 10;
+{$ENDIF}
+
+{$IF DEFINED(iOS) or DEFINED(ANDROID)}
+  DonutSeries.Marks.Visible := False;
+{$ENDIF}
+```
+
+### Layout Adjustments
+
+```pascal
+{$IFDEF MACOS}
+  Layout4.Height := 192;
+  LBTotalSales.TextSettings.Font.Size := 14;
+{$ELSE}
+  Layout4.Height := 256;
+  LBTotalSales.TextSettings.Font.Size := 18;
+{$ENDIF}
+```
+
+## Horizontal Series
+
+Many series types have horizontal variants:
+
+- **Horizontal Bar** - `DemoHorizBar.pas`
+- **Horizontal Area** - `DemoHorizArea.pas`
+- **Horizontal Line** - `DemoHorizLine.pas`
+
+```pascal
+// Horizontal bars automatically orient left-to-right
+Series1: THorizBarSeries;
+```
+
+## Common Properties
+
+### Series Customization
+
+```pascal
+// Colors and appearance
+Series1.Color := TAlphaColorRec.Blue;
+Series1.Transparency := 30;
+
+// Marks and labels
+Series1.Marks.Visible := True;
+Series1.Marks.Style := smsValue;
+
+// Outline
+Series1.OutLine.Visible := True;
+Series1.OutLine.Color := TAlphaColorRec.Black;
+
+// 3D options
+Chart1.View3D := True;
+Chart1.Chart3DPercent := 15;
+```
+
+## Sample Values
+
+All series support automatic sample value generation:
+
+```pascal
+// Generate default sample values
+Series1.FillSampleValues();
+
+// Generate specific number of points
+Series1.FillSampleValues(25);
+
+// Fill all series in chart
+Chart1.SeriesList.FillSampleValues;
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Animations" icon="play" href="/fmx/animations">
+    Add animations to your series
+  </Card>
+  
+  <Card title="Dashboard Examples" icon="table-cells" href="/fmx/dashboard">
+    Build comprehensive dashboards
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [StandardSeriesDemo Article](https://www.steema.com/wp/blog/2015/06/18/check-out-the-new-standardseriesdemo-example/)
+- [TeeChart Series Documentation](https://www.steema.com/product/vcl)
+
+<Tip>
+Explore the `StandardSeriesDemo` application for complete examples of dashboard layouts with multiple series types working together.
+</Tip>

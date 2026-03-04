@@ -1,122 +1,119 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "TeeChart VCL/FMX Samples",
+  "theme": "linden",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#e77c38",
+    "light": "#aecae4",
+    "dark": "#4b6d9e"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://media.brand.dev/4db77c6f-6a41-46bf-ae08-713227d05095.jpg",
+  "logo": {
+    "light": "https://media.brand.dev/a9e84a92-6a38-4e72-b991-b3947ce9b162.png",
+    "dark": "https://media.brand.dev/a9e84a92-6a38-4e72-b991-b3947ce9b162.png"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/Steema/TeeChart-VCL-FMX-Samples"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/Steema/TeeChart-VCL-FMX-Samples"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
+              "introduction",
               "quickstart",
-              "development"
+              "requirements"
             ]
           },
           {
-            "group": "Customization",
+            "group": "VCL Samples",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "vcl/overview",
+              "vcl/standard-series",
+              "vcl/financial-charts",
+              "vcl/statistical-charts",
+              "vcl/gauges",
+              "vcl/3d-charts",
+              "vcl/maps"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "FMX Samples",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "fmx/overview",
+              "fmx/standard-series",
+              "fmx/animations",
+              "fmx/dashboard",
+              "fmx/cross-platform"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Chart Types",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "charts/area",
+              "charts/bar",
+              "charts/line",
+              "charts/pie",
+              "charts/bubble",
+              "charts/gantt",
+              "charts/surface",
+              "charts/contour"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/axes",
+              "features/legends",
+              "features/annotations",
+              "features/export",
+              "features/real-time-data",
+              "features/database-integration"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "advanced/custom-drawing",
+              "advanced/opengl-rendering",
+              "advanced/performance",
+              "advanced/teeMaker"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Examples",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "By Category",
             "pages": [
-              "api-reference/introduction"
+              "examples/basic",
+              "examples/intermediate",
+              "examples/advanced"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Demo Applications",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "examples/teenew-demo",
+              "examples/fmx-demo",
+              "examples/teemaker-demo"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }
