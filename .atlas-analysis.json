@@ -1,0 +1,139 @@
+{
+  "projectType": "general",
+  "projectName": "TeeChart VCL/FMX Samples",
+  "projectDescription": "Comprehensive collection of 700+ code samples demonstrating TeeChart charting library features for Delphi and C++ Builder applications.",
+  "theme": "linden",
+  "primaryColor": "#e77c38",
+  "lightColor": "#aecae4",
+  "darkColor": "#4b6d9e",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "requirements"
+            ]
+          },
+          {
+            "group": "VCL Samples",
+            "pages": [
+              "vcl/overview",
+              "vcl/standard-series",
+              "vcl/financial-charts",
+              "vcl/statistical-charts",
+              "vcl/gauges",
+              "vcl/3d-charts",
+              "vcl/maps"
+            ]
+          },
+          {
+            "group": "FMX Samples",
+            "pages": [
+              "fmx/overview",
+              "fmx/standard-series",
+              "fmx/animations",
+              "fmx/dashboard",
+              "fmx/cross-platform"
+            ]
+          },
+          {
+            "group": "Chart Types",
+            "pages": [
+              "charts/area",
+              "charts/bar",
+              "charts/line",
+              "charts/pie",
+              "charts/bubble",
+              "charts/gantt",
+              "charts/surface",
+              "charts/contour"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/axes",
+              "features/legends",
+              "features/annotations",
+              "features/export",
+              "features/real-time-data",
+              "features/database-integration"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "advanced/custom-drawing",
+              "advanced/opengl-rendering",
+              "advanced/performance",
+              "advanced/teeMaker"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Examples",
+        "groups": [
+          {
+            "group": "By Category",
+            "pages": [
+              "examples/basic",
+              "examples/intermediate",
+              "examples/advanced"
+            ]
+          },
+          {
+            "group": "Demo Applications",
+            "pages": [
+              "examples/teenew-demo",
+              "examples/fmx-demo",
+              "examples/teemaker-demo"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "70+ chart types with 2D and 3D views",
+    "VCL and FireMonkey (FMX) framework support",
+    "Real-time data visualization and animations",
+    "Financial charts (Candle, MACD, Volume, RSI)",
+    "Statistical charts (Histogram, Box Plot, Error Bars)",
+    "Interactive gauges and circular gauges",
+    "Geographic maps with layers and spherical projections",
+    "Database integration and live bindings",
+    "Export to multiple formats (PDF, HTML, images)",
+    "Custom drawing and OpenGL rendering",
+    "Cross-platform support (Windows, macOS, iOS, Android)",
+    "TeeMaker 3D object creation tool"
+  ],
+  "publicApiSurface": [
+    "TChart - Main chart component",
+    "TChartSeries - Base series class",
+    "TLineSeries - Line chart series",
+    "TBarSeries - Bar chart series",
+    "TAreaSeries - Area chart series",
+    "TPieSeries - Pie chart series",
+    "TBubbleSeries - Bubble chart series",
+    "TGanttSeries - Gantt chart series",
+    "TSurfaceSeries - 3D surface series",
+    "TContourSeries - Contour chart series",
+    "TCandleSeries - Financial candle series",
+    "TVolumeSeries - Volume chart series",
+    "TPointSeries - Point series",
+    "TFastLineSeries - High-performance line series",
+    "TCircularGauge - Circular gauge component",
+    "TMapSeries - Geographic map series",
+    "TChartTool - Chart tools base class",
+    "TMarksTipTool - Tooltip tool",
+    "TAnnotationTool - Annotation tool",
+    "TColorBandTool - Color band tool",
+    "TAxisScrollTool - Axis scrolling tool"
+  ]
+}
